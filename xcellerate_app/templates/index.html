@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xcelerate Growth Partners — Proposal Generator</title>
+  <style>
+    /* ── Reset & Base ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #f0f2f5;
+      color: #2c2c2c;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    header {
+      background: #1D3461;
+      padding: 0;
+    }
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 32px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .header-logo {
+      height: 56px;
+      filter: brightness(0) invert(1);
+    }
+    .header-text h1 {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .header-text p {
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+    .green-bar { height: 6px; background: #5CB85C; }
+
+    /* ── Main layout ────────────────────────────────────────────────────── */
+    main {
+      max-width: 900px;
+      margin: 36px auto 60px;
+      padding: 0 20px;
+    }
+
+    /* ── Cards ──────────────────────────────────────────────────────────── */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .card-header {
+      background: #1D3461;
+      color: #fff;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header .badge {
+      background: #5CB85C;
+      color: #fff;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card-body { padding: 24px; }
+
+    /* ── Form fields ────────────────────────────────────────────────────── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1D3461;
+    }
+    label .req { color: #5CB85C; margin-left: 2px; }
+    label .opt { color: #aaa; font-weight: 400; font-size: 12px; margin-left: 4px; }
+
+    input[type="text"], input[type="date"], textarea, select {
+      border: 1.5px solid #dde2ec;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #2c2c2c;
+      background: #fafbfc;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+      font-family: inherit;
+    }
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #5CB85C;
+      box-shadow: 0 0 0 3px rgba(92,184,92,0.15);
+      background: #fff;
+    }
+    textarea { resize: vertical; min-height: 90px; }
+
+    /* ── File upload ────────────────────────────────────────────────────── */
+    .upload-zone {
+      border: 2px dashed #c5cfe0;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+      background: #fafbfc;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: #5CB85C;
+      background: #f0faf0;
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon { font-size: 28px; color: #5CB85C; margin-bottom: 6px; }
+    .upload-label { font-size: 13px; font-weight: 600; color: #1D3461; }
+    .upload-hint { font-size: 12px; color: #999; margin-top: 3px; }
+    .upload-filename {
+      margin-top: 8px; font-size: 12px; color: #5CB85C;
+      font-weight: 600; display: none;
+    }
+
+    /* ── Services checkboxes ────────────────────────────────────────────── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .service-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1.5px solid #dde2ec;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .service-item:hover { border-color: #5CB85C; background: #f9fffe; }
+    .service-item input[type="checkbox"] { display: none; }
+    .service-item.checked {
+      border-color: #5CB85C;
+      background: #f0faf0;
+    }
+    .checkmark {
+      width: 18px; height: 18px; min-width: 18px;
+      border: 2px solid #c5cfe0;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .service-item.checked .checkmark {
+      background: #5CB85C; border-color: #5CB85C; color: #fff;
+    }
+    .checkmark::after { content: "✓"; font-size: 12px; font-weight: 700; }
+    .service-label { font-size: 13px; color: #2c2c2c; line-height: 1.4; }
+
+    /* ── Fee section ────────────────────────────────────────────────────── */
+    .fee-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .fee-option {
+      border: 1.5px solid #dde2ec;
+      border-radius: 6px;
+      padding: 12px 16px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1D3461;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .fee-option:hover { border-color: #5CB85C; background: #f9fffe; }
+    .fee-option.selected { border-color: #5CB85C; background: #5CB85C; color: #fff; }
+    .fee-option input { display: none; }
+
+    .extra-fees { display: flex; flex-direction: column; gap: 8px; }
+    .extra-fee-row { display: flex; gap: 8px; align-items: center; }
+    .extra-fee-row input { flex: 1; }
+    .btn-remove {
+      background: none; border: 1.5px solid #e0e0e0;
+      border-radius: 5px; cursor: pointer; color: #999;
+      width: 34px; height: 38px; font-size: 16px;
+      transition: all 0.15s; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-remove:hover { border-color: #e05c5c; color: #e05c5c; background: #fff5f5; }
+    .btn-add-fee {
+      display: flex; align-items: center; gap: 6px;
+      background: none; border: 1.5px dashed #c5cfe0;
+      border-radius: 6px; padding: 8px 14px;
+      cursor: pointer; color: #1D3461; font-size: 13px;
+      font-weight: 600; width: 100%; margin-top: 8px;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .btn-add-fee:hover { border-color: #5CB85C; color: #5CB85C; background: #f9fffe; }
+
+    /* ── Submit button ──────────────────────────────────────────────────── */
+    .submit-row {
+      display: flex; justify-content: center; margin-top: 8px;
+    }
+    .btn-generate {
+      background: #5CB85C;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 16px 48px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 10px rgba(92,184,92,0.3);
+    }
+    .btn-generate:hover {
+      background: #4caa4c;
+      box-shadow: 0 5px 16px rgba(92,184,92,0.4);
+      transform: translateY(-1px);
+    }
+    .btn-generate:disabled {
+      background: #aaa; cursor: not-allowed;
+      transform: none; box-shadow: none;
+    }
+    .btn-generate .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Progress overlay ───────────────────────────────────────────────── */
+    #progress-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(29,52,97,0.55);
+      z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    #progress-overlay.visible { display: flex; }
+    .progress-box {
+      background: #fff; border-radius: 12px;
+      padding: 40px 48px; text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 360px; width: 90%;
+    }
+    .progress-spinner {
+      width: 52px; height: 52px;
+      border: 4px solid #eef0f5;
+      border-top-color: #5CB85C;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    .progress-title { font-size: 18px; font-weight: 700; color: #1D3461; margin-bottom: 8px; }
+    .progress-sub { font-size: 13px; color: #888; }
+    .progress-steps { margin-top: 20px; display: flex; flex-direction: column; gap: 6px; }
+    .progress-step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: #aaa; text-align: left;
+    }
+    .progress-step.active { color: #1D3461; font-weight: 600; }
+    .progress-step.done { color: #5CB85C; }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #dde2ec; flex-shrink: 0;
+    }
+    .progress-step.active .step-dot { background: #1D3461; }
+    .progress-step.done .step-dot { background: #5CB85C; }
+
+    /* ── Results section ────────────────────────────────────────────────── */
+    #results { display: none; }
+    .results-header {
+      background: #1D3461; border-radius: 8px 8px 0 0;
+      padding: 20px 24px;
+    }
+    .results-header h2 { color: #fff; font-size: 18px; }
+    .results-header p { color: rgba(255,255,255,0.65); font-size: 13px; margin-top: 4px; }
+    .results-body {
+      background: #fff; border-radius: 0 0 8px 8px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .downloads-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 4px;
+    }
+    .download-card {
+      border: 1.5px solid #dde2ec;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .download-card:hover {
+      border-color: #5CB85C;
+      box-shadow: 0 2px 10px rgba(92,184,92,0.15);
+    }
+    .download-card .doc-icon { font-size: 36px; margin-bottom: 10px; }
+    .download-card .doc-title { font-size: 13px; font-weight: 700; color: #1D3461; margin-bottom: 4px; }
+    .download-card .doc-type { font-size: 11px; color: #999; margin-bottom: 14px; }
+    .btn-download {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #1D3461; color: #fff;
+      border: none; border-radius: 6px;
+      padding: 9px 18px; font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.15s;
+    }
+    .btn-download:hover { background: #26478a; }
+    .download-card.unavailable { opacity: 0.4; pointer-events: none; }
+
+    .btn-start-over {
+      background: none; border: 1.5px solid #1D3461;
+      border-radius: 6px; padding: 10px 24px;
+      color: #1D3461; font-size: 13px; font-weight: 600;
+      cursor: pointer; margin-top: 20px;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .btn-start-over:hover { background: #1D3461; color: #fff; }
+
+    .error-banner {
+      background: #fff3f3; border: 1.5px solid #f5c5c5;
+      border-radius: 6px; padding: 12px 16px;
+      color: #c0392b; font-size: 13px; margin-bottom: 16px;
+      display: none;
+    }
+
+    /* ── Divider / hints ─────────────────────────────────────────────────── */
+    .section-hint {
+      font-size: 12px; color: #aaa; margin-top: -10px; margin-bottom: 16px;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .fee-grid { grid-template-columns: 1fr 1fr; }
+      .downloads-grid { grid-template-columns: 1fr; }
+      .header-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <img src="/static/logo.png" alt="Xcelerate Growth Partners" class="header-logo" onerror="this.style.display='none'">
+    <div class="header-text">
+      <h1>Xcelerate Growth Partners</h1>
+      <p>Proposal Package Generator — Intro Letter · Proposal PDF · PowerPoint</p>
+    </div>
+  </div>
+</header>
+<div class="green-bar"></div>
+
+<!-- Progress Overlay -->
+<div id="progress-overlay">
+  <div class="progress-box">
+    <div class="progress-spinner"></div>
+    <div class="progress-title">Building Your Package</div>
+    <div class="progress-sub">Generating all three documents…</div>
+    <div class="progress-steps">
+      <div class="progress-step active" id="step-letter">
+        <div class="step-dot"></div> Intro Letter PDF
+      </div>
+      <div class="progress-step" id="step-proposal">
+        <div class="step-dot"></div> Proposal Deck PDF
+      </div>
+      <div class="progress-step" id="step-pptx">
+        <div class="step-dot"></div> Proposal PowerPoint
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- Results (hidden until generation completes) -->
+  <div id="results">
+    <div class="results-header">
+      <h2>✅ Your Proposal Package Is Ready</h2>
+      <p id="results-subtitle">Three documents generated for <strong id="results-company"></strong></p>
+    </div>
+    <div class="results-body">
+      <div id="error-banner" class="error-banner"></div>
+      <div class="downloads-grid">
+
+        <div class="download-card" id="card-letter">
+          <div class="doc-icon">📄</div>
+          <div class="doc-title">Intro Letter</div>
+          <div class="doc-type">PDF · One Page</div>
+          <a class="btn-download" id="dl-letter" href="#" download>⬇ Download</a>
+        </div>
+
+        <div class="download-card" id="card-proposal-pdf">
+          <div class="doc-icon">📑</div>
+          <div class="doc-title">Proposal Deck</div>
+          <div class="doc-type">PDF · 8 Slides</div>
+          <a class="btn-download" id="dl-proposal-pdf" href="#" download>⬇ Download</a>
+        </div>
+
+        <div class="download-card" id="card-proposal-pptx">
+          <div class="doc-icon">📊</div>
+          <div class="doc-title">Proposal Deck</div>
+          <div class="doc-type">PowerPoint · Editable</div>
+          <a class="btn-download" id="dl-proposal-pptx" href="#" download>⬇ Download</a>
+        </div>
+
+      </div>
+      <div style="text-align:center">
+        <button class="btn-start-over" onclick="resetForm()">← Generate Another Package</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form id="proposal-form" enctype="multipart/form-data">
+
+    <!-- Section: Prospect Info -->
+    <div class="card">
+      <div class="card-header">
+        <span>01 — Prospect Information</span>
+        <span class="badge">Required</span>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="company">Company Name <span class="req">*</span></label>
+            <input type="text" id="company" name="company" placeholder="e.g. Edward Jones" required />
+          </div>
+          <div class="form-group">
+            <label for="contact">Contact Person <span class="opt">(optional)</span></label>
+            <input type="text" id="contact" name="contact" placeholder="e.g. Jane Smith" />
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label for="date">Meeting / Presentation Date <span class="req">*</span></label>
+            <input type="text" id="date" name="date" placeholder="e.g. April 15, 2026" required />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Branding Assets -->
+    <div class="card">
+      <div class="card-header">
+        <span>02 — Branding Assets</span>
+        <span class="badge">Optional Upload</span>
+      </div>
+      <div class="card-body">
+        <p class="section-hint">Leave blank to use the default Xcelerate logo and base proposal template already on file.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Xcelerate Logo <span class="opt">(PNG)</span></label>
+            <div class="upload-zone" id="logo-zone">
+              <input type="file" name="logo" accept=".png,.jpg,.jpeg" id="logo-input" />
+              <div class="upload-icon">🖼</div>
+              <div class="upload-label">Click or drag to upload logo</div>
+              <div class="upload-hint">PNG with transparent background recommended</div>
+              <div class="upload-filename" id="logo-filename"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Base Proposal Template <span class="opt">(PDF)</span></label>
+            <div class="upload-zone" id="pdf-zone">
+              <input type="file" name="base_pdf" accept=".pdf" id="pdf-input" />
+              <div class="upload-icon">📋</div>
+              <div class="upload-label">Click or drag to upload base PDF</div>
+              <div class="upload-hint">Pages 2+ will be used (cover is replaced)</div>
+              <div class="upload-filename" id="pdf-filename"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Services -->
+    <div class="card">
+      <div class="card-header">
+        <span>03 — Services to Highlight</span>
+        <span class="badge">Select All That Apply</span>
+      </div>
+      <div class="card-body">
+        <div class="services-grid" id="services-grid">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Proposed Investment -->
+    <div class="card">
+      <div class="card-header">
+        <span>04 — Proposed Investment</span>
+        <span class="badge">Optional</span>
+      </div>
+      <div class="card-body">
+        <label style="margin-bottom: 10px; display:block">Program Fee</label>
+        <div class="fee-grid" id="fee-grid">
+          <div class="fee-option" data-value="$10,000" onclick="selectFee(this)">$10,000</div>
+          <div class="fee-option" data-value="$15,000" onclick="selectFee(this)">$15,000</div>
+          <div class="fee-option" data-value="$25,000" onclick="selectFee(this)">$25,000</div>
+          <div class="fee-option" data-value="$50,000" onclick="selectFee(this)">$50,000</div>
+        </div>
+        <input type="hidden" name="fee" id="fee-value" value="" />
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="fee-custom" style="margin-top:6px">Custom Amount <span class="opt">(overrides above)</span></label>
+          <input type="text" id="fee-custom" placeholder="e.g. $35,000 or TBD" oninput="updateCustomFee(this.value)" />
+        </div>
+
+        <label style="margin-bottom: 8px; display:block">Additional Fee Lines <span class="opt">(optional)</span></label>
+        <div class="extra-fees" id="extra-fees"></div>
+        <button type="button" class="btn-add-fee" onclick="addExtraFee()">
+          <span>+</span> Add fee line (e.g. Travel &amp; Expenses: At cost)
+        </button>
+      </div>
+    </div>
+
+    <!-- Section: Content Customisation -->
+    <div class="card">
+      <div class="card-header">
+        <span>05 — Content Customisation</span>
+        <span class="badge">Optional</span>
+      </div>
+      <div class="card-body">
+        <div class="form-row single" style="margin-bottom: 0">
+          <div class="form-group">
+            <label for="notes">Custom Notes for Services Slide <span class="opt">(italic paragraph below bullet list)</span></label>
+            <textarea id="notes" name="notes" placeholder="e.g. This proposal reflects our recommended starting engagement. We're happy to customize further based on your team's specific goals."></textarea>
+          </div>
+        </div>
+        <div class="form-row single" style="margin-top: 16px; margin-bottom: 0">
+          <div class="form-group">
+            <label for="body_override">Custom Intro Letter Body <span class="opt">(replaces all default paragraphs)</span></label>
+            <textarea id="body_override" name="body_override" style="min-height: 120px"
+              placeholder="Leave blank to use the default Xcelerate letter copy referencing the company name, date, and selected services."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <div class="submit-row">
+      <button type="submit" class="btn-generate" id="generate-btn">
+        Generate Full Proposal Package
+      </button>
+    </div>
+
+  </form>
+
+</main>
+
+<script>
+  // ── Services list ──────────────────────────────────────────────────────────
+  const SERVICES = [
+    "Team Development and Optimization",
+    "Succession Planning and Practice Transitions",
+    "The Future of Wealth Management (keynotes / workshops)",
+    "Developing Leadership",
+    "Support Staff Development and Career Pathing",
+    "The Wealth Management Process",
+    "Content Development and White Papers",
+    "Conference and Sponsorship Strategy",
+    '"Train the Trainer" Workshops',
+    "Webinars and Podcasts",
+    "Advisor Relationship Development",
+  ];
+
+  // Build services checkboxes
+  const grid = document.getElementById("services-grid");
+  SERVICES.forEach(svc => {
+    const item = document.createElement("label");
+    item.className = "service-item";
+    item.innerHTML = `
+      <input type="checkbox" name="services" value="${svc}" />
+      <div class="checkmark"></div>
+      <span class="service-label">${svc}</span>
+    `;
+    item.addEventListener("click", function(e) {
+      const cb = this.querySelector("input");
+      // Let the click toggle the checkbox normally
+      setTimeout(() => {
+        this.classList.toggle("checked", cb.checked);
+      }, 0);
+    });
+    grid.appendChild(item);
+  });
+
+  // ── Fee selection ──────────────────────────────────────────────────────────
+  function selectFee(el) {
+    document.querySelectorAll(".fee-option").forEach(o => o.classList.remove("selected"));
+    el.classList.add("selected");
+    document.getElementById("fee-value").value = el.dataset.value;
+    document.getElementById("fee-custom").value = "";
+  }
+
+  function updateCustomFee(val) {
+    document.getElementById("fee-value").value = val;
+    document.querySelectorAll(".fee-option").forEach(o => o.classList.remove("selected"));
+  }
+
+  // ── Extra fee lines ────────────────────────────────────────────────────────
+  function addExtraFee(value = "") {
+    const container = document.getElementById("extra-fees");
+    const row = document.createElement("div");
+    row.className = "extra-fee-row";
+    row.innerHTML = `
+      <input type="text" name="extra_fees" placeholder="e.g. Travel &amp; Expenses: At cost" value="${value}" />
+      <button type="button" class="btn-remove" onclick="this.parentElement.remove()">×</button>
+    `;
+    container.appendChild(row);
+  }
+
+  // ── File upload display ────────────────────────────────────────────────────
+  function setupUpload(inputId, filenameId) {
+    const input = document.getElementById(inputId);
+    const display = document.getElementById(filenameId);
+    input.addEventListener("change", function() {
+      if (this.files[0]) {
+        display.textContent = "✓ " + this.files[0].name;
+        display.style.display = "block";
+      }
+    });
+  }
+  setupUpload("logo-input", "logo-filename");
+  setupUpload("pdf-input", "pdf-filename");
+
+  // Drag-over styling
+  ["logo-zone", "pdf-zone"].forEach(id => {
+    const zone = document.getElementById(id);
+    zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("drag-over"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+    zone.addEventListener("drop", () => zone.classList.remove("drag-over"));
+  });
+
+  // ── Progress animation ─────────────────────────────────────────────────────
+  function animateProgress() {
+    const steps = ["step-letter", "step-proposal", "step-pptx"];
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i > 0) {
+        document.getElementById(steps[i-1]).classList.remove("active");
+        document.getElementById(steps[i-1]).classList.add("done");
+      }
+      if (i < steps.length) {
+        document.getElementById(steps[i]).classList.add("active");
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 1200);
+    return interval;
+  }
+
+  // ── Form submission ────────────────────────────────────────────────────────
+  document.getElementById("proposal-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("generate-btn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Generating…';
+
+    // Reset progress steps
+    ["step-letter","step-proposal","step-pptx"].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove("active","done");
+    });
+
+    document.getElementById("progress-overlay").classList.add("visible");
+    const progressTimer = animateProgress();
+
+    try {
+      const formData = new FormData(this);
+      const resp = await fetch("/generate", { method: "POST", body: formData });
+      const data = await resp.json();
+
+      clearInterval(progressTimer);
+      // Mark all done
+      ["step-letter","step-proposal","step-pptx"].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove("active");
+        el.classList.add("done");
+      });
+
+      await new Promise(r => setTimeout(r, 600));
+      document.getElementById("progress-overlay").classList.remove("visible");
+
+      if (!resp.ok) {
+        alert("Error: " + (data.error || "Generation failed."));
+        btn.disabled = false;
+        btn.innerHTML = "Generate Full Proposal Package";
+        return;
+      }
+
+      showResults(data);
+
+    } catch (err) {
+      clearInterval(progressTimer);
+      document.getElementById("progress-overlay").classList.remove("visible");
+      alert("Network error: " + err.message);
+      btn.disabled = false;
+      btn.innerHTML = "Generate Full Proposal Package";
+    }
+  });
+
+  // ── Show results ───────────────────────────────────────────────────────────
+  function showResults(data) {
+    document.getElementById("proposal-form").style.display = "none";
+    const results = document.getElementById("results");
+    results.style.display = "block";
+
+    document.getElementById("results-company").textContent =
+      data.company + (data.date ? " — " + data.date : "");
+
+    const base = `/download/${data.job_id}/`;
+
+    function setCard(cardId, dlId, filename, available) {
+      const card = document.getElementById(cardId);
+      const dl   = document.getElementById(dlId);
+      if (available) {
+        dl.href = base + filename;
+        dl.download = filename;
+        card.classList.remove("unavailable");
+      } else {
+        card.classList.add("unavailable");
+      }
+    }
+
+    setCard("card-letter",       "dl-letter",       data.letter_name,        data.produced.letter_pdf);
+    setCard("card-proposal-pdf", "dl-proposal-pdf", data.proposal_pdf_name,  data.produced.proposal_pdf);
+    setCard("card-proposal-pptx","dl-proposal-pptx",data.proposal_pptx_name, data.produced.proposal_pptx);
+
+    if (data.errors && data.errors.length) {
+      const banner = document.getElementById("error-banner");
+      banner.style.display = "block";
+      banner.textContent = "Note: " + data.errors.join(" | ");
+    }
+
+    results.scrollIntoView({ behavior: "smooth" });
+  }
+
+  // ── Reset ──────────────────────────────────────────────────────────────────
+  function resetForm() {
+    document.getElementById("results").style.display = "none";
+    document.getElementById("error-banner").style.display = "none";
+    document.getElementById("proposal-form").style.display = "block";
+    const btn = document.getElementById("generate-btn");
+    btn.disabled = false;
+    btn.innerHTML = "Generate Full Proposal Package";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+</script>
+
+</body>
+</html>
