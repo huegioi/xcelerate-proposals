@@ -243,7 +243,10 @@ def _pdf_investment(c, company, costs, page_num):
     c.setFillColor(RL_GREEN)
     c.rect(36, PDF_H - 68, PDF_W - 72, 2, fill=1, stroke=0)
     row_h, row_y = 30, PDF_H - 84
-    for i, line in enumerate(costs):
+    # Separate total line from itemized lines
+    item_costs  = [l for l in costs if not l.lower().startswith("total")]
+    total_lines = [l for l in costs if l.lower().startswith("total")]
+    for i, line in enumerate(item_costs):
         label, amount = (line.split(":", 1) if ":" in line else (line, ""))
         if i % 2 == 0:
             c.setFillColor(RL_LGRAY)
@@ -253,6 +256,16 @@ def _pdf_investment(c, company, costs, page_num):
         c.setFillColor(RL_GREEN_DK); c.setFont("Helvetica-Bold", 11)
         c.drawRightString(PDF_W - 48, row_y - 6, amount.strip())
         row_y -= row_h
+    # Total row — navy background, larger text
+    if total_lines:
+        label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
+        row_y -= 6
+        c.setFillColor(RL_NAVY)
+        c.rect(36, row_y - row_h + 8, PDF_W - 72, row_h + 4, fill=1, stroke=0)
+        c.setFillColor(RL_WHITE); c.setFont("Helvetica-Bold", 13)
+        c.drawString(48, row_y - 5, label.strip())
+        c.setFillColor(RL_GREEN); c.setFont("Helvetica-Bold", 13)
+        c.drawRightString(PDF_W - 48, row_y - 5, amount.strip())
     c.setFillColor(RL_MGRAY);  c.setFont("Helvetica-Oblique", 8)
     c.drawString(36, 48, "All fees are subject to final scope confirmation. "
                  "Travel expenses billed at cost.")
@@ -555,7 +568,9 @@ def _pptx_investment_slide(prs, company, costs, page_num):
 
     row_h = Inches(0.55)
     y = Inches(1.4)
-    for i, line in enumerate(costs):
+    item_costs  = [l for l in costs if not l.lower().startswith("total")]
+    total_lines = [l for l in costs if l.lower().startswith("total")]
+    for i, line in enumerate(item_costs):
         label, amount = (line.split(":", 1) if ":" in line else (line, ""))
         if i % 2 == 0:
             _pptx_rect(slide, Inches(0.5), y,
@@ -568,6 +583,19 @@ def _pptx_investment_slide(prs, company, costs, page_num):
                       amount.strip(), 13, bold=True,
                       color=RGBColor(0x3A, 0x7A, 0x3A),
                       align=PP_ALIGN.RIGHT)
+        y += row_h
+    # Total row — navy background
+    if total_lines:
+        label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
+        y += Inches(0.05)
+        _pptx_rect(slide, Inches(0.5), y, W - Inches(1), row_h + Inches(0.05), PT_NAVY)
+        _pptx_textbox(slide, Inches(0.65), y + Inches(0.1),
+                      Inches(6), row_h,
+                      label.strip(), 14, bold=True, color=PT_WHITE)
+        _pptx_textbox(slide, W - Inches(3.5), y + Inches(0.1),
+                      Inches(3.0), row_h,
+                      amount.strip(), 14, bold=True,
+                      color=PT_GREEN, align=PP_ALIGN.RIGHT)
         y += row_h
 
     _pptx_textbox(slide, Inches(0.5), H - Inches(0.75),
