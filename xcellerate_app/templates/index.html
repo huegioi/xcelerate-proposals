@@ -517,21 +517,8 @@ Example:
           <!-- Populated by JS -->
         </div>
 
-        <!-- Custom service -->
-        <div class="custom-service-row" id="custom-row" style="margin-top:8px">
-          <div class="service-check-wrap" onclick="toggleCustom()">
-            <div class="checkmark" id="custom-checkmark"></div>
-            <input type="text" class="custom-service-name-input" id="custom-service-name"
-              placeholder="+ Add a custom service…"
-              onclick="event.stopPropagation()"
-              oninput="onCustomNameInput()" />
-          </div>
-          <div class="service-cost-wrap">
-            <span class="cost-prefix">$</span>
-            <input type="text" class="service-cost-input" id="custom-service-cost"
-              placeholder="0" oninput="updateTotal()" />
-          </div>
-        </div>
+        <!-- Custom service rows (populated by JS) -->
+        <div id="custom-services-container"></div>
 
         <!-- Total -->
         <div class="total-row" style="margin-top:14px">
@@ -619,26 +606,86 @@ Example:
     updateTotal();
   }
 
-  // ── Custom service ─────────────────────────────────────
-  let customChecked = false;
+  // ── Custom service rows (multi-row) ───────────────────
+  let _crowCount = 0;
+  const _crowState = {}; // id -> { checked, nameId, costId, rowId, cmId, aiAdded }
 
-  function toggleCustom() {
-    customChecked = !customChecked;
-    const cm = document.getElementById("custom-checkmark");
-    const row = document.getElementById("custom-row");
-    cm.style.background    = customChecked ? "#5CB85C" : "";
-    cm.style.borderColor   = customChecked ? "#5CB85C" : "";
-    row.style.borderColor  = customChecked ? "#5CB85C" : "";
-    row.style.borderStyle  = customChecked ? "solid"   : "dashed";
-    row.style.background   = customChecked ? "#f4fcf4" : "";
+  function _escAttr(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function addCustomRow(prefillName, prefillCost, startChecked, aiAdded) {
+    prefillName   = prefillName   || '';
+    prefillCost   = prefillCost   || '';
+    startChecked  = !!startChecked;
+    aiAdded       = !!aiAdded;
+
+    const id      = _crowCount++;
+    const nameId  = `crow-name-${id}`;
+    const costId  = `crow-cost-${id}`;
+    const rowId   = `crow-${id}`;
+    const cmId    = `crow-cm-${id}`;
+
+    _crowState[id] = { checked: startChecked, nameId, costId, rowId, cmId, aiAdded };
+
+    const row = document.createElement('div');
+    row.className = 'custom-service-row' + (startChecked ? ' checked' : '');
+    row.id = rowId;
+    if (aiAdded) row.dataset.aiAdded = '1';
+    row.style.marginTop = '8px';
+    row.innerHTML = `
+      <div class="service-check-wrap" onclick="toggleCrow(${id})">
+        <div class="checkmark" id="${cmId}"></div>
+        <input type="text" class="custom-service-name-input" id="${nameId}"
+          value="${_escAttr(prefillName)}"
+          placeholder="+ Add a custom service…"
+          onclick="event.stopPropagation()"
+          oninput="onCrowInput(${id})" />
+      </div>
+      <div class="service-cost-wrap">
+        <span class="cost-prefix">$</span>
+        <input type="text" class="service-cost-input" id="${costId}"
+          value="${_escAttr(prefillCost)}"
+          placeholder="0" oninput="updateTotal()" />
+      </div>
+    `;
+    document.getElementById('custom-services-container').appendChild(row);
+    if (startChecked) _setCrowStyle(id, true);
+    updateTotal();
+    return id;
+  }
+
+  function toggleCrow(id) {
+    const s = _crowState[id];
+    if (!s) return;
+    s.checked = !s.checked;
+    _setCrowStyle(id, s.checked);
     updateTotal();
   }
 
-  function onCustomNameInput() {
-    const name = document.getElementById("custom-service-name").value.trim();
-    if (name && !customChecked) toggleCustom();
+  function _setCrowStyle(id, checked) {
+    const s   = _crowState[id];
+    const cm  = document.getElementById(s.cmId);
+    const row = document.getElementById(s.rowId);
+    if (!cm || !row) return;
+    cm.style.background   = checked ? '#5CB85C' : '';
+    cm.style.borderColor  = checked ? '#5CB85C' : '';
+    row.style.borderColor = checked ? '#5CB85C' : '';
+    row.style.borderStyle = checked ? 'solid'   : 'dashed';
+    row.style.background  = checked ? '#f4fcf4' : '';
+    row.classList.toggle('checked', checked);
+  }
+
+  function onCrowInput(id) {
+    const s = _crowState[id];
+    if (!s) return;
+    const name = (document.getElementById(s.nameId) || {}).value?.trim() || '';
+    if (name && !s.checked) toggleCrow(id);
     updateTotal();
   }
+
+  // Create the initial blank custom row
+  addCustomRow();
 
   // ── Running total ──────────────────────────────────────
   function parseCost(val) {
@@ -661,9 +708,12 @@ Example:
       if (cb && cb.checked && cost) total += parseCost(cost.value);
     });
 
-    // Custom service
-    const customCost = document.getElementById("custom-service-cost");
-    if (customChecked && customCost) total += parseCost(customCost.value);
+    // Custom service rows
+    Object.values(_crowState).forEach(s => {
+      if (!s.checked) return;
+      const costEl = document.getElementById(s.costId);
+      if (costEl) total += parseCost(costEl.value);
+    });
 
     document.getElementById("total-display").textContent = formatCurrency(total);
   }
@@ -697,17 +747,19 @@ Example:
       }
     });
 
-    // Custom service
-    const customName = document.getElementById("custom-service-name").value.trim();
-    const customCostVal = document.getElementById("custom-service-cost").value;
-    if (customChecked && customName) {
-      addHidden("services", customName);
-      const amt = parseCost(customCostVal);
+    // Custom service rows
+    Object.values(_crowState).forEach(s => {
+      if (!s.checked) return;
+      const name = (document.getElementById(s.nameId) || {}).value?.trim() || '';
+      if (!name) return;
+      addHidden("services", name);
+      const costEl = document.getElementById(s.costId);
+      const amt = parseCost(costEl ? costEl.value : '0');
       if (amt > 0) {
-        costLines.push(`${customName}: ${formatCurrency(amt)}`);
+        costLines.push(`${name}: ${formatCurrency(amt)}`);
         total += amt;
       }
-    }
+    });
 
     // Add total line if there are any costs
     if (costLines.length > 0) {
@@ -744,7 +796,8 @@ Example:
 
     // Check at least one service is selected
     const anyChecked = SERVICES.some((_, i) => document.getElementById(`svc-${i}`)?.checked)
-      || (customChecked && document.getElementById("custom-service-name").value.trim());
+      || Object.values(_crowState).some(s => s.checked &&
+           (document.getElementById(s.nameId) || {}).value?.trim());
     if (!anyChecked) {
       alert("Please select at least one service.");
       return;
@@ -1083,6 +1136,27 @@ Example:
           }
         }
       }
+    });
+
+    // Remove any previously AI-added custom rows
+    document.querySelectorAll('#custom-services-container [data-ai-added]').forEach(el => {
+      const id = parseInt(el.id.replace('crow-', ''));
+      delete _crowState[id];
+      el.remove();
+    });
+
+    // Add unmatched services as new checked custom rows
+    const unmatched = (d.services || []).filter(svcName =>
+      !SERVICES.find(cat => cat.toLowerCase().trim() === svcName.toLowerCase().trim())
+    );
+    unmatched.forEach(svcName => {
+      const costKey = Object.keys(costs).find(k =>
+        k.toLowerCase().trim() === svcName.toLowerCase().trim()
+      );
+      const costStr = costKey
+        ? costs[costKey].replace(/[^0-9.,]/g, '').replace(/,/g, '')
+        : '';
+      addCustomRow(svcName, costStr, true, true);
     });
 
     updateTotal();
