@@ -9,6 +9,27 @@ from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify
 from werkzeug.utils import secure_filename
 
+try:
+    import anthropic as _anthropic
+    _ANTHROPIC_AVAILABLE = True
+except ImportError:
+    _ANTHROPIC_AVAILABLE = False
+
+# ── Services catalog (must match index.html) ──────────────────────────────────
+SERVICES_CATALOG = [
+    "Team Development and Optimization",
+    "Succession Planning and Practice Transitions",
+    "The Future of Wealth Management (keynotes / workshops)",
+    "Developing Leadership",
+    "Support Staff Development and Career Pathing",
+    "The Wealth Management Process",
+    "Content Development and White Papers",
+    "Conference and Sponsorship Strategy",
+    '"Train the Trainer" Workshops',
+    "Webinars and Podcasts",
+    "Advisor Relationship Development",
+]
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 BASE_DIR      = Path(__file__).parent
 SCRIPTS_DIR   = BASE_DIR / "scripts"
@@ -250,6 +271,72 @@ def regenerate(proposal_id):
         "proposal_pdf_name":  f"{prefix}_Proposal.pdf",
         "proposal_pptx_name": f"{prefix}_Proposal.pptx",
     })
+
+
+@app.route("/parse-transcript", methods=["POST"])
+def parse_transcript():
+    """
+    Accept a raw sales-call transcript and return structured proposal data
+    by calling the Anthropic API.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        return jsonify({"error": "ANTHROPIC_API_KEY is not configured on this server. Add it in Railway → Variables."}), 503
+
+    if not _ANTHROPIC_AVAILABLE:
+        return jsonify({"error": "The 'anthropic' Python package is not installed. Add it to requirements.txt and redeploy."}), 503
+
+    data = request.get_json(force=True, silent=True) or {}
+    transcript = (data.get("transcript") or "").strip()
+    if not transcript:
+        return jsonify({"error": "No transcript text provided."}), 400
+
+    catalog_str = "\n".join(f"- {s}" for s in SERVICES_CATALOG)
+
+    prompt = f"""You are an expert assistant helping Xcelerate Growth Partners prepare a proposal after a sales call.
+
+Read the transcript below and extract the following information. Return ONLY a single valid JSON object — no markdown, no explanation, no code fences.
+
+JSON schema:
+{{
+  "company":        "Prospect company name (string)",
+  "contact":        "Prospect contact person full name (string, empty string if unknown)",
+  "date":           "Proposed meeting or presentation date formatted as 'Month DD, YYYY' (string, empty string if not mentioned)",
+  "services":       ["Exact service names from catalog only (array of strings)"],
+  "service_costs":  {{"Service Name": "cost string e.g. $3,500/mo — only include if discussed, otherwise omit"}},
+  "notes":          "1–2 sentence note for the services slide summarizing the recommended engagement approach (string)",
+  "body_override":  "3–4 paragraph custom intro letter body written in a warm, professional tone. Reference the company name, key pain points or goals mentioned in the call, and why Xcelerate is uniquely positioned to help. Do NOT include salutation or signature — body paragraphs only (string)"
+}}
+
+Service catalog (use ONLY these exact strings for the 'services' array):
+{catalog_str}
+
+Transcript:
+{transcript}"""
+
+    try:
+        client = _anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2048,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        raw = message.content[0].text.strip()
+
+        # Strip markdown code fences if model wrapped the JSON
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+            raw = raw.strip()
+
+        parsed = json.loads(raw)
+        return jsonify({"ok": True, "data": parsed})
+
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Could not parse Claude's response as JSON: {e}", "raw": raw[:500]}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
