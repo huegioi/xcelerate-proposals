@@ -57,22 +57,12 @@ def generate():
     contact       = request.form.get("contact", "").strip()
     date          = request.form.get("date", "").strip()
     services      = request.form.getlist("services")
-    fee           = request.form.get("fee", "").strip()
-    extra_fees    = request.form.getlist("extra_fees")
+    cost_lines    = [c.strip() for c in request.form.getlist("cost_lines") if c.strip()]
     notes         = request.form.get("notes", "").strip()
     body_override = request.form.get("body_override", "").strip()
 
     if not company or not date:
         return jsonify({"error": "Company name and date are required."}), 400
-
-    # ── Build cost lines ─────────────────────────────────────────────────────
-    cost_lines = []
-    if fee:
-        cost_lines.append(f"Program Fee: {fee}")
-    for ef in extra_fees:
-        ef = ef.strip()
-        if ef:
-            cost_lines.append(ef)
 
     # ── Set up per-job output directory ──────────────────────────────────────
     job_id  = uuid.uuid4().hex[:8]
