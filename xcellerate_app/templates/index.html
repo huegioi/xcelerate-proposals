@@ -181,10 +181,61 @@
     .btn-start-over:hover { background: #1D3461; color: #fff; }
     .error-banner { background: #fff3f3; border: 1.5px solid #f5c5c5; border-radius: 6px; padding: 12px 16px; color: #c0392b; font-size: 13px; margin-bottom: 14px; display: none; }
 
+    /* ── Saved proposals ────────────────────────────────── */
+    .saved-empty { text-align: center; padding: 28px; color: #aaa; font-size: 13px; }
+    .saved-empty .empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+    .proposal-table { width: 100%; border-collapse: collapse; }
+    .proposal-table th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      color: #1D3461; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 8px 12px; border-bottom: 2px solid #eef0f5;
+    }
+    .proposal-table td {
+      padding: 11px 12px; font-size: 13px; color: #2c2c2c;
+      border-bottom: 1px solid #f0f2f5; vertical-align: middle;
+    }
+    .proposal-table tr:last-child td { border-bottom: none; }
+    .proposal-table tr:hover td { background: #fafbff; }
+    .td-company { font-weight: 600; color: #1D3461; }
+    .td-date { color: #888; font-size: 12px; }
+    .td-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-sm {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 11px; border-radius: 5px; font-size: 12px;
+      font-weight: 600; cursor: pointer; border: none; font-family: inherit;
+      transition: all 0.15s; text-decoration: none; white-space: nowrap;
+    }
+    .btn-regen  { background: #1D3461; color: #fff; }
+    .btn-regen:hover { background: #26478a; }
+    .btn-dl     { background: #5CB85C; color: #fff; }
+    .btn-dl:hover { background: #4caa4c; }
+    .btn-dl-gray { background: #e8eaf0; color: #888; cursor: default; }
+    .btn-delete { background: none; border: 1.5px solid #e0e0e0 !important; color: #bbb; }
+    .btn-delete:hover { border-color: #e05c5c !important; color: #e05c5c; background: #fff5f5; }
+    .saved-loading { text-align:center; padding: 20px; color: #aaa; font-size: 13px; }
+
+    .tab-bar {
+      display: flex; gap: 0; margin-bottom: 22px;
+      border-bottom: 2px solid #dde2ec;
+    }
+    .tab-btn {
+      padding: 10px 22px; font-size: 14px; font-weight: 600;
+      color: #888; cursor: pointer; border: none; background: none;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s; font-family: inherit;
+    }
+    .tab-btn.active { color: #1D3461; border-bottom-color: #5CB85C; }
+    .tab-btn:hover:not(.active) { color: #1D3461; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
     @media (max-width: 600px) {
       .form-row { grid-template-columns: 1fr; }
       .downloads-grid { grid-template-columns: 1fr; }
       .service-cost-input { width: 90px; }
+      .proposal-table th:nth-child(3),
+      .proposal-table td:nth-child(3) { display: none; }
     }
   </style>
 </head>
@@ -216,6 +267,46 @@
 </div>
 
 <main>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('new')">➕ New Proposal</button>
+    <button class="tab-btn" onclick="switchTab('saved')" id="saved-tab-btn">📁 Saved Proposals</button>
+  </div>
+
+  <!-- Saved Proposals Panel -->
+  <div class="tab-panel" id="panel-saved">
+    <div class="card">
+      <div class="card-header">
+        <span>Saved Proposals</span>
+        <span class="badge" id="saved-count-badge">0</span>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <div id="saved-loading" class="saved-loading">Loading…</div>
+        <div id="saved-content" style="display:none;">
+          <div id="saved-empty" class="saved-empty" style="display:none;">
+            <div class="empty-icon">📂</div>
+            No proposals saved yet. Generate your first one!
+          </div>
+          <table class="proposal-table" id="saved-table" style="display:none;">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Date</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="saved-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Proposal Panel -->
+  <div class="tab-panel active" id="panel-new">
 
   <!-- Results -->
   <div id="results">
@@ -336,6 +427,8 @@
     </div>
 
   </form>
+
+  </div><!-- end panel-new -->
 </main>
 
 <script>
@@ -592,6 +685,139 @@
     document.getElementById("generate-btn").disabled = false;
     document.getElementById("generate-btn").innerHTML = "Generate Full Proposal Package";
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ── Tab switching ──────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    if (tab === "saved") {
+      document.getElementById("saved-tab-btn").classList.add("active");
+      document.getElementById("panel-saved").classList.add("active");
+      loadSavedProposals();
+    } else {
+      document.querySelector(".tab-btn").classList.add("active");
+      document.getElementById("panel-new").classList.add("active");
+    }
+  }
+
+  // ── Saved Proposals ────────────────────────────────────
+  async function loadSavedProposals() {
+    document.getElementById("saved-loading").style.display = "block";
+    document.getElementById("saved-content").style.display = "none";
+    try {
+      const resp = await fetch("/api/proposals");
+      const proposals = await resp.json();
+      renderSavedProposals(proposals);
+    } catch(e) {
+      document.getElementById("saved-loading").textContent = "Could not load proposals.";
+    }
+  }
+
+  function renderSavedProposals(proposals) {
+    document.getElementById("saved-loading").style.display = "none";
+    document.getElementById("saved-content").style.display = "block";
+    document.getElementById("saved-count-badge").textContent = proposals.length;
+
+    if (proposals.length === 0) {
+      document.getElementById("saved-empty").style.display = "block";
+      document.getElementById("saved-table").style.display = "none";
+      return;
+    }
+
+    document.getElementById("saved-empty").style.display = "none";
+    document.getElementById("saved-table").style.display = "table";
+
+    const tbody = document.getElementById("saved-tbody");
+    tbody.innerHTML = "";
+    proposals.forEach(p => {
+      const files = p.files || {};
+      const base  = `/download/${p.id}/`;
+      const prefix = p.company.replace(/[^a-zA-Z0-9 \-_]/g,"").trim().replace(/ /g,"_");
+
+      const dlBtn = (label, filename, available) => available
+        ? `<a class="btn-sm btn-dl" href="${base}${filename}" download>⬇ ${label}</a>`
+        : `<span class="btn-sm btn-dl-gray">⬇ ${label}</span>`;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="td-company">${p.company}</td>
+        <td>${p.contact || "<span style='color:#bbb'>—</span>"}</td>
+        <td>${p.date}</td>
+        <td class="td-date">${p.created_at || ""}</td>
+        <td>
+          <div class="td-actions">
+            <button class="btn-sm btn-regen" onclick="regenProposal('${p.id}', this)">↻ Regenerate</button>
+            ${dlBtn("Letter", prefix+"_Intro_Letter.pdf",  files.letter_pdf)}
+            ${dlBtn("PDF",    prefix+"_Proposal.pdf",      files.proposal_pdf)}
+            ${dlBtn("PPT",    prefix+"_Proposal.pptx",     files.proposal_pptx)}
+            <button class="btn-sm btn-delete" onclick="deleteProposal('${p.id}', this)" title="Delete">✕</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function regenProposal(id, btn) {
+    btn.disabled = true;
+    btn.textContent = "Generating…";
+    try {
+      const resp = await fetch(`/regenerate/${id}`, { method: "POST" });
+      const data = await resp.json();
+      if (resp.ok) {
+        // Update download links in the row
+        const base   = `/download/${data.job_id}/`;
+        const prefix = data.company.replace(/[^a-zA-Z0-9 \-_]/g,"").trim().replace(/ /g,"_");
+        const row    = btn.closest("tr");
+        const actions = row.querySelector(".td-actions");
+        // Replace the download buttons with fresh links
+        actions.querySelectorAll(".btn-dl, .btn-dl-gray").forEach(el => el.remove());
+        const insertBefore = actions.querySelector(".btn-delete");
+        ["Letter","PDF","PPT"].forEach((label, i) => {
+          const filenames = [prefix+"_Intro_Letter.pdf", prefix+"_Proposal.pdf", prefix+"_Proposal.pptx"];
+          const a = document.createElement("a");
+          a.className = "btn-sm btn-dl";
+          a.href = base + filenames[i];
+          a.download = filenames[i];
+          a.textContent = "⬇ " + label;
+          actions.insertBefore(a, insertBefore);
+        });
+        btn.textContent = "✓ Done";
+        setTimeout(() => { btn.disabled = false; btn.textContent = "↻ Regenerate"; }, 2000);
+      } else {
+        btn.textContent = "✗ Failed";
+        setTimeout(() => { btn.disabled = false; btn.textContent = "↻ Regenerate"; }, 2000);
+      }
+    } catch(e) {
+      btn.disabled = false; btn.textContent = "↻ Regenerate";
+    }
+  }
+
+  async function deleteProposal(id, btn) {
+    if (!confirm("Remove this proposal from saved history?")) return;
+    await fetch(`/api/proposals/${id}`, { method: "DELETE" });
+    btn.closest("tr").remove();
+    const remaining = document.querySelectorAll("#saved-tbody tr").length;
+    document.getElementById("saved-count-badge").textContent = remaining;
+    if (remaining === 0) {
+      document.getElementById("saved-table").style.display = "none";
+      document.getElementById("saved-empty").style.display = "block";
+    }
+  }
+
+  // Auto-refresh saved count on page load
+  fetch("/api/proposals").then(r => r.json()).then(p => {
+    document.getElementById("saved-count-badge").textContent = p.length;
+  }).catch(() => {});
+
+  // After successful generation, switch saved tab count
+  const _origShowResults = showResults;
+  function showResults(data) {
+    _origShowResults(data);
+    fetch("/api/proposals").then(r => r.json()).then(p => {
+      document.getElementById("saved-count-badge").textContent = p.length;
+    }).catch(() => {});
   }
 </script>
 </body>
