@@ -799,6 +799,11 @@ Example:
     document.getElementById("results-company").textContent =
       data.company + (data.date ? " — " + data.date : "");
 
+    // Refresh saved proposals count badge
+    fetch("/api/proposals").then(r => r.json()).then(p => {
+      document.getElementById("saved-count-badge").textContent = p.length;
+    }).catch(() => {});
+
     const base = `/download/${data.job_id}/`;
     function setCard(cid, dlid, fname, ok) {
       const card = document.getElementById(cid);
@@ -1099,15 +1104,6 @@ Example:
   fetch("/api/proposals").then(r => r.json()).then(p => {
     document.getElementById("saved-count-badge").textContent = p.length;
   }).catch(() => {});
-
-  // After successful generation, switch saved tab count
-  const _origShowResults = showResults;
-  function showResults(data) {
-    _origShowResults(data);
-    fetch("/api/proposals").then(r => r.json()).then(p => {
-      document.getElementById("saved-count-badge").textContent = p.length;
-    }).catch(() => {});
-  }
 </script>
 </body>
 </html>
