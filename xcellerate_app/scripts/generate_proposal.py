@@ -169,30 +169,50 @@ def _pdf_footer(c, page_num):
 
 
 def _pdf_cover(c, company, contact, date, logo_path):
+    mid = PDF_W / 2
     c.setFillColor(RL_NAVY)
     c.rect(0, 0, PDF_W, PDF_H, fill=1, stroke=0)
-    c.setFillColor(RL_GREEN)
-    c.rect(0, PDF_H - 140, PDF_W, 6, fill=1, stroke=0)
+
+    # ── Logo (top band) ───────────────────────────────────────────────────────
     if logo_path and os.path.exists(logo_path):
         c.drawImage(ImageReader(logo_path),
-                    PDF_W / 2 - 100, PDF_H - 130, 200, 90,
+                    mid - 100, PDF_H - 125, 200, 85,
                     mask='auto', preserveAspectRatio=True, anchor='c')
-    c.setFillColor(RL_WHITE)
-    c.setFont("Helvetica-Bold", 42)
-    c.drawCentredString(PDF_W / 2, PDF_H / 2 + 80, contact or company)
-    if contact:
-        c.drawCentredString(PDF_W / 2, PDF_H / 2 + 20, company)
+
+    # ── Green accent bar below logo ───────────────────────────────────────────
     c.setFillColor(RL_GREEN)
-    c.setFont("Helvetica-Bold", 22)
-    c.drawCentredString(PDF_W / 2, PDF_H / 2 - 50, date)
+    c.rect(0, PDF_H - 135, PDF_W, 6, fill=1, stroke=0)
+
+    # ── Contact / Company name (well below logo) ──────────────────────────────
+    c.setFillColor(RL_WHITE)
+    if contact:
+        c.setFont("Helvetica-Bold", 34)
+        c.drawCentredString(mid, 225, contact)
+        c.setFont("Helvetica-Bold", 28)
+        c.drawCentredString(mid, 188, company)
+    else:
+        c.setFont("Helvetica-Bold", 34)
+        c.drawCentredString(mid, 210, company)
+
+    # ── Delivery Launch Date label + date ─────────────────────────────────────
     c.setFillColor(RL_WHITE)
     c.setFont("Helvetica", 9)
-    c.drawString(PDF_W - 200, 100, "Presented By:")
-    c.setFont("Helvetica-Bold", 10)
-    c.drawString(PDF_W - 200, 85,  "Jim Tracy, Co-Founder & CEO")
-    c.drawString(PDF_W - 200, 70,  "Mary Deatherage, Co-Founder & President")
-    c.setFont("Helvetica", 10)
-    c.drawString(PDF_W - 200, 55,  "Xcelerate Growth Partners")
+    c.drawCentredString(mid, 158, "Delivery Launch Date:")
+    c.setFillColor(RL_GREEN)
+    c.setFont("Helvetica-Bold", 20)
+    c.drawCentredString(mid, 140, date)
+
+    # ── Presented By — centred ────────────────────────────────────────────────
+    c.setFillColor(RL_WHITE)
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(mid, 100, "Presented By:")
+    c.setFont("Helvetica-Bold", 9)
+    c.drawCentredString(mid, 84, "Jim Tracy, Co-Founder & CEO")
+    c.drawCentredString(mid, 68, "Mary Deatherage, Co-Founder & President")
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(mid, 52, "Xcelerate Growth Partners")
+
+    # ── Bottom green bar ──────────────────────────────────────────────────────
     c.setFillColor(RL_GREEN)
     c.rect(0, 0, PDF_W, 8, fill=1, stroke=0)
     c.showPage()
@@ -383,53 +403,63 @@ def _pptx_cover(prs, company, contact, date, logo_path):
     W, H = PPTX_W, PPTX_H
     _pptx_bg(slide, PT_NAVY)
 
-    # Green stripe across top
-    _pptx_rect(slide, 0, Inches(1.6), W, Inches(0.07), PT_GREEN)
-
-    # Logo
+    # ── Logo (top, centred) ───────────────────────────────────────────────────
     if logo_path and os.path.exists(logo_path):
         slide.shapes.add_picture(logo_path,
-                                 W / 2 - Inches(1.5), Inches(0.15),
-                                 Inches(3.0), Inches(1.35))
+                                 W / 2 - Inches(1.5), Inches(0.18),
+                                 Inches(3.0), Inches(1.2))
 
-    # Contact name / company name
-    name_top = H / 2 - Inches(1.0)
-    _pptx_textbox(slide, Inches(1), name_top,
-                  W - Inches(2), Inches(0.8),
-                  contact or company, 40,
-                  bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    # ── Green accent bar below logo ───────────────────────────────────────────
+    _pptx_rect(slide, 0, Inches(1.5), W, Inches(0.06), PT_GREEN)
+
+    # ── Contact / Company name (well below logo) ──────────────────────────────
     if contact:
-        _pptx_textbox(slide, Inches(1), name_top + Inches(0.85),
-                      W - Inches(2), Inches(0.8),
-                      company, 40,
+        _pptx_textbox(slide, Inches(1), Inches(1.85),
+                      W - Inches(2), Inches(0.75),
+                      contact, 36,
+                      bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+        _pptx_textbox(slide, Inches(1), Inches(2.68),
+                      W - Inches(2), Inches(0.65),
+                      company, 30,
+                      bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    else:
+        _pptx_textbox(slide, Inches(1), Inches(2.1),
+                      W - Inches(2), Inches(0.75),
+                      company, 36,
                       bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
 
-    # Date (green)
-    _pptx_textbox(slide,
-                  Inches(1), H / 2 + Inches(0.6),
-                  W - Inches(2), Inches(0.5),
+    # ── Delivery Launch Date label + date ─────────────────────────────────────
+    date_label_y = Inches(3.55) if contact else Inches(3.2)
+    _pptx_textbox(slide, Inches(1), date_label_y,
+                  W - Inches(2), Inches(0.3),
+                  "Delivery Launch Date:", 10,
+                  bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(1), date_label_y + Inches(0.32),
+                  W - Inches(2), Inches(0.55),
                   date, 22,
                   bold=True, color=PT_GREEN, align=PP_ALIGN.CENTER)
 
-    # Presented By block (bottom-right)
-    by_left = W - Inches(3.2)
-    by_top  = H - Inches(1.6)
-    _pptx_textbox(slide, by_left, by_top,
-                  Inches(3.0), Inches(0.25),
-                  "Presented By:", 9, color=PT_WHITE)
-    lines = [
-        ("Jim Tracy, Co-Founder & CEO",          True),
-        ("Mary Deatherage, Co-Founder & President", True),
-        ("Xcelerate Growth Partners",             False),
-    ]
-    y = by_top + Inches(0.28)
-    for text, bold in lines:
-        _pptx_textbox(slide, by_left, y, Inches(3.0), Inches(0.25),
-                      text, 10, bold=bold, color=PT_WHITE)
-        y += Inches(0.26)
+    # ── Presented By — centred ────────────────────────────────────────────────
+    by_top = H - Inches(1.75)
+    _pptx_textbox(slide, Inches(1), by_top,
+                  W - Inches(2), Inches(0.28),
+                  "Presented By:", 9,
+                  bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(1), by_top + Inches(0.3),
+                  W - Inches(2), Inches(0.28),
+                  "Jim Tracy, Co-Founder & CEO", 10,
+                  bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(1), by_top + Inches(0.6),
+                  W - Inches(2), Inches(0.28),
+                  "Mary Deatherage, Co-Founder & President", 10,
+                  bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(1), by_top + Inches(0.9),
+                  W - Inches(2), Inches(0.28),
+                  "Xcelerate Growth Partners", 10,
+                  bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
 
-    # Bottom green bar
-    _pptx_rect(slide, 0, H - Inches(0.1), W, Inches(0.1), PT_GREEN)
+    # ── Bottom green bar ──────────────────────────────────────────────────────
+    _pptx_rect(slide, 0, H - Inches(0.12), W, Inches(0.12), PT_GREEN)
 
 
 def _pptx_content_slide(prs, title, bullets, subtitle=None,
