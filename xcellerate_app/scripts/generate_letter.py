@@ -22,7 +22,7 @@ from reportlab.lib.colors import HexColor, white
 from reportlab.lib.utils import ImageReader
 from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
 # ── Brand Colours ─────────────────────────────────────────────────────────────
 NAVY   = HexColor("#1D3461")   # dark navy header/footer background
@@ -78,6 +78,15 @@ def build_letter(company: str, contact: str, date: str,
         c.setFillColor(BODY_DARK)
         c.drawCentredString(CONTENT_MID, company_y - 30, contact)
 
+    # Delivery Launch Date
+    date_label_y = company_y - (55 if contact else 38)
+    c.setFont("Helvetica-Bold", 11)
+    c.setFillColor(NAVY)
+    c.drawCentredString(CONTENT_MID, date_label_y, "Delivery Launch Date:")
+    c.setFont("Helvetica", 11)
+    c.setFillColor(GREEN)
+    c.drawCentredString(CONTENT_MID, date_label_y - 16, date)
+
     # ── Body paragraphs ───────────────────────────────────────────────────────
     # Build default body text using the variable fields
     if body_override:
@@ -106,11 +115,11 @@ def build_letter(company: str, contact: str, date: str,
         fontSize=12,
         leading=18,
         textColor=BODY_DARK,
-        alignment=TA_CENTER,
+        alignment=TA_LEFT,
         spaceAfter=16,
     )
 
-    body_top = company_y - 70
+    body_top = company_y - (110 if contact else 90)
     for para_text in paragraphs:
         para = Paragraph(para_text, style)
         w, h = para.wrap(PAGE_W - 120, PAGE_H)
