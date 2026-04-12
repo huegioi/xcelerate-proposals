@@ -230,6 +230,95 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* ── Transcript Parser ──────────────────────────────── */
+    .transcript-card {
+      background: #fff; border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 22px; overflow: hidden;
+      border-left: 4px solid #5CB85C;
+    }
+    .transcript-header {
+      background: linear-gradient(135deg, #1D3461 0%, #264a87 100%);
+      padding: 14px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .transcript-header-left { display: flex; align-items: center; gap: 12px; }
+    .transcript-header h3 { color: #fff; font-size: 14px; font-weight: 700; margin: 0; }
+    .transcript-header p { color: rgba(255,255,255,0.65); font-size: 12px; margin: 2px 0 0; }
+    .ai-badge {
+      background: #5CB85C; color: #fff; border-radius: 20px;
+      padding: 3px 12px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .transcript-toggle {
+      color: rgba(255,255,255,0.7); font-size: 18px; transition: transform 0.2s;
+    }
+    .transcript-toggle.open { transform: rotate(180deg); }
+    .transcript-body {
+      padding: 20px 22px;
+      display: none;
+    }
+    .transcript-body.open { display: block; }
+    .transcript-desc {
+      font-size: 13px; color: #666; margin-bottom: 14px; line-height: 1.6;
+    }
+    .transcript-desc strong { color: #1D3461; }
+    textarea#transcript-input {
+      width: 100%; min-height: 160px; resize: vertical;
+      border: 1.5px solid #dde2ec; border-radius: 6px;
+      padding: 11px 14px; font-size: 13px; color: #2c2c2c;
+      background: #fafbfc; font-family: inherit; line-height: 1.6;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    textarea#transcript-input:focus {
+      outline: none; border-color: #5CB85C;
+      box-shadow: 0 0 0 3px rgba(92,184,92,0.15); background: #fff;
+    }
+    .transcript-actions {
+      display: flex; align-items: center; gap: 14px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .btn-parse {
+      background: #5CB85C; color: #fff; border: none; border-radius: 7px;
+      padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background 0.15s, transform 0.1s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-parse:hover { background: #4caa4c; transform: translateY(-1px); }
+    .btn-parse:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+    .parse-hint { font-size: 12px; color: #aaa; }
+    .parse-result {
+      margin-top: 16px; border-radius: 7px; overflow: hidden;
+      border: 1.5px solid #d0ecd0; display: none;
+    }
+    .parse-result.visible { display: block; }
+    .parse-result-header {
+      background: #edfaed; padding: 10px 16px;
+      font-size: 13px; font-weight: 700; color: #2e7d32;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .parse-result-body { padding: 14px 16px; background: #fff; }
+    .parsed-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+    .parsed-chip {
+      background: #eef1f8; border-radius: 20px; padding: 4px 12px;
+      font-size: 12px; color: #1D3461; font-weight: 600;
+    }
+    .parsed-chip.svc { background: #edfaed; color: #2e7d32; }
+    .parsed-info { font-size: 13px; color: #555; margin-bottom: 6px; }
+    .parsed-info strong { color: #1D3461; }
+    .btn-apply {
+      margin-top: 14px; background: #1D3461; color: #fff; border: none;
+      border-radius: 7px; padding: 10px 24px; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: background 0.15s;
+    }
+    .btn-apply:hover { background: #26478a; }
+    .parse-error {
+      margin-top: 12px; background: #fff3f3; border: 1.5px solid #f5c5c5;
+      border-radius: 6px; padding: 11px 14px; color: #c0392b; font-size: 13px;
+      display: none;
+    }
+    .parse-error.visible { display: block; }
+
     @media (max-width: 600px) {
       .form-row { grid-template-columns: 1fr; }
       .downloads-grid { grid-template-columns: 1fr; }
@@ -267,6 +356,58 @@
 </div>
 
 <main>
+
+  <!-- ✨ Transcript Parser -->
+  <div class="transcript-card">
+    <div class="transcript-header" onclick="toggleTranscript()">
+      <div class="transcript-header-left">
+        <div>
+          <h3>✨ Parse from Sales Call Transcript</h3>
+          <p>Let AI read your call notes and pre-fill the entire proposal form</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="ai-badge">AI-Powered</span>
+        <span class="transcript-toggle" id="transcript-toggle">▾</span>
+      </div>
+    </div>
+    <div class="transcript-body" id="transcript-body">
+      <p class="transcript-desc">
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
+        and write a custom intro letter body — then pre-fill the entire form for you to review.
+      </p>
+      <textarea id="transcript-input"
+        placeholder="Paste your sales call transcript or meeting notes here…
+
+Example:
+'Spoke with Sarah Johnson at Meridian Wealth Group today. They're struggling with advisor retention and need help building a leadership pipeline. Also interested in succession planning as two senior advisors plan to retire in the next 3 years. Budget is flexible — we discussed a monthly retainer around $4,500. Follow-up meeting scheduled for April 22nd.'"
+      ></textarea>
+      <div class="transcript-actions">
+        <button class="btn-parse" id="parse-btn" onclick="parseTranscript()">
+          <span id="parse-btn-icon">✨</span>
+          <span id="parse-btn-text">Parse &amp; Pre-fill Form</span>
+        </button>
+        <span class="parse-hint">Takes about 5–10 seconds</span>
+      </div>
+
+      <!-- Error -->
+      <div class="parse-error" id="parse-error"></div>
+
+      <!-- Results preview -->
+      <div class="parse-result" id="parse-result">
+        <div class="parse-result-header">✅ Extracted from transcript</div>
+        <div class="parse-result-body">
+          <div id="parsed-summary"></div>
+          <div id="parsed-services-wrap">
+            <div class="parsed-info" style="margin-top:10px"><strong>Recommended Services:</strong></div>
+            <div class="parsed-chips" id="parsed-services"></div>
+          </div>
+          <button class="btn-apply" onclick="applyParsed()">Apply to Form →</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Tab Bar -->
   <div class="tab-bar">
@@ -804,6 +945,154 @@
       document.getElementById("saved-table").style.display = "none";
       document.getElementById("saved-empty").style.display = "block";
     }
+  }
+
+  // ── Transcript Parser ──────────────────────────────────
+  let _parsedData = null;
+
+  function toggleTranscript() {
+    const body    = document.getElementById("transcript-body");
+    const toggle  = document.getElementById("transcript-toggle");
+    const isOpen  = body.classList.contains("open");
+    body.classList.toggle("open", !isOpen);
+    toggle.classList.toggle("open", !isOpen);
+  }
+
+  // Open it by default
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("transcript-body").classList.add("open");
+    document.getElementById("transcript-toggle").classList.add("open");
+  });
+
+  async function parseTranscript() {
+    const transcript = document.getElementById("transcript-input").value.trim();
+    if (!transcript) {
+      showParseError("Please paste your transcript or meeting notes first.");
+      return;
+    }
+
+    const btn      = document.getElementById("parse-btn");
+    const btnIcon  = document.getElementById("parse-btn-icon");
+    const btnText  = document.getElementById("parse-btn-text");
+    btn.disabled   = true;
+    btnIcon.innerHTML = '<span class="spinner"></span>';
+    btnText.textContent = "Parsing…";
+    hideParseError();
+    document.getElementById("parse-result").classList.remove("visible");
+
+    try {
+      const resp = await fetch("/parse-transcript", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript }),
+      });
+      const json = await resp.json();
+
+      if (!resp.ok || json.error) {
+        showParseError(json.error || "Parsing failed. Please try again.");
+        return;
+      }
+
+      _parsedData = json.data;
+      showParsedPreview(_parsedData);
+
+    } catch(e) {
+      showParseError("Network error: " + e.message);
+    } finally {
+      btn.disabled  = false;
+      btnIcon.textContent = "✨";
+      btnText.textContent = "Parse & Pre-fill Form";
+    }
+  }
+
+  function showParseError(msg) {
+    const el = document.getElementById("parse-error");
+    el.textContent = "⚠ " + msg;
+    el.classList.add("visible");
+  }
+
+  function hideParseError() {
+    document.getElementById("parse-error").classList.remove("visible");
+  }
+
+  function showParsedPreview(data) {
+    const summary = document.getElementById("parsed-summary");
+    const lines = [];
+    if (data.company) lines.push(`<div class="parsed-info"><strong>Company:</strong> ${esc(data.company)}</div>`);
+    if (data.contact) lines.push(`<div class="parsed-info"><strong>Contact:</strong> ${esc(data.contact)}</div>`);
+    if (data.date)    lines.push(`<div class="parsed-info"><strong>Date:</strong> ${esc(data.date)}</div>`);
+    if (data.notes)   lines.push(`<div class="parsed-info"><strong>Notes:</strong> ${esc(data.notes)}</div>`);
+    summary.innerHTML = lines.join("");
+
+    const svcWrap = document.getElementById("parsed-services");
+    svcWrap.innerHTML = "";
+    (data.services || []).forEach(s => {
+      const chip = document.createElement("span");
+      chip.className = "parsed-chip svc";
+      chip.textContent = s;
+      svcWrap.appendChild(chip);
+    });
+    document.getElementById("parsed-services-wrap").style.display =
+      (data.services && data.services.length) ? "block" : "none";
+
+    document.getElementById("parse-result").classList.add("visible");
+  }
+
+  function esc(str) {
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function applyParsed() {
+    if (!_parsedData) return;
+    const d = _parsedData;
+
+    // Fill text fields
+    if (d.company) document.getElementById("company").value = d.company;
+    if (d.contact) document.getElementById("contact").value = d.contact;
+    if (d.date)    document.getElementById("date").value    = d.date;
+    if (d.notes)   document.getElementById("notes").value   = d.notes;
+    if (d.body_override) document.getElementById("body_override").value = d.body_override;
+
+    // Check matching services and fill costs
+    const costs = d.service_costs || {};
+    SERVICES.forEach((svc, i) => {
+      const match = (d.services || []).find(s =>
+        s.toLowerCase().trim() === svc.toLowerCase().trim()
+      );
+      if (match) {
+        const cb  = document.getElementById(`svc-${i}`);
+        const row = document.querySelector(`.service-row[data-index="${i}"]`);
+        cb.checked = true;
+        row.classList.add("checked");
+
+        // Fill cost if discussed
+        const costKey = Object.keys(costs).find(k =>
+          k.toLowerCase().trim() === svc.toLowerCase().trim()
+        );
+        if (costKey) {
+          const costEl = document.getElementById(`cost-${i}`);
+          if (costEl) {
+            // Strip to just number
+            const numStr = costs[costKey].replace(/[^0-9.,]/g,"").replace(/,/g,"");
+            costEl.value = numStr;
+          }
+        }
+      }
+    });
+
+    updateTotal();
+
+    // Switch to New Proposal tab and scroll to form
+    switchTab("new");
+    setTimeout(() => {
+      document.getElementById("company").scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+
+    // Collapse the transcript panel
+    const body   = document.getElementById("transcript-body");
+    const toggle = document.getElementById("transcript-toggle");
+    body.classList.remove("open");
+    toggle.classList.remove("open");
   }
 
   // Auto-refresh saved count on page load
