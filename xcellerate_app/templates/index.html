@@ -8,32 +8,40 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: #f0f2f5;
+      background: #edf0f7;
       color: #2c2c2c;
       min-height: 100vh;
     }
 
     /* ── Header ─────────────────────────────────────────── */
-    header { background: #1D3461; }
-    .header-inner {
-      max-width: 860px; margin: 0 auto;
-      padding: 24px 32px 20px;
-      display: flex; align-items: center; gap: 20px;
+    header {
+      background: linear-gradient(135deg, #1a2e58 0%, #1D3461 60%, #243d73 100%);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
     }
-    .header-logo { height: 56px; filter: brightness(0) invert(1); }
-    .header-text h1 { color: #fff; font-size: 20px; font-weight: 700; }
-    .header-text p { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 2px; }
-    .green-bar { height: 6px; background: #5CB85C; }
+    .header-inner {
+      max-width: 900px; margin: 0 auto;
+      padding: 20px 28px 18px;
+      display: flex; align-items: center; gap: 18px;
+    }
+    .header-logo { height: 52px; filter: brightness(0) invert(1); }
+    .header-text h1 { color: #fff; font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
+    .header-text p { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 3px; }
+    .green-bar { height: 5px; background: linear-gradient(90deg, #5CB85C, #4daa4d); }
 
     /* ── Main ───────────────────────────────────────────── */
-    main { max-width: 860px; margin: 32px auto 60px; padding: 0 20px; }
+    main { max-width: 900px; margin: 28px auto 60px; padding: 0 20px; }
 
     /* ── Cards ──────────────────────────────────────────── */
-    .card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 22px; overflow: hidden; }
+    .card {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(29,52,97,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      margin-bottom: 20px; overflow: hidden;
+      border: 1px solid rgba(29,52,97,0.06);
+    }
     .card-header {
-      background: #1D3461; color: #fff;
-      padding: 13px 22px; font-size: 13px; font-weight: 700;
-      letter-spacing: 0.5px; text-transform: uppercase;
+      background: linear-gradient(135deg, #1D3461, #243d73); color: #fff;
+      padding: 13px 22px; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.7px; text-transform: uppercase;
       display: flex; align-items: center; gap: 10px;
     }
     .card-header .badge {
@@ -45,33 +53,33 @@
     /* ── Form fields ────────────────────────────────────── */
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
     .form-row.single { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    label.field-label { font-size: 13px; font-weight: 600; color: #1D3461; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    label.field-label { font-size: 12px; font-weight: 700; color: #1D3461; text-transform: uppercase; letter-spacing: 0.4px; }
     label.field-label .req { color: #5CB85C; }
-    label.field-label .opt { color: #aaa; font-weight: 400; font-size: 12px; }
+    label.field-label .opt { color: #bbb; font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; }
     input[type="text"], input[type="date"], textarea {
-      border: 1.5px solid #dde2ec; border-radius: 6px;
-      padding: 9px 12px; font-size: 14px; color: #2c2c2c;
-      background: #fafbfc; width: 100%; font-family: inherit;
+      border: 1.5px solid #dde2ec; border-radius: 8px;
+      padding: 10px 13px; font-size: 14px; color: #2c2c2c;
+      background: #fafbfd; width: 100%; font-family: inherit;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
     input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
       outline: none; border-color: #5CB85C;
-      box-shadow: 0 0 0 3px rgba(92,184,92,0.15); background: #fff;
+      box-shadow: 0 0 0 3px rgba(92,184,92,0.12); background: #fff;
     }
     textarea { resize: vertical; min-height: 88px; }
 
     /* ── Services list ───────────────────────────────────── */
-    .services-list { display: flex; flex-direction: column; gap: 8px; }
+    .services-list { display: flex; flex-direction: column; gap: 7px; }
 
     .service-row {
       display: flex; align-items: center; gap: 12px;
-      border: 1.5px solid #dde2ec; border-radius: 7px;
-      padding: 10px 14px; transition: border-color 0.15s, background 0.15s;
-      cursor: pointer;
+      border: 1.5px solid #e4e9f2; border-radius: 9px;
+      padding: 10px 14px; transition: all 0.15s;
+      cursor: pointer; background: #fafbfd;
     }
-    .service-row:hover { border-color: #b0ceb0; background: #fafffe; }
-    .service-row.checked { border-color: #5CB85C; background: #f4fcf4; }
+    .service-row:hover { border-color: #b0ceb0; background: #f6fef6; box-shadow: 0 1px 6px rgba(92,184,92,0.1); }
+    .service-row.checked { border-color: #5CB85C; background: #f0faf0; box-shadow: 0 1px 8px rgba(92,184,92,0.15); }
 
     .service-check-wrap {
       display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer;
@@ -216,17 +224,18 @@
     .saved-loading { text-align:center; padding: 20px; color: #aaa; font-size: 13px; }
 
     .tab-bar {
-      display: flex; gap: 0; margin-bottom: 22px;
-      border-bottom: 2px solid #dde2ec;
+      display: flex; gap: 6px; margin-bottom: 20px;
+      background: #fff; border-radius: 10px; padding: 5px;
+      box-shadow: 0 2px 12px rgba(29,52,97,0.07);
+      border: 1px solid rgba(29,52,97,0.06);
     }
     .tab-btn {
-      padding: 10px 22px; font-size: 14px; font-weight: 600;
+      flex: 1; padding: 10px 20px; font-size: 13px; font-weight: 600;
       color: #888; cursor: pointer; border: none; background: none;
-      border-bottom: 3px solid transparent; margin-bottom: -2px;
-      transition: color 0.15s, border-color 0.15s; font-family: inherit;
+      border-radius: 7px; transition: all 0.15s; font-family: inherit;
     }
-    .tab-btn.active { color: #1D3461; border-bottom-color: #5CB85C; }
-    .tab-btn:hover:not(.active) { color: #1D3461; }
+    .tab-btn.active { color: #fff; background: linear-gradient(135deg, #1D3461, #243d73); box-shadow: 0 2px 8px rgba(29,52,97,0.25); }
+    .tab-btn:hover:not(.active) { color: #1D3461; background: #f0f3f9; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
@@ -321,129 +330,235 @@
 
     /* ── Sales Director Panel ───────────────────────────── */
     .sd-card {
-      background: #fff; border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      margin-bottom: 22px; overflow: hidden;
-      border-left: 4px solid #e8a020;
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(123,63,0,0.10), 0 1px 4px rgba(0,0,0,0.04);
+      margin-bottom: 20px; overflow: hidden;
+      border: 1px solid rgba(232,160,32,0.2);
     }
     .sd-header {
-      background: linear-gradient(135deg, #7b3f00 0%, #b35a00 100%);
-      padding: 14px 22px;
+      background: linear-gradient(135deg, #6b3400 0%, #a05000 50%, #b86010 100%);
+      padding: 16px 22px;
       display: flex; align-items: center; justify-content: space-between;
       cursor: pointer; user-select: none;
     }
-    .sd-header h3 { color: #fff; font-size: 14px; font-weight: 700; margin: 0; }
-    .sd-header p { color: rgba(255,255,255,0.65); font-size: 12px; margin: 2px 0 0; }
-    .sd-badge {
-      background: #e8a020; color: #fff; border-radius: 20px;
-      padding: 3px 12px; font-size: 11px; font-weight: 700;
-      letter-spacing: 0.5px; white-space: nowrap;
+    .sd-header-left { display:flex; align-items:center; gap:12px; }
+    .sd-header-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
     }
-    .sd-toggle { color: rgba(255,255,255,0.7); font-size: 18px; transition: transform 0.2s; }
+    .sd-header h3 { color: #fff; font-size: 15px; font-weight: 800; margin: 0; letter-spacing: -0.2px; }
+    .sd-header p { color: rgba(255,255,255,0.60); font-size: 12px; margin: 2px 0 0; }
+    .sd-badge {
+      background: rgba(255,255,255,0.18); color: #fff; border-radius: 20px;
+      padding: 4px 12px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.25);
+    }
+    .sd-toggle { color: rgba(255,255,255,0.65); font-size: 18px; transition: transform 0.2s; }
     .sd-toggle.open { transform: rotate(180deg); }
-    .sd-body { padding: 20px 22px; display: none; }
+    .sd-body { padding: 22px; display: none; }
     .sd-body.open { display: block; }
+
+    /* Step indicator */
+    .sd-steps-indicator {
+      display: flex; gap: 0; margin-bottom: 20px;
+      background: #f5f7fb; border-radius: 9px; padding: 4px;
+    }
+    .sd-step-tab {
+      flex: 1; text-align: center; padding: 8px 12px; font-size: 12px;
+      font-weight: 700; border-radius: 6px; color: #aaa; transition: all 0.2s;
+    }
+    .sd-step-tab.active {
+      background: #fff; color: #b35a00;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    }
+    .sd-step-tab.done { color: #5CB85C; }
+
     .sd-input-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;
     }
     .sd-input-label {
-      font-size: 12px; font-weight: 700; color: #555; margin-bottom: 5px;
-      text-transform: uppercase; letter-spacing: 0.4px;
+      font-size: 11px; font-weight: 700; color: #666; margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
     .sd-textarea {
       width: 100%; min-height: 130px; resize: vertical;
-      border: 1.5px solid #dde2ec; border-radius: 6px;
-      padding: 10px 13px; font-size: 13px; color: #2c2c2c;
-      background: #fafbfc; font-family: inherit; line-height: 1.6;
+      border: 1.5px solid #e4e9f2; border-radius: 9px;
+      padding: 11px 13px; font-size: 13px; color: #2c2c2c;
+      background: #fafbfd; font-family: inherit; line-height: 1.6;
       transition: border-color 0.15s, box-shadow 0.15s; box-sizing: border-box;
     }
     .sd-textarea:focus {
-      outline: none; border-color: #e8a020;
-      box-shadow: 0 0 0 3px rgba(232,160,32,0.15); background: #fff;
+      outline: none; border-color: #c87020;
+      box-shadow: 0 0 0 3px rgba(200,112,32,0.12); background: #fff;
     }
-    .btn-sd-analyze {
-      background: #b35a00; color: #fff; border: none; border-radius: 7px;
-      padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background 0.15s, transform 0.1s;
+    .btn-sd-start {
+      background: linear-gradient(135deg, #b35a00, #d06800); color: #fff;
+      border: none; border-radius: 9px;
+      padding: 12px 32px; font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
       display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 3px 10px rgba(179,90,0,0.35);
     }
-    .btn-sd-analyze:hover { background: #954c00; transform: translateY(-1px); }
-    .btn-sd-analyze:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+    .btn-sd-start:hover { background: linear-gradient(135deg, #954c00, #b85c00); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(179,90,0,0.4); }
+    .btn-sd-start:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Clarify step */
+    .sd-clarify-box {
+      background: linear-gradient(135deg, #fff8ee, #fff4e0);
+      border: 1.5px solid #f0c060; border-radius: 10px;
+      padding: 16px 18px; margin-bottom: 18px;
+    }
+    .sd-clarify-summary {
+      font-size: 13px; color: #5a3800; line-height: 1.7; margin-bottom: 14px;
+      font-style: italic;
+    }
+    .sd-questions-wrap { display: flex; flex-direction: column; gap: 14px; }
+    .sd-q-item { display: flex; flex-direction: column; gap: 6px; }
+    .sd-q-label { font-size: 13px; font-weight: 700; color: #333; }
+    .sd-q-input {
+      border: 1.5px solid #e0c080; border-radius: 8px;
+      padding: 9px 12px; font-size: 13px; font-family: inherit;
+      background: #fff; color: #2c2c2c; transition: border-color 0.15s;
+    }
+    .sd-q-input:focus { outline: none; border-color: #c87020; box-shadow: 0 0 0 3px rgba(200,112,32,0.12); }
+    .sd-clarify-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .btn-sd-back {
+      background: none; border: 1.5px solid #ddd; border-radius: 8px;
+      padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; color: #888; transition: all 0.15s;
+    }
+    .btn-sd-back:hover { border-color: #aaa; color: #555; }
+    .btn-sd-analyze {
+      background: linear-gradient(135deg, #b35a00, #d06800); color: #fff;
+      border: none; border-radius: 9px;
+      padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 3px 10px rgba(179,90,0,0.3);
+    }
+    .btn-sd-analyze:hover { background: linear-gradient(135deg, #954c00, #b85c00); transform: translateY(-1px); }
+    .btn-sd-analyze:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+
     .sd-error {
       margin-top: 12px; background: #fff3f3; border: 1.5px solid #f5c5c5;
-      border-radius: 6px; padding: 11px 14px; color: #c0392b; font-size: 13px;
+      border-radius: 8px; padding: 11px 14px; color: #c0392b; font-size: 13px;
       display: none;
     }
     .sd-error.visible { display: block; }
+
     /* Results */
     .sd-results { margin-top: 20px; display: none; }
     .sd-results.visible { display: block; }
     .sd-section {
-      border: 1.5px solid #eee; border-radius: 8px; margin-bottom: 14px; overflow: hidden;
+      border: 1px solid #eaecf2; border-radius: 10px; margin-bottom: 12px; overflow: hidden;
     }
     .sd-section-head {
-      background: #f8f9fb; padding: 10px 16px;
-      font-size: 12px; font-weight: 700; color: #1D3461;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      border-bottom: 1px solid #eee;
+      background: linear-gradient(135deg, #f5f7fc, #eef1f8); padding: 10px 16px;
+      font-size: 12px; font-weight: 800; color: #1D3461;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      border-bottom: 1px solid #e8ecf4; display: flex; align-items: center; gap: 8px;
     }
-    .sd-section-body { padding: 14px 16px; font-size: 13px; color: #333; line-height: 1.7; }
+    .sd-section-body { padding: 14px 16px; font-size: 13px; color: #333; line-height: 1.75; }
     .sd-svc-list { display: flex; flex-direction: column; gap: 8px; }
     .sd-svc-row {
       display: flex; align-items: flex-start; justify-content: space-between;
-      gap: 12px; padding: 8px 12px; background: #f8f9fb; border-radius: 6px;
-      flex-wrap: wrap;
+      gap: 12px; padding: 10px 12px; background: #f8f9fd; border-radius: 8px;
+      border: 1px solid #eaecf2; flex-wrap: wrap; transition: border-color 0.15s;
     }
+    .sd-svc-row:hover { border-color: #c5d5ea; }
     .sd-svc-info { flex: 1; min-width: 0; }
     .sd-svc-name { font-weight: 700; color: #1D3461; font-size: 13px; }
-    .sd-svc-rationale { font-size: 12px; color: #666; margin-top: 2px; }
+    .sd-svc-rationale { font-size: 12px; color: #777; margin-top: 3px; line-height: 1.5; }
     .sd-svc-price {
-      background: #edfaed; color: #2e7d32; border-radius: 20px;
-      padding: 3px 12px; font-size: 12px; font-weight: 700;
-      white-space: nowrap; align-self: flex-start;
+      background: linear-gradient(135deg, #edfaed, #d8f5d8); color: #2a6e2a;
+      border-radius: 20px; padding: 4px 13px; font-size: 12px; font-weight: 700;
+      white-space: nowrap; align-self: flex-start; border: 1px solid #b8e0b8;
+    }
+    .sd-svc-custom {
+      background: linear-gradient(135deg, #fff8e6, #fff0cc); color: #7b3f00;
+      border-radius: 20px; padding: 4px 13px; font-size: 12px; font-weight: 700;
+      white-space: nowrap; align-self: flex-start; border: 1px solid #f0c060;
     }
     .sd-total {
-      margin-top: 10px; padding: 10px 14px;
-      background: #1D3461; border-radius: 7px;
-      font-weight: 700; color: #fff; font-size: 14px;
+      margin-top: 12px; padding: 12px 16px;
+      background: linear-gradient(135deg, #1D3461, #243d73); border-radius: 9px;
+      font-weight: 700; color: #fff; font-size: 15px;
       display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 3px 12px rgba(29,52,97,0.2);
     }
-    .sd-total span { color: #5CB85C; }
-    .sd-obj-list { display: flex; flex-direction: column; gap: 10px; }
-    .sd-obj-item { border-left: 3px solid #e8a020; padding-left: 12px; }
-    .sd-obj-q { font-weight: 700; color: #333; font-size: 13px; }
-    .sd-obj-a { color: #555; font-size: 13px; margin-top: 3px; }
+    .sd-obj-list { display: flex; flex-direction: column; gap: 12px; }
+    .sd-obj-item {
+      border-left: 3px solid #e8a020; padding-left: 14px;
+      background: #fffbf4; border-radius: 0 8px 8px 0; padding: 10px 14px;
+    }
+    .sd-obj-q { font-weight: 700; color: #2c2c2c; font-size: 13px; }
+    .sd-obj-a { color: #555; font-size: 13px; margin-top: 4px; line-height: 1.6; }
     .sd-next-steps { padding: 0; margin: 0; list-style: none; }
     .sd-next-steps li {
-      padding: 6px 0; border-bottom: 1px solid #f0f0f0;
-      font-size: 13px; display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid #f0f2f7;
+      font-size: 13px; display: flex; gap: 12px; align-items: flex-start; line-height: 1.5;
     }
     .sd-next-steps li:last-child { border-bottom: none; }
     .sd-step-num {
-      background: #1D3461; color: #fff; border-radius: 50%;
-      width: 20px; height: 20px; font-size: 11px; font-weight: 700;
+      background: linear-gradient(135deg, #1D3461, #243d73); color: #fff; border-radius: 50%;
+      width: 22px; height: 22px; font-size: 11px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      margin-top: 1px;
     }
     .sd-email-pre {
-      background: #f8f9fb; border-radius: 6px; padding: 14px;
+      background: #f8f9fb; border-radius: 8px; padding: 14px 16px;
       font-size: 13px; white-space: pre-wrap; font-family: inherit;
-      border: 1px solid #e8e8e8; line-height: 1.7; color: #333;
+      border: 1px solid #e4e8f0; line-height: 1.75; color: #333;
     }
-    .sd-email-subject {
-      font-weight: 700; color: #1D3461; margin-bottom: 10px; font-size: 13px;
-    }
+    .sd-email-subject { font-weight: 700; color: #1D3461; margin-bottom: 10px; font-size: 13px; }
     .btn-copy-email {
-      background: #eef1f8; color: #1D3461; border: none; border-radius: 6px;
+      background: #eef1f8; color: #1D3461; border: none; border-radius: 7px;
       padding: 7px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
       font-family: inherit; margin-bottom: 10px; transition: background 0.15s;
     }
     .btn-copy-email:hover { background: #dce3f3; }
     .btn-sd-apply {
-      width: 100%; background: #1D3461; color: #fff; border: none; border-radius: 8px;
-      padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background 0.15s; margin-top: 6px;
+      width: 100%; background: linear-gradient(135deg, #1D3461, #243d73);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.15s; margin-top: 8px;
+      box-shadow: 0 4px 16px rgba(29,52,97,0.25);
     }
-    .btn-sd-apply:hover { background: #26478a; }
+    .btn-sd-apply:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(29,52,97,0.35); }
+
+    /* Follow-up chat */
+    .sd-followup {
+      margin-top: 14px; display: flex; gap: 8px;
+      border: 1.5px solid #e4e9f2; border-radius: 9px; overflow: hidden;
+      background: #fafbfd;
+    }
+    .sd-followup-input {
+      flex: 1; border: none; padding: 11px 14px; font-size: 13px;
+      font-family: inherit; background: transparent; color: #2c2c2c; outline: none;
+    }
+    .sd-followup-input::placeholder { color: #bbb; }
+    .btn-sd-followup {
+      background: #b35a00; color: #fff; border: none; padding: 11px 18px;
+      font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: background 0.15s; white-space: nowrap;
+    }
+    .btn-sd-followup:hover { background: #954c00; }
+    .btn-sd-followup:disabled { background: #ccc; cursor: not-allowed; }
+    .sd-followup-response {
+      margin-top: 10px; background: #fff8ee; border: 1px solid #f0c060;
+      border-radius: 9px; padding: 13px 15px; font-size: 13px; color: #3a2000;
+      line-height: 1.7; display: none;
+    }
+    .sd-followup-response.visible { display: block; }
+
+    /* Transcript card (updated to match) */
+    .transcript-card {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(29,52,97,0.07), 0 1px 4px rgba(0,0,0,0.04);
+      margin-bottom: 20px; overflow: hidden;
+      border: 1px solid rgba(92,184,92,0.15);
+    }
 
     @media (max-width: 700px) { .sd-input-grid { grid-template-columns: 1fr; } }
 
@@ -485,64 +600,15 @@
 
 <main>
 
-  <!-- ✨ Transcript Parser -->
-  <div class="transcript-card">
-    <div class="transcript-header" onclick="toggleTranscript()">
-      <div class="transcript-header-left">
-        <div>
-          <h3>✨ Parse from Sales Call Transcript</h3>
-          <p>Let AI read your call notes and pre-fill the entire proposal form</p>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <span class="ai-badge">AI-Powered</span>
-        <span class="transcript-toggle" id="transcript-toggle">▾</span>
-      </div>
-    </div>
-    <div class="transcript-body" id="transcript-body">
-      <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
-        Claude will extract the prospect's name, company, relevant services, pricing discussed,
-        and write a custom intro letter body — then pre-fill the entire form for you to review.
-      </p>
-      <textarea id="transcript-input"
-        placeholder="Paste your sales call transcript or meeting notes here…
-
-Example:
-'Spoke with Sarah Johnson at Meridian Wealth Group today. They're struggling with advisor retention and need help building a leadership pipeline. Also interested in succession planning as two senior advisors plan to retire in the next 3 years. Budget is flexible — we discussed a monthly retainer around $4,500. Follow-up meeting scheduled for April 22nd.'"
-      ></textarea>
-      <div class="transcript-actions">
-        <button class="btn-parse" id="parse-btn" onclick="parseTranscript()">
-          <span id="parse-btn-icon">✨</span>
-          <span id="parse-btn-text">Parse &amp; Pre-fill Form</span>
-        </button>
-        <span class="parse-hint">Takes about 5–10 seconds</span>
-      </div>
-
-      <!-- Error -->
-      <div class="parse-error" id="parse-error"></div>
-
-      <!-- Results preview -->
-      <div class="parse-result" id="parse-result">
-        <div class="parse-result-header">✅ Extracted from transcript</div>
-        <div class="parse-result-body">
-          <div id="parsed-summary"></div>
-          <div id="parsed-services-wrap">
-            <div class="parsed-info" style="margin-top:10px"><strong>Recommended Services:</strong></div>
-            <div class="parsed-chips" id="parsed-services"></div>
-          </div>
-          <button class="btn-apply" onclick="applyParsed()">Apply to Form →</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- 🎯 Sales Director Analysis -->
   <div class="sd-card" id="sd-card">
     <div class="sd-header" onclick="toggleSalesDirector()">
-      <div>
-        <h3>🎯 Sales Director Analysis</h3>
-        <p>Paste your call transcript &amp; email — get a recommended package, pricing ranges, and deal coaching</p>
+      <div class="sd-header-left">
+        <div class="sd-header-icon">🎯</div>
+        <div>
+          <h3>Sales Director Analysis</h3>
+          <p>Get a recommended package, deal coaching, objection handling &amp; a ready-to-send follow-up email</p>
+        </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px">
         <span class="sd-badge">Deal Intelligence</span>
@@ -551,30 +617,59 @@ Example:
     </div>
 
     <div class="sd-body" id="sd-body">
-      <div class="sd-input-grid">
-        <div>
-          <div class="sd-input-label">Sales Call Transcript</div>
-          <textarea class="sd-textarea" id="sd-transcript"
-            placeholder="Paste your call transcript or meeting notes here…"></textarea>
+
+      <!-- Step Indicator -->
+      <div class="sd-steps-indicator">
+        <div class="sd-step-tab active" id="sd-tab-1">① Input</div>
+        <div class="sd-step-tab" id="sd-tab-2">② Clarify</div>
+        <div class="sd-step-tab" id="sd-tab-3">③ Results</div>
+      </div>
+
+      <!-- ── Step 1: Input ─────────────────────────────── -->
+      <div id="sd-step-1">
+        <div class="sd-input-grid">
+          <div>
+            <div class="sd-input-label">Sales Call Transcript</div>
+            <textarea class="sd-textarea" id="sd-transcript"
+              placeholder="Paste your call transcript or meeting notes here…"></textarea>
+          </div>
+          <div>
+            <div class="sd-input-label">Email Thread (optional)</div>
+            <textarea class="sd-textarea" id="sd-email"
+              placeholder="Paste any email exchange with the prospect…"></textarea>
+          </div>
         </div>
-        <div>
-          <div class="sd-input-label">Email Thread (optional)</div>
-          <textarea class="sd-textarea" id="sd-email"
-            placeholder="Paste any email exchange with the prospect…"></textarea>
+
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <button class="btn-sd-start" id="sd-start-btn" onclick="startSdAnalysis()">
+            <span id="sd-start-icon">🎯</span>
+            <span id="sd-start-text">Start Analysis</span>
+          </button>
+          <span style="font-size:12px;color:#aaa">Takes about 5 seconds</span>
         </div>
       </div>
 
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <button class="btn-sd-analyze" id="sd-btn" onclick="analyzeOpportunity()">
-          <span id="sd-btn-icon">🎯</span>
-          <span id="sd-btn-text">Analyze Opportunity</span>
-        </button>
-        <span style="font-size:12px;color:#aaa">Takes 10–15 seconds</span>
+      <!-- ── Step 2: Clarify ───────────────────────────── -->
+      <div id="sd-step-2" style="display:none">
+        <div class="sd-clarify-box">
+          <div class="sd-clarify-summary" id="sd-clarify-summary"></div>
+          <div class="sd-questions-wrap" id="sd-questions-wrap">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+        <div class="sd-clarify-actions">
+          <button class="btn-sd-back" onclick="backToStep1()">← Back</button>
+          <button class="btn-sd-analyze" id="sd-analyze-btn" onclick="analyzeOpportunity()">
+            <span id="sd-analyze-icon">🔍</span>
+            <span id="sd-analyze-text">Get Full Recommendations</span>
+          </button>
+          <span style="font-size:12px;color:#aaa">Takes 10–15 seconds</span>
+        </div>
       </div>
 
       <div class="sd-error" id="sd-error"></div>
 
-      <!-- Results -->
+      <!-- ── Step 3: Results ───────────────────────────── -->
       <div class="sd-results" id="sd-results">
 
         <!-- Opportunity Summary -->
@@ -638,9 +733,73 @@ Example:
           ✅ Apply Recommended Services &amp; Pricing to Form
         </button>
 
+        <!-- Follow-up Chat -->
+        <div style="margin-top:18px">
+          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Ask a follow-up question</div>
+          <div class="sd-followup">
+            <input type="text" class="sd-followup-input" id="sd-followup-input"
+              placeholder="e.g. How should I handle budget pushback? What's the best opening line?"
+              onkeydown="if(event.key==='Enter')sdFollowUp()"/>
+            <button class="btn-sd-followup" id="sd-followup-btn" onclick="sdFollowUp()">Ask →</button>
+          </div>
+          <div class="sd-followup-response" id="sd-followup-response"></div>
+        </div>
+
       </div><!-- /sd-results -->
     </div><!-- /sd-body -->
   </div><!-- /sd-card -->
+
+  <!-- ✨ Transcript Parser -->
+  <div class="transcript-card">
+    <div class="transcript-header" onclick="toggleTranscript()">
+      <div class="transcript-header-left">
+        <div>
+          <h3>✨ Parse from Sales Call Transcript</h3>
+          <p>Let AI read your call notes and pre-fill the entire proposal form</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="ai-badge">AI-Powered</span>
+        <span class="transcript-toggle" id="transcript-toggle">▾</span>
+      </div>
+    </div>
+    <div class="transcript-body" id="transcript-body">
+      <p class="transcript-desc">
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
+        and write a custom intro letter body — then pre-fill the entire form for you to review.
+      </p>
+      <textarea id="transcript-input"
+        placeholder="Paste your sales call transcript or meeting notes here…
+
+Example:
+'Spoke with Sarah Johnson at Meridian Wealth Group today. They're struggling with advisor retention and need help building a leadership pipeline. Also interested in succession planning as two senior advisors plan to retire in the next 3 years. Budget is flexible — we discussed a monthly retainer around $4,500. Follow-up meeting scheduled for April 22nd.'"
+      ></textarea>
+      <div class="transcript-actions">
+        <button class="btn-parse" id="parse-btn" onclick="parseTranscript()">
+          <span id="parse-btn-icon">✨</span>
+          <span id="parse-btn-text">Parse &amp; Pre-fill Form</span>
+        </button>
+        <span class="parse-hint">Takes about 5–10 seconds</span>
+      </div>
+
+      <!-- Error -->
+      <div class="parse-error" id="parse-error"></div>
+
+      <!-- Results preview -->
+      <div class="parse-result" id="parse-result">
+        <div class="parse-result-header">✅ Extracted from transcript</div>
+        <div class="parse-result-body">
+          <div id="parsed-summary"></div>
+          <div id="parsed-services-wrap">
+            <div class="parsed-info" style="margin-top:10px"><strong>Recommended Services:</strong></div>
+            <div class="parsed-chips" id="parsed-services"></div>
+          </div>
+          <button class="btn-apply" onclick="applyParsed()">Apply to Form →</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Tab Bar -->
   <div class="tab-bar">
@@ -1430,7 +1589,8 @@ Example:
   }
 
   // ── Sales Director ───────────────────────────────────────
-  let _sdData = null;  // stores last analysis result
+  let _sdData        = null;   // stores last full analysis
+  let _sdClarifyData = null;   // stores clarify step response (summary + questions)
 
   function toggleSalesDirector() {
     const body   = document.getElementById("sd-body");
@@ -1439,22 +1599,116 @@ Example:
     toggle.classList.toggle("open", open);
   }
 
-  async function analyzeOpportunity() {
+  function _sdSetStep(step) {
+    // Update step tabs
+    [1,2,3].forEach(n => {
+      const tab = document.getElementById(`sd-tab-${n}`);
+      tab.classList.toggle("active", n === step);
+      tab.classList.toggle("done",   n < step);
+    });
+    // Show/hide step panels
+    document.getElementById("sd-step-1").style.display = step === 1 ? "block" : "none";
+    document.getElementById("sd-step-2").style.display = step === 2 ? "block" : "none";
+    if (step === 3) {
+      document.getElementById("sd-results").classList.add("visible");
+    } else {
+      document.getElementById("sd-results").classList.remove("visible");
+    }
+  }
+
+  function backToStep1() {
+    document.getElementById("sd-error").classList.remove("visible");
+    _sdSetStep(1);
+  }
+
+  // ── Step 1: read transcript → call /sd-clarify for 2 questions
+  async function startSdAnalysis() {
     const transcript = document.getElementById("sd-transcript").value.trim();
     const email      = document.getElementById("sd-email").value.trim();
     const errEl      = document.getElementById("sd-error");
-    const resEl      = document.getElementById("sd-results");
-    const btn        = document.getElementById("sd-btn");
-    const btnIcon    = document.getElementById("sd-btn-icon");
-    const btnText    = document.getElementById("sd-btn-text");
+    const btn        = document.getElementById("sd-start-btn");
+    const btnIcon    = document.getElementById("sd-start-icon");
+    const btnText    = document.getElementById("sd-start-text");
 
     errEl.classList.remove("visible");
-    resEl.classList.remove("visible");
 
     if (!transcript && !email) {
       errEl.textContent = "Please paste a transcript or email thread first.";
       errEl.classList.add("visible");
       return;
+    }
+
+    btn.disabled = true;
+    btnIcon.textContent = "⏳";
+    btnText.textContent = "Reading…";
+
+    try {
+      const resp = await fetch("/sd-clarify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript, email }),
+      });
+      const json = await resp.json();
+
+      if (!resp.ok || json.error) {
+        errEl.textContent = json.error || "Could not read transcript. Please try again.";
+        errEl.classList.add("visible");
+        return;
+      }
+
+      _sdClarifyData = json.data;
+      _buildClarifyStep(json.data);
+      _sdSetStep(2);
+
+    } catch (err) {
+      errEl.textContent = "Network error: " + err.message;
+      errEl.classList.add("visible");
+    } finally {
+      btn.disabled = false;
+      btnIcon.textContent = "🎯";
+      btnText.textContent = "Start Analysis";
+    }
+  }
+
+  function _buildClarifyStep(data) {
+    // Show AI's one-line summary
+    document.getElementById("sd-clarify-summary").textContent =
+      data.summary || "Here's what I understood from your notes. Please answer a couple of quick questions before I dive into the full analysis.";
+
+    // Build question inputs
+    const wrap = document.getElementById("sd-questions-wrap");
+    wrap.innerHTML = "";
+    (data.questions || []).forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "sd-q-item";
+      div.innerHTML = `
+        <div class="sd-q-label">Q${i+1}: ${esc(q)}</div>
+        <input type="text" class="sd-q-input" id="sd-q-${i}"
+          placeholder="Your answer…" />
+      `;
+      wrap.appendChild(div);
+    });
+  }
+
+  // ── Step 2: collect answers → call /analyze-opportunity
+  async function analyzeOpportunity() {
+    const transcript = document.getElementById("sd-transcript").value.trim();
+    const email      = document.getElementById("sd-email").value.trim();
+    const errEl      = document.getElementById("sd-error");
+    const resEl      = document.getElementById("sd-results");
+    const btn        = document.getElementById("sd-analyze-btn");
+    const btnIcon    = document.getElementById("sd-analyze-icon");
+    const btnText    = document.getElementById("sd-analyze-text");
+
+    errEl.classList.remove("visible");
+
+    // Collect clarification answers
+    const clarifications = {};
+    if (_sdClarifyData && _sdClarifyData.questions) {
+      _sdClarifyData.questions.forEach((q, i) => {
+        const ans = (document.getElementById(`sd-q-${i}`) || {}).value?.trim() || "";
+        if (ans) clarifications[q] = ans;
+      });
     }
 
     btn.disabled = true;
@@ -1465,7 +1719,7 @@ Example:
       const resp = await fetch("/analyze-opportunity", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript, email }),
+        body: JSON.stringify({ transcript, email, clarifications }),
       });
       const json = await resp.json();
 
@@ -1477,15 +1731,55 @@ Example:
 
       _sdData = json.data;
       renderSalesDirectorResults(_sdData);
-      resEl.classList.add("visible");
+      _sdSetStep(3);
+      resEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
     } catch (err) {
       errEl.textContent = "Network error: " + err.message;
       errEl.classList.add("visible");
     } finally {
       btn.disabled = false;
-      btnIcon.textContent = "🎯";
-      btnText.textContent = "Analyze Opportunity";
+      btnIcon.textContent = "🔍";
+      btnText.textContent = "Get Full Recommendations";
+    }
+  }
+
+  // ── Follow-up chat ──────────────────────────────────────
+  async function sdFollowUp() {
+    const input   = document.getElementById("sd-followup-input");
+    const respEl  = document.getElementById("sd-followup-response");
+    const btn     = document.getElementById("sd-followup-btn");
+    const question = input.value.trim();
+    if (!question) return;
+
+    btn.disabled = true;
+    btn.textContent = "…";
+    respEl.classList.remove("visible");
+
+    const transcript = document.getElementById("sd-transcript").value.trim();
+    const email      = document.getElementById("sd-email").value.trim();
+
+    try {
+      const resp = await fetch("/analyze-opportunity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript, email, followup_question: question }),
+      });
+      const json = await resp.json();
+
+      if (!resp.ok || json.error) {
+        respEl.textContent = "⚠ " + (json.error || "Could not get a response.");
+      } else {
+        respEl.textContent = json.data?.followup_answer || json.data?.opportunity_summary || "No response.";
+      }
+      respEl.classList.add("visible");
+      input.value = "";
+    } catch (err) {
+      respEl.textContent = "Network error: " + err.message;
+      respEl.classList.add("visible");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Ask →";
     }
   }
 
@@ -1567,12 +1861,15 @@ Example:
     const svcNames = allServices.map(s => s.name);
 
     // Check catalog checkboxes that match
-    svcNames.forEach(name => {
-      document.querySelectorAll(".service-checkbox").forEach(cb => {
-        if (cb.value.toLowerCase().trim() === name.toLowerCase().trim()) {
-          if (!cb.checked) cb.click();
+    SERVICES.forEach((svc, i) => {
+      if (svcNames.find(n => n.toLowerCase().trim() === svc.toLowerCase().trim())) {
+        const cb  = document.getElementById(`svc-${i}`);
+        const row = document.querySelector(`.service-row[data-index="${i}"]`);
+        if (cb && !cb.checked) {
+          cb.checked = true;
+          row && row.classList.add("checked");
         }
-      });
+      }
     });
 
     // Add non-catalog services as custom rows
@@ -1588,17 +1885,15 @@ Example:
       addCustomRow(svc.name, costNum, true, true);
     });
 
-    // Fill cost inputs — use low end of each range
+    // Fill cost inputs — use low end of each price range
     allServices.forEach(svc => {
       const priceMatch = (svc.price_range || "").match(/\$([\d,]+)/);
       if (!priceMatch) return;
       const numVal = priceMatch[1].replace(/,/g, "");
-      // Match against cost inputs by their visible label
-      document.querySelectorAll(".service-row").forEach(row => {
-        const label = row.querySelector(".service-label");
-        if (label && label.textContent.toLowerCase().trim() === svc.name.toLowerCase().trim()) {
-          const ci = row.querySelector(".service-cost-input");
-          if (ci && !ci.value) ci.value = numVal;
+      SERVICES.forEach((cat, i) => {
+        if (cat.toLowerCase().trim() === svc.name.toLowerCase().trim()) {
+          const ci = document.getElementById(`cost-${i}`);
+          if (ci && !ci.value) { ci.value = numVal; }
         }
       });
     });
