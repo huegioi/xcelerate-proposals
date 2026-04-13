@@ -36,7 +36,8 @@ SCRIPTS_DIR   = BASE_DIR / "scripts"
 ASSETS_DIR    = BASE_DIR / "assets"
 OUTPUTS_DIR   = BASE_DIR / "outputs"
 DATA_DIR      = BASE_DIR / "data"
-PROPOSALS_FILE = DATA_DIR / "proposals.json"
+PROPOSALS_FILE  = DATA_DIR / "proposals.json"
+ANALYSES_FILE   = DATA_DIR / "analyses.json"
 
 DEFAULT_LOGO      = ASSETS_DIR / "xcelerate_logo.png"
 DEFAULT_BASE_PDF  = ASSETS_DIR / "base_proposal_template.pdf"
@@ -79,6 +80,31 @@ def add_proposal(record):
     save_proposals(proposals)
 
 
+# ── Analyses storage ──────────────────────────────────────────────────────────
+
+def load_analyses():
+    DATA_DIR.mkdir(exist_ok=True)
+    if not ANALYSES_FILE.exists():
+        return []
+    try:
+        with open(ANALYSES_FILE) as f:
+            return json.load(f).get("analyses", [])
+    except Exception:
+        return []
+
+def save_analyses(analyses):
+    DATA_DIR.mkdir(exist_ok=True)
+    with open(ANALYSES_FILE, "w") as f:
+        json.dump({"analyses": analyses}, f, indent=2)
+
+def add_analysis(record):
+    analyses = load_analyses()
+    analyses = [a for a in analyses if a["id"] != record["id"]]
+    analyses.insert(0, record)
+    analyses = analyses[:100]
+    save_analyses(analyses)
+
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @app.route("/")
@@ -106,6 +132,39 @@ def delete_proposal(proposal_id):
     proposals = load_proposals()
     proposals = [p for p in proposals if p["id"] != proposal_id]
     save_proposals(proposals)
+    return jsonify({"ok": True})
+
+
+# ── Analyses API ──────────────────────────────────────────────────────────────
+
+@app.route("/api/analyses")
+def api_analyses():
+    return jsonify(load_analyses())
+
+@app.route("/api/analyses/<analysis_id>")
+def get_analysis(analysis_id):
+    analyses = load_analyses()
+    match = next((a for a in analyses if a.get("id") == analysis_id), None)
+    if not match:
+        return jsonify({"error": "Not found"}), 404
+    return jsonify(match)
+
+@app.route("/api/analyses", methods=["POST"])
+def save_analysis():
+    data = request.get_json(force=True, silent=True) or {}
+    if not data:
+        return jsonify({"error": "No data"}), 400
+    record = dict(data)
+    record["id"]         = str(uuid.uuid4())
+    record["created_at"] = datetime.now().strftime("%b %d, %Y %I:%M %p")
+    add_analysis(record)
+    return jsonify({"ok": True, "id": record["id"]})
+
+@app.route("/api/analyses/<analysis_id>", methods=["DELETE"])
+def delete_analysis(analysis_id):
+    analyses = load_analyses()
+    analyses = [a for a in analyses if a.get("id") != analysis_id]
+    save_analyses(analyses)
     return jsonify({"ok": True})
 
 
@@ -498,22 +557,28 @@ Return ONLY a single valid JSON object with NO markdown, NO code fences, NO expl
 
 JSON schema:
 {{
+  "company": "Prospect company name extracted from the input",
+  "contact": "Contact person full name",
+  "contact_email": "Contact email if mentioned, else empty string",
+  "contact_phone": "Contact phone if mentioned, else empty string",
+  "date": "Meeting or follow-up date if mentioned (e.g. 'April 22, 2026'), else empty string",
   "opportunity_summary": "2-3 sentence read on this prospect — who they are, what they really need, and your confidence level on closing",
   "recommended_services": [
     {{
       "name": "Exact service name from catalog",
       "rationale": "One sentence on why this fits THIS specific prospect",
-      "price_range": "e.g. $3,500–$5,000/month or $8,000–$12,000 project"
+      "price_range": "Use '/mo' suffix for monthly retainers (e.g. '$3,500-$5,000/mo') and 'one-time' label for project fees (e.g. '$8,000-$12,000 one-time')"
     }}
   ],
   "custom_services": [
     {{
       "name": "Any service not in catalog but clearly needed",
       "rationale": "Why",
-      "price_range": "Suggested range"
+      "price_range": "Use '/mo' or 'one-time' suffix as appropriate",
+      "is_custom": true
     }}
   ],
-  "total_range": "e.g. $7,500–$11,000/month",
+  "total_range": "Describe clearly, e.g. '$5,500-$8,000/mo retainer + $12,000 one-time setup' or '$7,500-$11,000/mo'",
   "strategic_rationale": "2-3 sentences on the overall package strategy and why this combination wins the deal",
   "objections": [
     {{
@@ -527,7 +592,8 @@ JSON schema:
     "body": "Full email body — ready to send. Reference the call. End with a clear ask. Sign off as Jim Tracy."
   }},
   "next_steps": ["Action 1", "Action 2", "Action 3"],
-  "intro_notes": "1-2 sentences for the intro letter — the angle or hook that will resonate most with this prospect"
+  "intro_notes": "1-2 sentences for the intro letter — the angle or hook that will resonate most with this prospect",
+  "body_override": "If you can write a compelling personalized 2-paragraph intro letter body for this prospect, include it here. Otherwise empty string."
 }}"""
 
     try:
