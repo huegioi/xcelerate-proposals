@@ -299,16 +299,19 @@ Read the transcript below and extract the following information. Return ONLY a s
 
 JSON schema:
 {{
-  "company":        "Prospect company name (string)",
-  "contact":        "Prospect contact person full name (string, empty string if unknown)",
-  "date":           "Proposed meeting or presentation date formatted as 'Month DD, YYYY' (string, empty string if not mentioned)",
-  "services":       ["Exact service names from catalog only (array of strings)"],
-  "service_costs":  {{"Service Name": "cost string e.g. $3,500/mo — only include if discussed, otherwise omit"}},
-  "notes":          "1–2 sentence note for the services slide summarizing the recommended engagement approach (string)",
-  "body_override":  "3–4 paragraph custom intro letter body written in a warm, professional tone. Reference the company name, key pain points or goals mentioned in the call, and why Xcelerate is uniquely positioned to help. Do NOT include salutation or signature — body paragraphs only (string)"
+  "company":         "Prospect company name (string)",
+  "contact":         "Prospect contact person full name (string, empty string if unknown)",
+  "date":            "Proposed meeting or presentation date formatted as 'Month DD, YYYY' (string, empty string if not mentioned)",
+  "services":        ["Exact service names from catalog that were discussed (array of strings — use ONLY the exact strings listed below)"],
+  "service_costs":   {{"Service Name": "cost string e.g. $3,500/mo — only include if explicitly discussed, otherwise omit"}},
+  "custom_services": [{{"name": "Short descriptive service name", "cost": "cost string if mentioned, otherwise empty string"}}],
+  "notes":           "1–2 sentence note for the services slide summarizing the recommended engagement approach (string)",
+  "body_override":   "3–4 paragraph custom intro letter body written in a warm, professional tone. Reference the company name, key pain points or goals mentioned in the call, and why Xcelerate is uniquely positioned to help. Do NOT include salutation or signature — body paragraphs only (string)"
 }}
 
-Service catalog (use ONLY these exact strings for the 'services' array):
+IMPORTANT — for "custom_services": if the transcript mentions any services, needs, or deliverables that do NOT appear in the catalog below, add each one as an object in the "custom_services" array with a short, clear name and any cost mentioned. Do NOT force them into the catalog list. Examples of custom services: "Executive Coaching Program", "Monthly Market Briefings", "Custom Advisor Scorecard", "Onboarding Training Series".
+
+Service catalog (use ONLY these exact strings in the "services" array):
 {catalog_str}
 
 Transcript:
@@ -335,6 +338,128 @@ Transcript:
 
     except json.JSONDecodeError as e:
         return jsonify({"error": f"Could not parse Claude's response as JSON: {e}", "raw": raw[:500]}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/analyze-opportunity", methods=["POST"])
+def analyze_opportunity():
+    """
+    Sales Director analysis: accepts a transcript and/or email, references past
+    proposals for pricing context, and returns structured package recommendations,
+    pricing ranges, a strategic rationale, and deal-coaching notes.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        return jsonify({"error": "ANTHROPIC_API_KEY is not configured on this server. Add it in Railway → Variables."}), 503
+    if not _ANTHROPIC_AVAILABLE:
+        return jsonify({"error": "The 'anthropic' Python package is not installed."}), 503
+
+    data       = request.get_json(force=True, silent=True) or {}
+    transcript = (data.get("transcript") or "").strip()
+    email      = (data.get("email") or "").strip()
+
+    if not transcript and not email:
+        return jsonify({"error": "Please provide a transcript and/or email thread."}), 400
+
+    # ── Build past-proposals context (last 8 for pricing reference) ───────────
+    past = load_proposals()[:8]
+    past_context = ""
+    if past:
+        lines = []
+        for p in past:
+            svcs  = ", ".join(p.get("services", [])) or "N/A"
+            costs = " | ".join(p.get("costs", [])) or "N/A"
+            lines.append(f"  • {p.get('company','?')} — Services: {svcs} — Fees: {costs}")
+        past_context = "PAST PROPOSAL REFERENCE (use for pricing calibration):\n" + "\n".join(lines)
+    else:
+        past_context = "PAST PROPOSAL REFERENCE: No past proposals on file yet."
+
+    catalog_str = "\n".join(f"- {s}" for s in SERVICES_CATALOG)
+
+    input_text = ""
+    if transcript:
+        input_text += f"SALES CALL TRANSCRIPT:\n{transcript}\n\n"
+    if email:
+        input_text += f"EMAIL THREAD:\n{email}\n\n"
+
+    system_prompt = f"""You are the Sales Director at Xcelerate Growth Partners — a firm that delivers
+custom growth, leadership, and practice management programs to wealth management firms,
+asset managers, and financial advisor teams.
+
+Your job is to analyze every sales opportunity and give sharp, actionable recommendations.
+You speak like an experienced deal-maker: direct, decisive, and specific.
+
+{past_context}
+
+XCELERATE'S SERVICE CATALOG (with typical price ranges):
+{catalog_str}
+
+Typical fee context:
+- Asset managers / large wirehouses: $8,000–$25,000/month retainer
+- Regional broker-dealers: $4,000–$12,000/month
+- Individual advisor teams / smaller firms: $2,500–$6,000/month
+- One-time projects (succession, workshops, keynotes): $5,000–$15,000
+- Bundle 3+ services: 10–15% discount is common
+
+Return ONLY a single valid JSON object with NO markdown, NO code fences, NO explanation.
+
+JSON schema:
+{{
+  "opportunity_summary": "2-3 sentence read on this prospect — who they are, what they really need, and your confidence level on closing",
+  "recommended_services": [
+    {{
+      "name": "Exact service name from catalog",
+      "rationale": "One sentence on why this fits THIS specific prospect",
+      "price_range": "e.g. $3,500–$5,000/month or $8,000–$12,000 project"
+    }}
+  ],
+  "custom_services": [
+    {{
+      "name": "Any service not in catalog but clearly needed",
+      "rationale": "Why",
+      "price_range": "Suggested range"
+    }}
+  ],
+  "total_range": "e.g. $7,500–$11,000/month",
+  "strategic_rationale": "2-3 sentences on the overall package strategy and why this combination wins the deal",
+  "objections": [
+    {{
+      "objection": "Specific concern the prospect raised or is likely to raise",
+      "rebuttal": "Specific, confident response — tie it to something they said"
+    }}
+  ],
+  "competitive_angle": "2-3 sentences on what makes Xcelerate uniquely positioned to win this vs. any alternative",
+  "follow_up_email": {{
+    "subject": "Email subject line",
+    "body": "Full email body — ready to send. Reference the call. End with a clear ask. Sign off as Jim Tracy."
+  }},
+  "next_steps": ["Action 1", "Action 2", "Action 3"],
+  "intro_notes": "1-2 sentences for the intro letter — the angle or hook that will resonate most with this prospect"
+}}"""
+
+    try:
+        client  = _anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=3000,
+            system=system_prompt,
+            messages=[{"role": "user", "content": input_text}],
+        )
+        raw = message.content[0].text.strip()
+
+        # Strip markdown code fences if model wrapped the JSON
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+            raw = raw.strip()
+
+        parsed = json.loads(raw)
+        return jsonify({"ok": True, "data": parsed})
+
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Could not parse response as JSON: {e}", "raw": raw[:500]}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
