@@ -319,6 +319,134 @@
     }
     .parse-error.visible { display: block; }
 
+    /* ── Sales Director Panel ───────────────────────────── */
+    .sd-card {
+      background: #fff; border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 22px; overflow: hidden;
+      border-left: 4px solid #e8a020;
+    }
+    .sd-header {
+      background: linear-gradient(135deg, #7b3f00 0%, #b35a00 100%);
+      padding: 14px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .sd-header h3 { color: #fff; font-size: 14px; font-weight: 700; margin: 0; }
+    .sd-header p { color: rgba(255,255,255,0.65); font-size: 12px; margin: 2px 0 0; }
+    .sd-badge {
+      background: #e8a020; color: #fff; border-radius: 20px;
+      padding: 3px 12px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .sd-toggle { color: rgba(255,255,255,0.7); font-size: 18px; transition: transform 0.2s; }
+    .sd-toggle.open { transform: rotate(180deg); }
+    .sd-body { padding: 20px 22px; display: none; }
+    .sd-body.open { display: block; }
+    .sd-input-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;
+    }
+    .sd-input-label {
+      font-size: 12px; font-weight: 700; color: #555; margin-bottom: 5px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .sd-textarea {
+      width: 100%; min-height: 130px; resize: vertical;
+      border: 1.5px solid #dde2ec; border-radius: 6px;
+      padding: 10px 13px; font-size: 13px; color: #2c2c2c;
+      background: #fafbfc; font-family: inherit; line-height: 1.6;
+      transition: border-color 0.15s, box-shadow 0.15s; box-sizing: border-box;
+    }
+    .sd-textarea:focus {
+      outline: none; border-color: #e8a020;
+      box-shadow: 0 0 0 3px rgba(232,160,32,0.15); background: #fff;
+    }
+    .btn-sd-analyze {
+      background: #b35a00; color: #fff; border: none; border-radius: 7px;
+      padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background 0.15s, transform 0.1s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-sd-analyze:hover { background: #954c00; transform: translateY(-1px); }
+    .btn-sd-analyze:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+    .sd-error {
+      margin-top: 12px; background: #fff3f3; border: 1.5px solid #f5c5c5;
+      border-radius: 6px; padding: 11px 14px; color: #c0392b; font-size: 13px;
+      display: none;
+    }
+    .sd-error.visible { display: block; }
+    /* Results */
+    .sd-results { margin-top: 20px; display: none; }
+    .sd-results.visible { display: block; }
+    .sd-section {
+      border: 1.5px solid #eee; border-radius: 8px; margin-bottom: 14px; overflow: hidden;
+    }
+    .sd-section-head {
+      background: #f8f9fb; padding: 10px 16px;
+      font-size: 12px; font-weight: 700; color: #1D3461;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid #eee;
+    }
+    .sd-section-body { padding: 14px 16px; font-size: 13px; color: #333; line-height: 1.7; }
+    .sd-svc-list { display: flex; flex-direction: column; gap: 8px; }
+    .sd-svc-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; padding: 8px 12px; background: #f8f9fb; border-radius: 6px;
+      flex-wrap: wrap;
+    }
+    .sd-svc-info { flex: 1; min-width: 0; }
+    .sd-svc-name { font-weight: 700; color: #1D3461; font-size: 13px; }
+    .sd-svc-rationale { font-size: 12px; color: #666; margin-top: 2px; }
+    .sd-svc-price {
+      background: #edfaed; color: #2e7d32; border-radius: 20px;
+      padding: 3px 12px; font-size: 12px; font-weight: 700;
+      white-space: nowrap; align-self: flex-start;
+    }
+    .sd-total {
+      margin-top: 10px; padding: 10px 14px;
+      background: #1D3461; border-radius: 7px;
+      font-weight: 700; color: #fff; font-size: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .sd-total span { color: #5CB85C; }
+    .sd-obj-list { display: flex; flex-direction: column; gap: 10px; }
+    .sd-obj-item { border-left: 3px solid #e8a020; padding-left: 12px; }
+    .sd-obj-q { font-weight: 700; color: #333; font-size: 13px; }
+    .sd-obj-a { color: #555; font-size: 13px; margin-top: 3px; }
+    .sd-next-steps { padding: 0; margin: 0; list-style: none; }
+    .sd-next-steps li {
+      padding: 6px 0; border-bottom: 1px solid #f0f0f0;
+      font-size: 13px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .sd-next-steps li:last-child { border-bottom: none; }
+    .sd-step-num {
+      background: #1D3461; color: #fff; border-radius: 50%;
+      width: 20px; height: 20px; font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sd-email-pre {
+      background: #f8f9fb; border-radius: 6px; padding: 14px;
+      font-size: 13px; white-space: pre-wrap; font-family: inherit;
+      border: 1px solid #e8e8e8; line-height: 1.7; color: #333;
+    }
+    .sd-email-subject {
+      font-weight: 700; color: #1D3461; margin-bottom: 10px; font-size: 13px;
+    }
+    .btn-copy-email {
+      background: #eef1f8; color: #1D3461; border: none; border-radius: 6px;
+      padding: 7px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: inherit; margin-bottom: 10px; transition: background 0.15s;
+    }
+    .btn-copy-email:hover { background: #dce3f3; }
+    .btn-sd-apply {
+      width: 100%; background: #1D3461; color: #fff; border: none; border-radius: 8px;
+      padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background 0.15s; margin-top: 6px;
+    }
+    .btn-sd-apply:hover { background: #26478a; }
+
+    @media (max-width: 700px) { .sd-input-grid { grid-template-columns: 1fr; } }
+
     @media (max-width: 600px) {
       .form-row { grid-template-columns: 1fr; }
       .downloads-grid { grid-template-columns: 1fr; }
@@ -373,8 +501,8 @@
     </div>
     <div class="transcript-body" id="transcript-body">
       <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, email or call summary</strong> below.
-        Our AI will extract the prospect's name, company, relevant services, pricing discussed,
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
         and write a custom intro letter body — then pre-fill the entire form for you to review.
       </p>
       <textarea id="transcript-input"
@@ -408,6 +536,111 @@ Example:
       </div>
     </div>
   </div>
+
+  <!-- 🎯 Sales Director Analysis -->
+  <div class="sd-card" id="sd-card">
+    <div class="sd-header" onclick="toggleSalesDirector()">
+      <div>
+        <h3>🎯 Sales Director Analysis</h3>
+        <p>Paste your call transcript &amp; email — get a recommended package, pricing ranges, and deal coaching</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="sd-badge">Deal Intelligence</span>
+        <span class="sd-toggle" id="sd-toggle">▾</span>
+      </div>
+    </div>
+
+    <div class="sd-body" id="sd-body">
+      <div class="sd-input-grid">
+        <div>
+          <div class="sd-input-label">Sales Call Transcript</div>
+          <textarea class="sd-textarea" id="sd-transcript"
+            placeholder="Paste your call transcript or meeting notes here…"></textarea>
+        </div>
+        <div>
+          <div class="sd-input-label">Email Thread (optional)</div>
+          <textarea class="sd-textarea" id="sd-email"
+            placeholder="Paste any email exchange with the prospect…"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <button class="btn-sd-analyze" id="sd-btn" onclick="analyzeOpportunity()">
+          <span id="sd-btn-icon">🎯</span>
+          <span id="sd-btn-text">Analyze Opportunity</span>
+        </button>
+        <span style="font-size:12px;color:#aaa">Takes 10–15 seconds</span>
+      </div>
+
+      <div class="sd-error" id="sd-error"></div>
+
+      <!-- Results -->
+      <div class="sd-results" id="sd-results">
+
+        <!-- Opportunity Summary -->
+        <div class="sd-section">
+          <div class="sd-section-head">🎯 Opportunity Summary</div>
+          <div class="sd-section-body" id="sd-summary"></div>
+        </div>
+
+        <!-- Recommended Package -->
+        <div class="sd-section">
+          <div class="sd-section-head">📦 Recommended Package</div>
+          <div class="sd-section-body">
+            <div class="sd-svc-list" id="sd-svc-list"></div>
+            <div class="sd-total">
+              <span style="color:#fff">Total Engagement Range</span>
+              <span id="sd-total-range"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategic Rationale -->
+        <div class="sd-section">
+          <div class="sd-section-head">💡 Strategic Rationale</div>
+          <div class="sd-section-body" id="sd-rationale"></div>
+        </div>
+
+        <!-- Objections -->
+        <div class="sd-section">
+          <div class="sd-section-head">💬 Objections to Expect</div>
+          <div class="sd-section-body">
+            <div class="sd-obj-list" id="sd-objections"></div>
+          </div>
+        </div>
+
+        <!-- Competitive Angle -->
+        <div class="sd-section">
+          <div class="sd-section-head">🏆 Why We Win This Deal</div>
+          <div class="sd-section-body" id="sd-competitive"></div>
+        </div>
+
+        <!-- Follow-up Email -->
+        <div class="sd-section">
+          <div class="sd-section-head">📧 Follow-Up Email Draft</div>
+          <div class="sd-section-body">
+            <div class="sd-email-subject" id="sd-email-subject"></div>
+            <button class="btn-copy-email" onclick="copyFollowUpEmail()">📋 Copy Email</button>
+            <div class="sd-email-pre" id="sd-email-body"></div>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="sd-section">
+          <div class="sd-section-head">✅ Next Steps (48 Hours)</div>
+          <div class="sd-section-body">
+            <ul class="sd-next-steps" id="sd-next-steps"></ul>
+          </div>
+        </div>
+
+        <!-- Apply Button -->
+        <button class="btn-sd-apply" onclick="applySalesDirector()">
+          ✅ Apply Recommended Services &amp; Pricing to Form
+        </button>
+
+      </div><!-- /sd-results -->
+    </div><!-- /sd-body -->
+  </div><!-- /sd-card -->
 
   <!-- Tab Bar -->
   <div class="tab-bar">
@@ -1090,8 +1323,20 @@ Example:
       chip.textContent = s;
       svcWrap.appendChild(chip);
     });
+    // Show custom (non-catalog) services with a distinct style
+    (data.custom_services || []).forEach(s => {
+      const name = s.name || s;
+      if (!name) return;
+      const chip = document.createElement("span");
+      chip.className = "parsed-chip";
+      chip.style.cssText = "background:#fff8e6;color:#7b3f00;border:1px solid #e8a020";
+      chip.textContent = "✦ " + name + (s.cost ? " — " + s.cost : "") + " (custom)";
+      svcWrap.appendChild(chip);
+    });
+    const hasAnySvc = (data.services && data.services.length) ||
+                      (data.custom_services && data.custom_services.length);
     document.getElementById("parsed-services-wrap").style.display =
-      (data.services && data.services.length) ? "block" : "none";
+      hasAnySvc ? "block" : "none";
 
     document.getElementById("parse-result").classList.add("visible");
   }
@@ -1145,7 +1390,7 @@ Example:
       el.remove();
     });
 
-    // Add unmatched services as new checked custom rows
+    // Add catalog services that didn't match as custom rows (edge case)
     const unmatched = (d.services || []).filter(svcName =>
       !SERVICES.find(cat => cat.toLowerCase().trim() === svcName.toLowerCase().trim())
     );
@@ -1159,6 +1404,16 @@ Example:
       addCustomRow(svcName, costStr, true, true);
     });
 
+    // Add explicitly custom services (things AI found that aren't in catalog at all)
+    (d.custom_services || []).forEach(svc => {
+      const name = svc.name || '';
+      if (!name) return;
+      // Don't add if it already matches a catalog service
+      if (SERVICES.find(cat => cat.toLowerCase().trim() === name.toLowerCase().trim())) return;
+      const costStr = (svc.cost || '').replace(/[^0-9.,]/g, '').replace(/,/g, '');
+      addCustomRow(name, costStr, true, true);
+    });
+
     updateTotal();
 
     // Switch to New Proposal tab and scroll to form
@@ -1170,6 +1425,201 @@ Example:
     // Collapse the transcript panel
     const body   = document.getElementById("transcript-body");
     const toggle = document.getElementById("transcript-toggle");
+    body.classList.remove("open");
+    toggle.classList.remove("open");
+  }
+
+  // ── Sales Director ───────────────────────────────────────
+  let _sdData = null;  // stores last analysis result
+
+  function toggleSalesDirector() {
+    const body   = document.getElementById("sd-body");
+    const toggle = document.getElementById("sd-toggle");
+    const open   = body.classList.toggle("open");
+    toggle.classList.toggle("open", open);
+  }
+
+  async function analyzeOpportunity() {
+    const transcript = document.getElementById("sd-transcript").value.trim();
+    const email      = document.getElementById("sd-email").value.trim();
+    const errEl      = document.getElementById("sd-error");
+    const resEl      = document.getElementById("sd-results");
+    const btn        = document.getElementById("sd-btn");
+    const btnIcon    = document.getElementById("sd-btn-icon");
+    const btnText    = document.getElementById("sd-btn-text");
+
+    errEl.classList.remove("visible");
+    resEl.classList.remove("visible");
+
+    if (!transcript && !email) {
+      errEl.textContent = "Please paste a transcript or email thread first.";
+      errEl.classList.add("visible");
+      return;
+    }
+
+    btn.disabled = true;
+    btnIcon.textContent = "⏳";
+    btnText.textContent = "Analyzing…";
+
+    try {
+      const resp = await fetch("/analyze-opportunity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript, email }),
+      });
+      const json = await resp.json();
+
+      if (!resp.ok || json.error) {
+        errEl.textContent = json.error || "Unknown server error.";
+        errEl.classList.add("visible");
+        return;
+      }
+
+      _sdData = json.data;
+      renderSalesDirectorResults(_sdData);
+      resEl.classList.add("visible");
+
+    } catch (err) {
+      errEl.textContent = "Network error: " + err.message;
+      errEl.classList.add("visible");
+    } finally {
+      btn.disabled = false;
+      btnIcon.textContent = "🎯";
+      btnText.textContent = "Analyze Opportunity";
+    }
+  }
+
+  function renderSalesDirectorResults(d) {
+    // Opportunity summary
+    document.getElementById("sd-summary").textContent = d.opportunity_summary || "";
+
+    // Recommended services
+    const svcList = document.getElementById("sd-svc-list");
+    svcList.innerHTML = "";
+    const allServices = [...(d.recommended_services || []), ...(d.custom_services || [])];
+    allServices.forEach(svc => {
+      const row = document.createElement("div");
+      row.className = "sd-svc-row";
+      row.innerHTML = `
+        <div class="sd-svc-info">
+          <div class="sd-svc-name">${esc(svc.name)}</div>
+          <div class="sd-svc-rationale">${esc(svc.rationale)}</div>
+        </div>
+        <div class="sd-svc-price">${esc(svc.price_range || "")}</div>
+      `;
+      svcList.appendChild(row);
+    });
+
+    // Total range
+    document.getElementById("sd-total-range").textContent = d.total_range || "";
+
+    // Rationale
+    document.getElementById("sd-rationale").textContent = d.strategic_rationale || "";
+
+    // Objections
+    const objEl = document.getElementById("sd-objections");
+    objEl.innerHTML = "";
+    (d.objections || []).forEach(obj => {
+      const div = document.createElement("div");
+      div.className = "sd-obj-item";
+      div.innerHTML = `<div class="sd-obj-q">❓ ${esc(obj.objection)}</div>
+                       <div class="sd-obj-a">💡 ${esc(obj.rebuttal)}</div>`;
+      objEl.appendChild(div);
+    });
+
+    // Competitive angle
+    document.getElementById("sd-competitive").textContent = d.competitive_angle || "";
+
+    // Follow-up email
+    const emailData = d.follow_up_email || {};
+    document.getElementById("sd-email-subject").textContent =
+      emailData.subject ? "Subject: " + emailData.subject : "";
+    document.getElementById("sd-email-body").textContent = emailData.body || "";
+
+    // Next steps
+    const stepsEl = document.getElementById("sd-next-steps");
+    stepsEl.innerHTML = "";
+    (d.next_steps || []).forEach((step, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span class="sd-step-num">${i+1}</span><span>${esc(step)}</span>`;
+      stepsEl.appendChild(li);
+    });
+  }
+
+  function copyFollowUpEmail() {
+    const subj = (document.getElementById("sd-email-subject").textContent || "").replace("Subject: ", "");
+    const body = document.getElementById("sd-email-body").textContent || "";
+    const full = subj ? `Subject: ${subj}\n\n${body}` : body;
+    navigator.clipboard.writeText(full).then(() => {
+      const btn = document.querySelector(".btn-copy-email");
+      const orig = btn.textContent;
+      btn.textContent = "✅ Copied!";
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+
+  function applySalesDirector() {
+    if (!_sdData) return;
+    const d = _sdData;
+
+    // Check matching catalog services
+    const allServices = [...(d.recommended_services || []), ...(d.custom_services || [])];
+    const svcNames = allServices.map(s => s.name);
+
+    // Check catalog checkboxes that match
+    svcNames.forEach(name => {
+      document.querySelectorAll(".service-checkbox").forEach(cb => {
+        if (cb.value.toLowerCase().trim() === name.toLowerCase().trim()) {
+          if (!cb.checked) cb.click();
+        }
+      });
+    });
+
+    // Add non-catalog services as custom rows
+    const unmatched = allServices.filter(svc =>
+      !SERVICES.find(cat => cat.toLowerCase().trim() === svc.name.toLowerCase().trim())
+    );
+    // Remove previous AI-added rows
+    document.querySelectorAll("[data-ai-added]").forEach(r => r.remove());
+    unmatched.forEach(svc => {
+      // Extract a clean number from price range for cost field
+      const priceMatch = (svc.price_range || "").match(/\$([\d,]+)/);
+      const costNum = priceMatch ? priceMatch[1].replace(/,/g, "") : "";
+      addCustomRow(svc.name, costNum, true, true);
+    });
+
+    // Fill cost inputs — use low end of each range
+    allServices.forEach(svc => {
+      const priceMatch = (svc.price_range || "").match(/\$([\d,]+)/);
+      if (!priceMatch) return;
+      const numVal = priceMatch[1].replace(/,/g, "");
+      // Match against cost inputs by their visible label
+      document.querySelectorAll(".service-row").forEach(row => {
+        const label = row.querySelector(".service-label");
+        if (label && label.textContent.toLowerCase().trim() === svc.name.toLowerCase().trim()) {
+          const ci = row.querySelector(".service-cost-input");
+          if (ci && !ci.value) ci.value = numVal;
+        }
+      });
+    });
+
+    // Fill notes field with intro_notes if notes is empty
+    if (d.intro_notes) {
+      const notesEl = document.getElementById("notes");
+      if (notesEl && !notesEl.value.trim()) notesEl.value = d.intro_notes;
+    }
+
+    updateTotal();
+
+    // Switch to New Proposal tab and scroll
+    switchTab("new");
+    setTimeout(() => {
+      document.getElementById("company").scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+
+    // Collapse the SD panel
+    const body   = document.getElementById("sd-body");
+    const toggle = document.getElementById("sd-toggle");
     body.classList.remove("open");
     toggle.classList.remove("open");
   }
