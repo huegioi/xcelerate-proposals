@@ -240,12 +240,6 @@
     .tab-panel.active { display: block; }
 
     /* ── Transcript Parser ──────────────────────────────── */
-    .transcript-card {
-      background: #fff; border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      margin-bottom: 22px; overflow: hidden;
-      border-left: 4px solid #5CB85C;
-    }
     .transcript-header {
       background: linear-gradient(135deg, #1D3461 0%, #264a87 100%);
       padding: 14px 22px;
@@ -331,28 +325,29 @@
     /* ── Sales Director Panel ───────────────────────────── */
     .sd-card {
       background: #fff; border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(123,63,0,0.10), 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 24px rgba(11,76,97,0.12), 0 1px 4px rgba(0,0,0,0.04);
       margin-bottom: 20px; overflow: hidden;
-      border: 1px solid rgba(232,160,32,0.2);
+      border: 1px solid rgba(14,143,170,0.18);
     }
     .sd-header {
-      background: linear-gradient(135deg, #6b3400 0%, #a05000 50%, #b86010 100%);
+      background: linear-gradient(135deg, #0b4c61 0%, #0e6882 55%, #128faa 100%);
       padding: 16px 22px;
       display: flex; align-items: center; justify-content: space-between;
       cursor: pointer; user-select: none;
     }
     .sd-header-left { display:flex; align-items:center; gap:12px; }
     .sd-header-icon {
-      width: 36px; height: 36px; border-radius: 9px;
-      background: rgba(255,255,255,0.15);
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; font-size: 19px;
+      border: 1px solid rgba(255,255,255,0.2);
     }
     .sd-header h3 { color: #fff; font-size: 15px; font-weight: 800; margin: 0; letter-spacing: -0.2px; }
-    .sd-header p { color: rgba(255,255,255,0.60); font-size: 12px; margin: 2px 0 0; }
+    .sd-header p { color: rgba(255,255,255,0.62); font-size: 12px; margin: 2px 0 0; }
     .sd-badge {
-      background: rgba(255,255,255,0.18); color: #fff; border-radius: 20px;
+      background: rgba(255,255,255,0.16); color: #fff; border-radius: 20px;
       padding: 4px 12px; font-size: 11px; font-weight: 700;
-      letter-spacing: 0.5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.25);
+      letter-spacing: 0.5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.24);
     }
     .sd-toggle { color: rgba(255,255,255,0.65); font-size: 18px; transition: transform 0.2s; }
     .sd-toggle.open { transform: rotate(180deg); }
@@ -361,16 +356,16 @@
 
     /* Step indicator */
     .sd-steps-indicator {
-      display: flex; gap: 0; margin-bottom: 20px;
-      background: #f5f7fb; border-radius: 9px; padding: 4px;
+      display: flex; gap: 0; margin-bottom: 22px;
+      background: #f0f5f7; border-radius: 9px; padding: 4px;
     }
     .sd-step-tab {
       flex: 1; text-align: center; padding: 8px 12px; font-size: 12px;
       font-weight: 700; border-radius: 6px; color: #aaa; transition: all 0.2s;
     }
     .sd-step-tab.active {
-      background: #fff; color: #b35a00;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      background: #fff; color: #0b7a9e;
+      box-shadow: 0 1px 6px rgba(11,120,158,0.18);
     }
     .sd-step-tab.done { color: #5CB85C; }
 
@@ -378,67 +373,85 @@
       display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;
     }
     .sd-input-label {
-      font-size: 11px; font-weight: 700; color: #666; margin-bottom: 6px;
+      font-size: 11px; font-weight: 700; color: #5a7080; margin-bottom: 6px;
       text-transform: uppercase; letter-spacing: 0.5px;
     }
     .sd-textarea {
       width: 100%; min-height: 130px; resize: vertical;
-      border: 1.5px solid #e4e9f2; border-radius: 9px;
+      border: 1.5px solid #cfe0e8; border-radius: 9px;
       padding: 11px 13px; font-size: 13px; color: #2c2c2c;
-      background: #fafbfd; font-family: inherit; line-height: 1.6;
+      background: #f8fbfd; font-family: inherit; line-height: 1.6;
       transition: border-color 0.15s, box-shadow 0.15s; box-sizing: border-box;
     }
     .sd-textarea:focus {
-      outline: none; border-color: #c87020;
-      box-shadow: 0 0 0 3px rgba(200,112,32,0.12); background: #fff;
+      outline: none; border-color: #0e88a8;
+      box-shadow: 0 0 0 3px rgba(14,136,168,0.12); background: #fff;
     }
     .btn-sd-start {
-      background: linear-gradient(135deg, #b35a00, #d06800); color: #fff;
+      background: linear-gradient(135deg, #0e6882, #1299bc); color: #fff;
       border: none; border-radius: 9px;
       padding: 12px 32px; font-size: 14px; font-weight: 700; cursor: pointer;
       font-family: inherit; transition: all 0.15s;
       display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 3px 10px rgba(179,90,0,0.35);
+      box-shadow: 0 3px 10px rgba(14,104,130,0.35);
     }
-    .btn-sd-start:hover { background: linear-gradient(135deg, #954c00, #b85c00); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(179,90,0,0.4); }
-    .btn-sd-start:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-sd-start:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(14,104,130,0.4); }
+    .btn-sd-start:disabled { background: #b0c8d0; cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* Clarify step */
-    .sd-clarify-box {
-      background: linear-gradient(135deg, #fff8ee, #fff4e0);
-      border: 1.5px solid #f0c060; border-radius: 10px;
-      padding: 16px 18px; margin-bottom: 18px;
+    /* ── Clarify step ── */
+    .sd-clarify-intro {
+      display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px;
+      background: linear-gradient(135deg, #e8f6fc, #d4eef8);
+      border: 1.5px solid #88cee4; border-radius: 12px; padding: 16px 18px;
+    }
+    .sd-ai-avatar {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #0e6882, #128faa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; color: #fff; box-shadow: 0 2px 8px rgba(14,104,130,0.3);
     }
     .sd-clarify-summary {
-      font-size: 13px; color: #5a3800; line-height: 1.7; margin-bottom: 14px;
-      font-style: italic;
+      font-size: 13.5px; color: #0a3d52; line-height: 1.7; padding-top: 3px;
     }
-    .sd-questions-wrap { display: flex; flex-direction: column; gap: 14px; }
-    .sd-q-item { display: flex; flex-direction: column; gap: 6px; }
-    .sd-q-label { font-size: 13px; font-weight: 700; color: #333; }
+    .sd-questions-wrap { display: flex; flex-direction: column; gap: 12px; margin-bottom: 4px; }
+    .sd-q-item {
+      background: #fff; border: 1.5px solid #cce0e8; border-radius: 10px;
+      padding: 14px 16px; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .sd-q-item:focus-within { border-color: #0e88a8; box-shadow: 0 0 0 3px rgba(14,136,168,0.1); }
+    .sd-q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+    .sd-q-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #0e6882, #128faa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #fff;
+    }
+    .sd-q-label { font-size: 13px; font-weight: 600; color: #1a3a47; line-height: 1.4; }
     .sd-q-input {
-      border: 1.5px solid #e0c080; border-radius: 8px;
+      border: 1.5px solid #ddeef4; border-radius: 7px;
       padding: 9px 12px; font-size: 13px; font-family: inherit;
-      background: #fff; color: #2c2c2c; transition: border-color 0.15s;
+      background: #f6fbfd; color: #2c2c2c; transition: all 0.15s; width: 100%;
     }
-    .sd-q-input:focus { outline: none; border-color: #c87020; box-shadow: 0 0 0 3px rgba(200,112,32,0.12); }
-    .sd-clarify-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .sd-q-input:focus { outline: none; border-color: #0e88a8; background: #fff; box-shadow: 0 0 0 3px rgba(14,136,168,0.1); }
+    .sd-q-input::placeholder { color: #aac0cc; }
+    .sd-clarify-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
     .btn-sd-back {
-      background: none; border: 1.5px solid #ddd; border-radius: 8px;
+      background: none; border: 1.5px solid #c8d8e0; border-radius: 8px;
       padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-      font-family: inherit; color: #888; transition: all 0.15s;
+      font-family: inherit; color: #7a96a4; transition: all 0.15s;
     }
-    .btn-sd-back:hover { border-color: #aaa; color: #555; }
+    .btn-sd-back:hover { border-color: #8ab0be; color: #3a6070; background: #f0f8fb; }
     .btn-sd-analyze {
-      background: linear-gradient(135deg, #b35a00, #d06800); color: #fff;
+      background: linear-gradient(135deg, #0e6882, #1299bc); color: #fff;
       border: none; border-radius: 9px;
       padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
       font-family: inherit; transition: all 0.15s;
       display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 3px 10px rgba(179,90,0,0.3);
+      box-shadow: 0 3px 10px rgba(14,104,130,0.3);
     }
-    .btn-sd-analyze:hover { background: linear-gradient(135deg, #954c00, #b85c00); transform: translateY(-1px); }
-    .btn-sd-analyze:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-sd-analyze:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); transform: translateY(-1px); }
+    .btn-sd-analyze:disabled { background: #b0c8d0; cursor: not-allowed; transform: none; box-shadow: none; }
+    .sd-skip-note { font-size: 11px; color: #9ab0bb; font-style: italic; }
 
     .sd-error {
       margin-top: 12px; background: #fff3f3; border: 1.5px solid #f5c5c5;
@@ -447,118 +460,180 @@
     }
     .sd-error.visible { display: block; }
 
-    /* Results */
+    /* ── Results ── */
     .sd-results { margin-top: 20px; display: none; }
     .sd-results.visible { display: block; }
     .sd-section {
-      border: 1px solid #eaecf2; border-radius: 10px; margin-bottom: 12px; overflow: hidden;
+      border: 1px solid #dde8ee; border-radius: 10px; margin-bottom: 12px; overflow: hidden;
     }
     .sd-section-head {
-      background: linear-gradient(135deg, #f5f7fc, #eef1f8); padding: 10px 16px;
-      font-size: 12px; font-weight: 800; color: #1D3461;
+      background: linear-gradient(135deg, #f2f8fa, #e8f2f6); padding: 10px 16px;
+      font-size: 12px; font-weight: 800; color: #0b4c61;
       text-transform: uppercase; letter-spacing: 0.6px;
-      border-bottom: 1px solid #e8ecf4; display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid #d8e8ee; display: flex; align-items: center; gap: 8px;
     }
     .sd-section-body { padding: 14px 16px; font-size: 13px; color: #333; line-height: 1.75; }
     .sd-svc-list { display: flex; flex-direction: column; gap: 8px; }
     .sd-svc-row {
       display: flex; align-items: flex-start; justify-content: space-between;
-      gap: 12px; padding: 10px 12px; background: #f8f9fd; border-radius: 8px;
-      border: 1px solid #eaecf2; flex-wrap: wrap; transition: border-color 0.15s;
+      gap: 12px; padding: 10px 14px; background: #f6fbfd; border-radius: 9px;
+      border: 1px solid #d8eaf2; flex-wrap: wrap; transition: border-color 0.15s;
     }
-    .sd-svc-row:hover { border-color: #c5d5ea; }
+    .sd-svc-row:hover { border-color: #90c8e0; background: #eef7fb; }
     .sd-svc-info { flex: 1; min-width: 0; }
-    .sd-svc-name { font-weight: 700; color: #1D3461; font-size: 13px; }
-    .sd-svc-rationale { font-size: 12px; color: #777; margin-top: 3px; line-height: 1.5; }
+    .sd-svc-name { font-weight: 700; color: #0b4c61; font-size: 13px; }
+    .sd-svc-rationale { font-size: 12px; color: #6a8898; margin-top: 3px; line-height: 1.5; }
+    .sd-svc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
     .sd-svc-price {
       background: linear-gradient(135deg, #edfaed, #d8f5d8); color: #2a6e2a;
       border-radius: 20px; padding: 4px 13px; font-size: 12px; font-weight: 700;
-      white-space: nowrap; align-self: flex-start; border: 1px solid #b8e0b8;
+      white-space: nowrap; border: 1px solid #b8e0b8;
     }
-    .sd-svc-custom {
-      background: linear-gradient(135deg, #fff8e6, #fff0cc); color: #7b3f00;
-      border-radius: 20px; padding: 4px 13px; font-size: 12px; font-weight: 700;
-      white-space: nowrap; align-self: flex-start; border: 1px solid #f0c060;
+    .sd-svc-type-badge {
+      font-size: 10px; font-weight: 700; color: #6a8898;
+      background: #e8f2f6; border-radius: 10px; padding: 2px 8px;
+      text-transform: uppercase; letter-spacing: 0.4px;
     }
-    .sd-total {
-      margin-top: 12px; padding: 12px 16px;
-      background: linear-gradient(135deg, #1D3461, #243d73); border-radius: 9px;
-      font-weight: 700; color: #fff; font-size: 15px;
+    /* Package total breakdown */
+    .sd-pkg-totals { margin-top: 14px; border-radius: 10px; overflow: hidden; border: 1px solid #d8eaf2; }
+    .sd-pkg-total-row {
       display: flex; justify-content: space-between; align-items: center;
-      box-shadow: 0 3px 12px rgba(29,52,97,0.2);
+      padding: 9px 16px; background: #f2f8fb;
+      border-bottom: 1px solid #d8eaf2; font-size: 13px;
     }
+    .sd-pkg-total-row:last-child { border-bottom: none; }
+    .sd-pkg-total-row.grand {
+      background: linear-gradient(135deg, #0b4c61, #0e6882); color: #fff;
+      padding: 12px 16px; font-weight: 700;
+    }
+    .sd-pkg-total-label { color: #4a7080; font-weight: 600; }
+    .sd-pkg-total-row.grand .sd-pkg-total-label { color: rgba(255,255,255,0.8); font-size: 13px; }
+    .sd-pkg-total-amount { font-weight: 700; color: #0b4c61; }
+    .sd-pkg-total-row.grand .sd-pkg-total-amount { color: #7de0a8; font-size: 15px; }
+
     .sd-obj-list { display: flex; flex-direction: column; gap: 12px; }
     .sd-obj-item {
-      border-left: 3px solid #e8a020; padding-left: 14px;
-      background: #fffbf4; border-radius: 0 8px 8px 0; padding: 10px 14px;
+      background: #f4fbfd; border-radius: 9px; padding: 12px 14px;
+      border-left: 3px solid #15a3c8;
     }
-    .sd-obj-q { font-weight: 700; color: #2c2c2c; font-size: 13px; }
-    .sd-obj-a { color: #555; font-size: 13px; margin-top: 4px; line-height: 1.6; }
+    .sd-obj-q { font-weight: 700; color: #1a3a47; font-size: 13px; }
+    .sd-obj-a { color: #4a6878; font-size: 13px; margin-top: 4px; line-height: 1.6; }
     .sd-next-steps { padding: 0; margin: 0; list-style: none; }
     .sd-next-steps li {
-      padding: 8px 0; border-bottom: 1px solid #f0f2f7;
+      padding: 8px 0; border-bottom: 1px solid #e8f2f6;
       font-size: 13px; display: flex; gap: 12px; align-items: flex-start; line-height: 1.5;
     }
     .sd-next-steps li:last-child { border-bottom: none; }
     .sd-step-num {
-      background: linear-gradient(135deg, #1D3461, #243d73); color: #fff; border-radius: 50%;
+      background: linear-gradient(135deg, #0e6882, #128faa); color: #fff; border-radius: 50%;
       width: 22px; height: 22px; font-size: 11px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       margin-top: 1px;
     }
     .sd-email-pre {
-      background: #f8f9fb; border-radius: 8px; padding: 14px 16px;
+      background: #f6fbfd; border-radius: 8px; padding: 14px 16px;
       font-size: 13px; white-space: pre-wrap; font-family: inherit;
-      border: 1px solid #e4e8f0; line-height: 1.75; color: #333;
+      border: 1px solid #cce0e8; line-height: 1.75; color: #2c3a42;
     }
-    .sd-email-subject { font-weight: 700; color: #1D3461; margin-bottom: 10px; font-size: 13px; }
+    .sd-email-subject { font-weight: 700; color: #0b4c61; margin-bottom: 10px; font-size: 13px; }
     .btn-copy-email {
-      background: #eef1f8; color: #1D3461; border: none; border-radius: 7px;
+      background: #e0eff5; color: #0b4c61; border: none; border-radius: 7px;
       padding: 7px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
       font-family: inherit; margin-bottom: 10px; transition: background 0.15s;
     }
-    .btn-copy-email:hover { background: #dce3f3; }
+    .btn-copy-email:hover { background: #c8e0ea; }
+
+    /* SD action row (apply + save) */
+    .sd-action-row { display: flex; gap: 10px; margin-top: 8px; }
     .btn-sd-apply {
-      width: 100%; background: linear-gradient(135deg, #1D3461, #243d73);
+      flex: 1; background: linear-gradient(135deg, #1D3461, #243d73);
       color: #fff; border: none; border-radius: 10px;
       padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: all 0.15s; margin-top: 8px;
+      font-family: inherit; transition: all 0.15s;
       box-shadow: 0 4px 16px rgba(29,52,97,0.25);
     }
     .btn-sd-apply:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(29,52,97,0.35); }
+    .btn-sd-save {
+      background: #e8f2f6; color: #0b4c61; border: 1.5px solid #cce0e8;
+      border-radius: 10px; padding: 15px 22px; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-sd-save:hover { background: #d4eaf2; border-color: #90c0d0; }
+    .btn-sd-save.saved { background: #edfaed; color: #2a6e2a; border-color: #b8e0b8; }
 
     /* Follow-up chat */
+    .sd-followup-wrap { margin-top: 16px; }
+    .sd-followup-label {
+      font-size: 11px; font-weight: 700; color: #6a8898; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
     .sd-followup {
-      margin-top: 14px; display: flex; gap: 8px;
-      border: 1.5px solid #e4e9f2; border-radius: 9px; overflow: hidden;
-      background: #fafbfd;
+      display: flex; gap: 0;
+      border: 1.5px solid #cce0e8; border-radius: 10px; overflow: hidden;
+      background: #f6fbfd;
     }
     .sd-followup-input {
       flex: 1; border: none; padding: 11px 14px; font-size: 13px;
       font-family: inherit; background: transparent; color: #2c2c2c; outline: none;
     }
-    .sd-followup-input::placeholder { color: #bbb; }
+    .sd-followup-input::placeholder { color: #a0c0cc; }
     .btn-sd-followup {
-      background: #b35a00; color: #fff; border: none; padding: 11px 18px;
-      font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
-      transition: background 0.15s; white-space: nowrap;
+      background: linear-gradient(135deg, #0e6882, #128faa); color: #fff; border: none;
+      padding: 11px 20px; font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background 0.15s; white-space: nowrap;
     }
-    .btn-sd-followup:hover { background: #954c00; }
-    .btn-sd-followup:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-sd-followup:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); }
+    .btn-sd-followup:disabled { background: #b0c8d0; cursor: not-allowed; }
     .sd-followup-response {
-      margin-top: 10px; background: #fff8ee; border: 1px solid #f0c060;
-      border-radius: 9px; padding: 13px 15px; font-size: 13px; color: #3a2000;
+      margin-top: 10px; background: #e8f6fc; border: 1px solid #88cee4;
+      border-radius: 10px; padding: 13px 15px; font-size: 13px; color: #0a3d52;
       line-height: 1.7; display: none;
     }
     .sd-followup-response.visible { display: block; }
 
-    /* Transcript card (updated to match) */
+    /* ── Fee type toggle on service rows ── */
+    .fee-type-btn {
+      font-size: 10px; font-weight: 700; border-radius: 6px; padding: 3px 9px;
+      cursor: pointer; border: 1.5px solid #dde2ec; background: #f0f3f9;
+      color: #6a7a9a; font-family: inherit; transition: all 0.15s;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .fee-type-btn.monthly { border-color: #1D3461; background: #1D3461; color: #fff; }
+    .fee-type-btn.onetime { border-color: #0e6882; background: #0e6882; color: #fff; }
+
+    /* ── Total breakdown ── */
+    .total-breakdown { margin-top: 14px; border-radius: 9px; overflow: hidden; border: 1px solid #e4e9f2; }
+    .total-breakdown-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 18px; font-size: 13px;
+      border-bottom: 1px solid #e4e9f2; background: #fafbfd;
+    }
+    .total-breakdown-row:last-child { border-bottom: none; }
+    .total-breakdown-row.grand { background: #1D3461; }
+    .total-bd-label { font-weight: 600; color: #5a6a8a; }
+    .total-bd-amount { font-weight: 700; color: #1D3461; }
+    .total-breakdown-row.grand .total-bd-label { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 700; }
+    .total-breakdown-row.grand .total-bd-amount { color: #5CB85C; font-size: 16px; }
+
+    /* ── Transcript card ── */
     .transcript-card {
       background: #fff; border-radius: 12px;
       box-shadow: 0 2px 16px rgba(29,52,97,0.07), 0 1px 4px rgba(0,0,0,0.04);
       margin-bottom: 20px; overflow: hidden;
       border: 1px solid rgba(92,184,92,0.15);
     }
+
+    /* ── Saved analyses ── */
+    .analysis-table { width: 100%; border-collapse: collapse; }
+    .analysis-table th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      color: #0b4c61; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 8px 12px; border-bottom: 2px solid #dde8ee;
+    }
+    .analysis-table td { padding: 11px 12px; font-size: 13px; border-bottom: 1px solid #eef2f5; vertical-align: middle; }
+    .analysis-table tr:last-child td { border-bottom: none; }
+    .analysis-table tr:hover td { background: #f6fbfd; }
 
     @media (max-width: 700px) { .sd-input-grid { grid-template-columns: 1fr; } }
 
@@ -651,11 +726,14 @@
 
       <!-- ── Step 2: Clarify ───────────────────────────── -->
       <div id="sd-step-2" style="display:none">
-        <div class="sd-clarify-box">
+        <!-- AI summary -->
+        <div class="sd-clarify-intro">
+          <div class="sd-ai-avatar">🤖</div>
           <div class="sd-clarify-summary" id="sd-clarify-summary"></div>
-          <div class="sd-questions-wrap" id="sd-questions-wrap">
-            <!-- Injected by JS -->
-          </div>
+        </div>
+        <!-- Questions -->
+        <div class="sd-questions-wrap" id="sd-questions-wrap">
+          <!-- Injected by JS -->
         </div>
         <div class="sd-clarify-actions">
           <button class="btn-sd-back" onclick="backToStep1()">← Back</button>
@@ -663,7 +741,7 @@
             <span id="sd-analyze-icon">🔍</span>
             <span id="sd-analyze-text">Get Full Recommendations</span>
           </button>
-          <span style="font-size:12px;color:#aaa">Takes 10–15 seconds</span>
+          <span class="sd-skip-note">Answers are optional — skip to go straight to analysis</span>
         </div>
       </div>
 
@@ -683,9 +761,20 @@
           <div class="sd-section-head">📦 Recommended Package</div>
           <div class="sd-section-body">
             <div class="sd-svc-list" id="sd-svc-list"></div>
-            <div class="sd-total">
-              <span style="color:#fff">Total Engagement Range</span>
-              <span id="sd-total-range"></span>
+            <!-- Package totals breakdown -->
+            <div class="sd-pkg-totals" id="sd-pkg-totals" style="display:none">
+              <div class="sd-pkg-total-row" id="sd-monthly-row" style="display:none">
+                <span class="sd-pkg-total-label">📅 Monthly Retainer</span>
+                <span class="sd-pkg-total-amount" id="sd-monthly-range"></span>
+              </div>
+              <div class="sd-pkg-total-row" id="sd-onetime-row" style="display:none">
+                <span class="sd-pkg-total-label">🔹 One-Time Fees</span>
+                <span class="sd-pkg-total-amount" id="sd-onetime-range"></span>
+              </div>
+              <div class="sd-pkg-total-row grand">
+                <span class="sd-pkg-total-label">Total Engagement Range</span>
+                <span class="sd-pkg-total-amount" id="sd-total-range"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -728,17 +817,22 @@
           </div>
         </div>
 
-        <!-- Apply Button -->
-        <button class="btn-sd-apply" onclick="applySalesDirector()">
-          ✅ Apply Recommended Services &amp; Pricing to Form
-        </button>
+        <!-- Action row: Apply + Save -->
+        <div class="sd-action-row">
+          <button class="btn-sd-apply" onclick="applySalesDirector()">
+            ✅ Apply to Form &amp; Build Proposal
+          </button>
+          <button class="btn-sd-save" id="sd-save-btn" onclick="saveAnalysis()">
+            💾 Save Analysis
+          </button>
+        </div>
 
         <!-- Follow-up Chat -->
-        <div style="margin-top:18px">
-          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Ask a follow-up question</div>
+        <div class="sd-followup-wrap">
+          <div class="sd-followup-label">Ask a follow-up question</div>
           <div class="sd-followup">
             <input type="text" class="sd-followup-input" id="sd-followup-input"
-              placeholder="e.g. How should I handle budget pushback? What's the best opening line?"
+              placeholder="e.g. How should I handle budget pushback? Best opening line?"
               onkeydown="if(event.key==='Enter')sdFollowUp()"/>
             <button class="btn-sd-followup" id="sd-followup-btn" onclick="sdFollowUp()">Ask →</button>
           </div>
@@ -765,8 +859,8 @@
     </div>
     <div class="transcript-body" id="transcript-body">
       <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, email or call summary</strong> below.
-        Our Ai will extract the prospect's name, company, relevant services, pricing discussed,
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
         and write a custom intro letter body — then pre-fill the entire form for you to review.
       </p>
       <textarea id="transcript-input"
@@ -803,8 +897,9 @@ Example:
 
   <!-- Tab Bar -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('new')">➕ New Proposal</button>
+    <button class="tab-btn active" onclick="switchTab('new')" id="new-tab-btn">➕ New Proposal</button>
     <button class="tab-btn" onclick="switchTab('saved')" id="saved-tab-btn">📁 Saved Proposals</button>
+    <button class="tab-btn" onclick="switchTab('analyses')" id="analyses-tab-btn">🎯 Saved Analyses</button>
   </div>
 
   <!-- Saved Proposals Panel -->
@@ -832,6 +927,37 @@ Example:
               </tr>
             </thead>
             <tbody id="saved-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saved Analyses Panel -->
+  <div class="tab-panel" id="panel-analyses">
+    <div class="card">
+      <div class="card-header" style="background: linear-gradient(135deg, #0b4c61, #0e6882);">
+        <span>Saved Sales Director Analyses</span>
+        <span class="badge" id="analyses-count-badge">0</span>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <div id="analyses-loading" class="saved-loading">Loading…</div>
+        <div id="analyses-content" style="display:none;">
+          <div id="analyses-empty" class="saved-empty" style="display:none;">
+            <div class="empty-icon">🎯</div>
+            No analyses saved yet. Run the Sales Director and click "Save Analysis".
+          </div>
+          <table class="analysis-table" id="analyses-table" style="display:none;">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Total Range</th>
+                <th>Saved</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="analyses-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -888,8 +1014,18 @@ Example:
             <input type="text" id="company" name="company" placeholder="e.g. Edward Jones" required />
           </div>
           <div class="form-group">
-            <label class="field-label" for="contact">Contact Person <span class="opt">(optional)</span></label>
+            <label class="field-label" for="contact">Contact Name <span class="opt">(optional)</span></label>
             <input type="text" id="contact" name="contact" placeholder="e.g. Jane Smith" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="field-label" for="contact_email">Contact Email <span class="opt">(optional)</span></label>
+            <input type="text" id="contact_email" name="contact_email" placeholder="e.g. jane@edwardjones.com" />
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="contact_phone">Contact Phone <span class="opt">(optional)</span></label>
+            <input type="text" id="contact_phone" name="contact_phone" placeholder="e.g. (555) 123-4567" />
           </div>
         </div>
         <div class="form-row single" style="margin-bottom:0">
@@ -912,10 +1048,20 @@ Example:
         <!-- Custom service rows (populated by JS) -->
         <div id="custom-services-container"></div>
 
-        <!-- Total -->
-        <div class="total-row" style="margin-top:14px">
-          <span class="total-label">Total Investment</span>
-          <span class="total-amount" id="total-display">$0</span>
+        <!-- Total breakdown -->
+        <div class="total-breakdown" style="margin-top:14px">
+          <div class="total-breakdown-row" id="monthly-breakdown-row" style="display:none">
+            <span class="total-bd-label">📅 Monthly Retainer</span>
+            <span class="total-bd-amount" id="monthly-display">$0/mo</span>
+          </div>
+          <div class="total-breakdown-row" id="onetime-breakdown-row" style="display:none">
+            <span class="total-bd-label">🔹 One-Time Fees</span>
+            <span class="total-bd-amount" id="onetime-display">$0</span>
+          </div>
+          <div class="total-breakdown-row grand">
+            <span class="total-bd-label">Total Investment</span>
+            <span class="total-bd-amount" id="total-display">$0</span>
+          </div>
         </div>
 
         <!-- Hidden inputs built on submit -->
@@ -967,6 +1113,30 @@ Example:
     "Advisor Relationship Development",
   ];
 
+  // ── Fee types (monthly vs one-time) per service ────────
+  const _feeTypes = {};   // index → 'monthly' | 'onetime'
+  SERVICES.forEach((_, i) => { _feeTypes[i] = 'monthly'; });
+
+  function toggleFeeType(i, isCustom) {
+    if (isCustom) {
+      const s = _crowState[i];
+      if (!s) return;
+      s.feeType = (s.feeType === 'monthly') ? 'onetime' : 'monthly';
+      _updateFeeBtn(`crow-fee-${i}`, s.feeType);
+    } else {
+      _feeTypes[i] = (_feeTypes[i] === 'monthly') ? 'onetime' : 'monthly';
+      _updateFeeBtn(`fee-type-${i}`, _feeTypes[i]);
+    }
+    updateTotal();
+  }
+
+  function _updateFeeBtn(btnId, feeType) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.textContent = feeType === 'monthly' ? 'Monthly' : 'One-Time';
+    btn.className   = 'fee-type-btn ' + feeType;
+  }
+
   // ── Build service rows ─────────────────────────────────
   const list = document.getElementById("services-list");
   SERVICES.forEach((svc, i) => {
@@ -980,6 +1150,8 @@ Example:
         <span class="service-name">${svc}</span>
       </div>
       <div class="service-cost-wrap">
+        <button class="fee-type-btn monthly" id="fee-type-${i}"
+          onclick="event.stopPropagation();toggleFeeType(${i},false)" title="Click to toggle Monthly / One-Time">Monthly</button>
         <span class="cost-prefix">$</span>
         <input type="text" class="service-cost-input" id="cost-${i}"
           placeholder="0" oninput="updateTotal()"
@@ -1006,19 +1178,21 @@ Example:
     return String(str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  function addCustomRow(prefillName, prefillCost, startChecked, aiAdded) {
+  function addCustomRow(prefillName, prefillCost, startChecked, aiAdded, feeType) {
     prefillName   = prefillName   || '';
     prefillCost   = prefillCost   || '';
     startChecked  = !!startChecked;
     aiAdded       = !!aiAdded;
+    feeType       = feeType || 'monthly';
 
     const id      = _crowCount++;
     const nameId  = `crow-name-${id}`;
     const costId  = `crow-cost-${id}`;
     const rowId   = `crow-${id}`;
     const cmId    = `crow-cm-${id}`;
+    const feeId   = `crow-fee-${id}`;
 
-    _crowState[id] = { checked: startChecked, nameId, costId, rowId, cmId, aiAdded };
+    _crowState[id] = { checked: startChecked, nameId, costId, rowId, cmId, aiAdded, feeType, feeId };
 
     const row = document.createElement('div');
     row.className = 'custom-service-row' + (startChecked ? ' checked' : '');
@@ -1035,6 +1209,8 @@ Example:
           oninput="onCrowInput(${id})" />
       </div>
       <div class="service-cost-wrap">
+        <button class="fee-type-btn ${feeType}" id="${feeId}"
+          onclick="event.stopPropagation();toggleFeeType(${id},true)">${feeType === 'monthly' ? 'Monthly' : 'One-Time'}</button>
         <span class="cost-prefix">$</span>
         <input type="text" class="service-cost-input" id="${costId}"
           value="${_escAttr(prefillCost)}"
@@ -1091,22 +1267,38 @@ Example:
   }
 
   function updateTotal() {
-    let total = 0;
+    let monthly = 0, onetime = 0;
 
     // Standard services
     SERVICES.forEach((_, i) => {
       const cb   = document.getElementById(`svc-${i}`);
       const cost = document.getElementById(`cost-${i}`);
-      if (cb && cb.checked && cost) total += parseCost(cost.value);
+      if (!cb || !cb.checked || !cost) return;
+      const amt = parseCost(cost.value);
+      if (_feeTypes[i] === 'onetime') onetime += amt; else monthly += amt;
     });
 
     // Custom service rows
     Object.values(_crowState).forEach(s => {
       if (!s.checked) return;
       const costEl = document.getElementById(s.costId);
-      if (costEl) total += parseCost(costEl.value);
+      if (!costEl) return;
+      const amt = parseCost(costEl.value);
+      if (s.feeType === 'onetime') onetime += amt; else monthly += amt;
     });
 
+    const total = monthly + onetime;
+
+    // Monthly row
+    const mRow = document.getElementById("monthly-breakdown-row");
+    const oRow = document.getElementById("onetime-breakdown-row");
+    if (mRow) mRow.style.display = monthly > 0 ? "flex" : "none";
+    if (oRow) oRow.style.display = onetime > 0 ? "flex" : "none";
+
+    const mEl = document.getElementById("monthly-display");
+    const oEl = document.getElementById("onetime-display");
+    if (mEl) mEl.textContent = formatCurrency(monthly) + "/mo";
+    if (oEl) oEl.textContent = formatCurrency(onetime);
     document.getElementById("total-display").textContent = formatCurrency(total);
   }
 
@@ -1123,7 +1315,7 @@ Example:
       container.appendChild(inp);
     };
 
-    let total = 0;
+    let monthly = 0, onetime = 0;
     const costLines = [];
 
     SERVICES.forEach((svc, i) => {
@@ -1133,8 +1325,9 @@ Example:
         addHidden("services", svc);
         const amt = parseCost(cost ? cost.value : "0");
         if (amt > 0) {
-          costLines.push(`${svc}: ${formatCurrency(amt)}`);
-          total += amt;
+          const ft = _feeTypes[i] === 'onetime' ? 'one-time' : '/mo';
+          costLines.push(`${svc}: ${formatCurrency(amt)}${ft}`);
+          if (_feeTypes[i] === 'onetime') onetime += amt; else monthly += amt;
         }
       }
     });
@@ -1148,13 +1341,16 @@ Example:
       const costEl = document.getElementById(s.costId);
       const amt = parseCost(costEl ? costEl.value : '0');
       if (amt > 0) {
-        costLines.push(`${name}: ${formatCurrency(amt)}`);
-        total += amt;
+        const ft = s.feeType === 'onetime' ? 'one-time' : '/mo';
+        costLines.push(`${name}: ${formatCurrency(amt)}${ft}`);
+        if (s.feeType === 'onetime') onetime += amt; else monthly += amt;
       }
     });
 
-    // Add total line if there are any costs
+    const total = monthly + onetime;
     if (costLines.length > 0) {
+      if (monthly > 0) costLines.push(`Monthly Retainer: ${formatCurrency(monthly)}/mo`);
+      if (onetime > 0) costLines.push(`One-Time Fees: ${formatCurrency(onetime)}`);
       costLines.push(`Total Investment: ${formatCurrency(total)}`);
     }
 
@@ -1286,9 +1482,89 @@ Example:
       document.getElementById("saved-tab-btn").classList.add("active");
       document.getElementById("panel-saved").classList.add("active");
       loadSavedProposals();
+    } else if (tab === "analyses") {
+      document.getElementById("analyses-tab-btn").classList.add("active");
+      document.getElementById("panel-analyses").classList.add("active");
+      loadSavedAnalyses();
     } else {
-      document.querySelector(".tab-btn").classList.add("active");
+      document.getElementById("new-tab-btn").classList.add("active");
       document.getElementById("panel-new").classList.add("active");
+    }
+  }
+
+  // ── Saved Analyses ─────────────────────────────────────
+  async function loadSavedAnalyses() {
+    document.getElementById("analyses-loading").style.display = "block";
+    document.getElementById("analyses-content").style.display = "none";
+    try {
+      const resp = await fetch("/api/analyses");
+      const list = await resp.json();
+      renderSavedAnalyses(list);
+    } catch(e) {
+      document.getElementById("analyses-loading").textContent = "Could not load analyses.";
+    }
+  }
+
+  function renderSavedAnalyses(list) {
+    document.getElementById("analyses-loading").style.display = "none";
+    document.getElementById("analyses-content").style.display = "block";
+    document.getElementById("analyses-count-badge").textContent = list.length;
+    if (list.length === 0) {
+      document.getElementById("analyses-empty").style.display = "block";
+      document.getElementById("analyses-table").style.display = "none";
+      return;
+    }
+    document.getElementById("analyses-empty").style.display = "none";
+    document.getElementById("analyses-table").style.display = "table";
+    const tbody = document.getElementById("analyses-tbody");
+    tbody.innerHTML = "";
+    list.forEach(a => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style="font-weight:600;color:#0b4c61">${esc(a.company || "—")}</td>
+        <td>${esc(a.contact || "—")}</td>
+        <td style="color:#2a6e2a;font-weight:600">${esc(a.total_range || "—")}</td>
+        <td style="color:#888;font-size:12px">${esc(a.created_at || "")}</td>
+        <td>
+          <div class="td-actions">
+            <button class="btn-sm btn-regen" onclick="loadAnalysis('${a.id}')">↺ Load</button>
+            <button class="btn-sm btn-delete" onclick="deleteAnalysis('${a.id}',this)" title="Delete">✕</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function loadAnalysis(id) {
+    try {
+      const resp = await fetch(`/api/analyses/${id}`);
+      const json = await resp.json();
+      if (!resp.ok) { alert("Could not load analysis."); return; }
+      _sdData = json;
+      renderSalesDirectorResults(_sdData);
+      // Open SD panel and jump to step 3
+      const body = document.getElementById("sd-body");
+      const toggle = document.getElementById("sd-toggle");
+      body.classList.add("open");
+      toggle.classList.add("open");
+      _sdSetStep(3);
+      switchTab("new");
+      setTimeout(() => {
+        document.getElementById("sd-card").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    } catch(e) { alert("Error: " + e.message); }
+  }
+
+  async function deleteAnalysis(id, btn) {
+    if (!confirm("Delete this analysis?")) return;
+    await fetch(`/api/analyses/${id}`, { method: "DELETE" });
+    btn.closest("tr").remove();
+    const rem = document.querySelectorAll("#analyses-tbody tr").length;
+    document.getElementById("analyses-count-badge").textContent = rem;
+    if (rem === 0) {
+      document.getElementById("analyses-table").style.display = "none";
+      document.getElementById("analyses-empty").style.display = "block";
     }
   }
 
@@ -1671,20 +1947,21 @@ Example:
   }
 
   function _buildClarifyStep(data) {
-    // Show AI's one-line summary
     document.getElementById("sd-clarify-summary").textContent =
-      data.summary || "Here's what I understood from your notes. Please answer a couple of quick questions before I dive into the full analysis.";
+      data.summary || "Here's what I understood from your notes. Answer these two questions to sharpen the recommendation.";
 
-    // Build question inputs
     const wrap = document.getElementById("sd-questions-wrap");
     wrap.innerHTML = "";
     (data.questions || []).forEach((q, i) => {
       const div = document.createElement("div");
       div.className = "sd-q-item";
       div.innerHTML = `
-        <div class="sd-q-label">Q${i+1}: ${esc(q)}</div>
+        <div class="sd-q-header">
+          <div class="sd-q-num">${i+1}</div>
+          <div class="sd-q-label">${esc(q)}</div>
+        </div>
         <input type="text" class="sd-q-input" id="sd-q-${i}"
-          placeholder="Your answer…" />
+          placeholder="Your answer (or skip)…" />
       `;
       wrap.appendChild(div);
     });
@@ -1787,25 +2064,47 @@ Example:
     // Opportunity summary
     document.getElementById("sd-summary").textContent = d.opportunity_summary || "";
 
-    // Recommended services
+    // Recommended services — detect fee type from price_range string
     const svcList = document.getElementById("sd-svc-list");
     svcList.innerHTML = "";
     const allServices = [...(d.recommended_services || []), ...(d.custom_services || [])];
+    let hasMonthly = false, hasOnetime = false;
     allServices.forEach(svc => {
+      const priceStr = svc.price_range || "";
+      const isMonthly = /\/mo|month|retainer/i.test(priceStr);
+      const isOnetime = /one.time|project|flat|flat.fee/i.test(priceStr) || (!isMonthly && /^\$/.test(priceStr));
+      if (isMonthly) hasMonthly = true;
+      if (isOnetime) hasOnetime = true;
+      const typeBadge = isMonthly ? 'Monthly' : (isOnetime ? 'One-Time' : '');
       const row = document.createElement("div");
       row.className = "sd-svc-row";
       row.innerHTML = `
         <div class="sd-svc-info">
-          <div class="sd-svc-name">${esc(svc.name)}</div>
-          <div class="sd-svc-rationale">${esc(svc.rationale)}</div>
+          <div class="sd-svc-name">${esc(svc.name)}${svc.is_custom ? ' <span style="font-size:10px;color:#0e6882;font-weight:600">(custom)</span>' : ''}</div>
+          <div class="sd-svc-rationale">${esc(svc.rationale || "")}</div>
         </div>
-        <div class="sd-svc-price">${esc(svc.price_range || "")}</div>
+        <div class="sd-svc-right">
+          <div class="sd-svc-price">${esc(priceStr)}</div>
+          ${typeBadge ? `<div class="sd-svc-type-badge">${typeBadge}</div>` : ''}
+        </div>
       `;
       svcList.appendChild(row);
     });
 
-    // Total range
-    document.getElementById("sd-total-range").textContent = d.total_range || "";
+    // Package total breakdown
+    const totalsEl = document.getElementById("sd-pkg-totals");
+    const monthlyRow = document.getElementById("sd-monthly-row");
+    const onetimeRow = document.getElementById("sd-onetime-row");
+    totalsEl.style.display = "block";
+    monthlyRow.style.display = hasMonthly ? "flex" : "none";
+    onetimeRow.style.display = hasOnetime ? "flex" : "none";
+    // Parse monthly/onetime from total_range or per-service data
+    const totalStr = d.total_range || "";
+    const monthMatch = totalStr.match(/\$([\d,]+(?:\.\d+)?)\s*(?:–|-)?\s*\$?([\d,]+(?:\.\d+)?)?\s*\/mo/i);
+    const oneMatch   = totalStr.match(/\$([\d,]+(?:\.\d+)?)\s*(?:–|-)?\s*\$?([\d,]+(?:\.\d+)?)?\s*(?:one.time|project)/i);
+    if (monthMatch) document.getElementById("sd-monthly-range").textContent = monthMatch[0];
+    if (oneMatch)   document.getElementById("sd-onetime-range").textContent = oneMatch[0];
+    document.getElementById("sd-total-range").textContent = totalStr;
 
     // Rationale
     document.getElementById("sd-rationale").textContent = d.strategic_rationale || "";
@@ -1856,72 +2155,115 @@ Example:
     if (!_sdData) return;
     const d = _sdData;
 
-    // Check matching catalog services
-    const allServices = [...(d.recommended_services || []), ...(d.custom_services || [])];
-    const svcNames = allServices.map(s => s.name);
-
-    // Check catalog checkboxes that match
-    SERVICES.forEach((svc, i) => {
-      if (svcNames.find(n => n.toLowerCase().trim() === svc.toLowerCase().trim())) {
-        const cb  = document.getElementById(`svc-${i}`);
-        const row = document.querySelector(`.service-row[data-index="${i}"]`);
-        if (cb && !cb.checked) {
-          cb.checked = true;
-          row && row.classList.add("checked");
-        }
-      }
-    });
-
-    // Add non-catalog services as custom rows
-    const unmatched = allServices.filter(svc =>
-      !SERVICES.find(cat => cat.toLowerCase().trim() === svc.name.toLowerCase().trim())
-    );
-    // Remove previous AI-added rows
-    document.querySelectorAll("[data-ai-added]").forEach(r => r.remove());
-    unmatched.forEach(svc => {
-      // Extract a clean number from price range for cost field
-      const priceMatch = (svc.price_range || "").match(/\$([\d,]+)/);
-      const costNum = priceMatch ? priceMatch[1].replace(/,/g, "") : "";
-      addCustomRow(svc.name, costNum, true, true);
-    });
-
-    // Fill cost inputs — use low end of each price range
-    allServices.forEach(svc => {
-      const priceMatch = (svc.price_range || "").match(/\$([\d,]+)/);
-      if (!priceMatch) return;
-      const numVal = priceMatch[1].replace(/,/g, "");
-      SERVICES.forEach((cat, i) => {
-        if (cat.toLowerCase().trim() === svc.name.toLowerCase().trim()) {
-          const ci = document.getElementById(`cost-${i}`);
-          if (ci && !ci.value) { ci.value = numVal; }
-        }
-      });
-    });
-
-    // Fill notes field with intro_notes if notes is empty
+    // Fill form fields from SD extracted data
+    if (d.company)         document.getElementById("company").value = d.company;
+    if (d.contact)         document.getElementById("contact").value = d.contact;
+    if (d.contact_email)   document.getElementById("contact_email").value = d.contact_email;
+    if (d.contact_phone)   document.getElementById("contact_phone").value = d.contact_phone;
+    if (d.date)            document.getElementById("date").value = d.date;
     if (d.intro_notes) {
       const notesEl = document.getElementById("notes");
       if (notesEl && !notesEl.value.trim()) notesEl.value = d.intro_notes;
     }
+    if (d.body_override) {
+      const boEl = document.getElementById("body_override");
+      if (boEl && !boEl.value.trim()) boEl.value = d.body_override;
+    }
+
+    // All recommended + custom services
+    const allServices = [...(d.recommended_services || []), ...(d.custom_services || [])];
+    const svcNames = allServices.map(s => s.name);
+
+    // Check catalog checkboxes that match + set fee type
+    SERVICES.forEach((svc, i) => {
+      const match = allServices.find(s => s.name.toLowerCase().trim() === svc.toLowerCase().trim());
+      if (match) {
+        const cb  = document.getElementById(`svc-${i}`);
+        const row = document.querySelector(`.service-row[data-index="${i}"]`);
+        if (cb && !cb.checked) { cb.checked = true; row && row.classList.add("checked"); }
+        // Detect fee type from price_range
+        const priceStr = match.price_range || "";
+        const ft = /\/mo|month|retainer/i.test(priceStr) ? 'monthly' : 'onetime';
+        _feeTypes[i] = ft;
+        _updateFeeBtn(`fee-type-${i}`, ft);
+        // Fill cost
+        const priceMatch = priceStr.match(/\$([\d,]+)/);
+        if (priceMatch) {
+          const ci = document.getElementById(`cost-${i}`);
+          if (ci && !ci.value) ci.value = priceMatch[1].replace(/,/g, "");
+        }
+      }
+    });
+
+    // Remove previous AI-added rows, add unmatched as custom
+    document.querySelectorAll("[data-ai-added]").forEach(r => {
+      const id = parseInt(r.id.replace('crow-', ''));
+      delete _crowState[id]; r.remove();
+    });
+    const unmatched = allServices.filter(svc =>
+      !SERVICES.find(cat => cat.toLowerCase().trim() === svc.name.toLowerCase().trim())
+    );
+    unmatched.forEach(svc => {
+      const priceStr = svc.price_range || "";
+      const priceMatch = priceStr.match(/\$([\d,]+)/);
+      const costNum = priceMatch ? priceMatch[1].replace(/,/g, "") : "";
+      const ft = /\/mo|month|retainer/i.test(priceStr) ? 'monthly' : 'onetime';
+      addCustomRow(svc.name, costNum, true, true, ft);
+    });
 
     updateTotal();
-
-    // Switch to New Proposal tab and scroll
     switchTab("new");
     setTimeout(() => {
       document.getElementById("company").scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
 
-    // Collapse the SD panel
     const body   = document.getElementById("sd-body");
     const toggle = document.getElementById("sd-toggle");
     body.classList.remove("open");
     toggle.classList.remove("open");
   }
 
-  // Auto-refresh saved count on page load
+  // ── Save Analysis ────────────────────────────────────────
+  async function saveAnalysis() {
+    if (!_sdData) return;
+    const btn = document.getElementById("sd-save-btn");
+    btn.textContent = "Saving…";
+    btn.disabled = true;
+    try {
+      const resp = await fetch("/api/analyses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(_sdData),
+      });
+      const json = await resp.json();
+      if (resp.ok) {
+        btn.textContent = "✅ Saved!";
+        btn.classList.add("saved");
+        setTimeout(() => {
+          btn.textContent = "💾 Save Analysis";
+          btn.classList.remove("saved");
+          btn.disabled = false;
+        }, 3000);
+        // Update badge
+        fetch("/api/analyses").then(r => r.json()).then(list => {
+          document.getElementById("analyses-count-badge").textContent = list.length;
+        }).catch(() => {});
+      } else {
+        btn.textContent = "⚠ Error";
+        btn.disabled = false;
+      }
+    } catch(e) {
+      btn.textContent = "⚠ Error";
+      btn.disabled = false;
+    }
+  }
+
+  // Auto-refresh counts on page load
   fetch("/api/proposals").then(r => r.json()).then(p => {
     document.getElementById("saved-count-badge").textContent = p.length;
+  }).catch(() => {});
+  fetch("/api/analyses").then(r => r.json()).then(a => {
+    document.getElementById("analyses-count-badge").textContent = a.length;
   }).catch(() => {});
 </script>
 </body>
