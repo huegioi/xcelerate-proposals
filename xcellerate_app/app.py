@@ -342,6 +342,71 @@ Transcript:
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/sd-clarify", methods=["POST"])
+def sd_clarify():
+    """
+    Step 1 of the conversational Sales Director: quickly read the transcript/email
+    and return a brief summary + 2 targeted clarifying questions.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        return jsonify({"error": "ANTHROPIC_API_KEY is not configured. Add it in Railway → Variables."}), 503
+    if not _ANTHROPIC_AVAILABLE:
+        return jsonify({"error": "The 'anthropic' package is not installed."}), 503
+
+    data       = request.get_json(force=True, silent=True) or {}
+    transcript = (data.get("transcript") or "").strip()
+    email      = (data.get("email") or "").strip()
+
+    if not transcript and not email:
+        return jsonify({"error": "Please provide a transcript or email."}), 400
+
+    input_text = ""
+    if transcript: input_text += f"TRANSCRIPT:\n{transcript}\n\n"
+    if email:      input_text += f"EMAIL:\n{email}\n\n"
+
+    catalog_str = "\n".join(f"- {s}" for s in SERVICES_CATALOG)
+
+    prompt = f"""You are the Sales Director at Xcelerate Growth Partners reviewing a sales opportunity.
+
+Read the following transcript/email and do TWO things:
+1. Write a 1–2 sentence summary of what you understand about this prospect and their needs.
+2. Ask exactly 2 targeted clarifying questions — the 2 questions whose answers would MOST improve your package recommendation. Make them specific to THIS prospect, not generic.
+
+Return ONLY valid JSON — no markdown, no code fences:
+{{
+  "summary": "1-2 sentence understanding of the prospect and their situation",
+  "questions": [
+    "First specific clarifying question",
+    "Second specific clarifying question"
+  ]
+}}
+
+Xcelerate service catalog (for context):
+{catalog_str}
+
+{input_text}"""
+
+    try:
+        client  = _anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=512,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        raw = message.content[0].text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"): raw = raw[4:]
+            raw = raw.strip()
+        parsed = json.loads(raw)
+        return jsonify({"ok": True, "data": parsed})
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Could not parse response: {e}"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/analyze-opportunity", methods=["POST"])
 def analyze_opportunity():
     """
@@ -355,12 +420,36 @@ def analyze_opportunity():
     if not _ANTHROPIC_AVAILABLE:
         return jsonify({"error": "The 'anthropic' Python package is not installed."}), 503
 
-    data       = request.get_json(force=True, silent=True) or {}
-    transcript = (data.get("transcript") or "").strip()
-    email      = (data.get("email") or "").strip()
+    data              = request.get_json(force=True, silent=True) or {}
+    transcript        = (data.get("transcript") or "").strip()
+    email             = (data.get("email") or "").strip()
+    clarifications    = data.get("clarifications") or {}   # {question: answer} pairs
+    followup_question = (data.get("followup_question") or "").strip()
 
     if not transcript and not email:
         return jsonify({"error": "Please provide a transcript and/or email thread."}), 400
+
+    # ── Follow-up chat mode ───────────────────────────────────────────────────
+    if followup_question:
+        context = ""
+        if transcript: context += f"TRANSCRIPT:\n{transcript}\n\n"
+        if email:      context += f"EMAIL:\n{email}\n\n"
+        followup_prompt = f"""{context}A sales rep is asking a follow-up question about this deal.
+Answer concisely and directly as an experienced Sales Director at Xcelerate Growth Partners.
+Be specific to THIS prospect — don't give generic advice.
+
+Question: {followup_question}"""
+        try:
+            client  = _anthropic.Anthropic(api_key=api_key)
+            message = client.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=600,
+                messages=[{"role": "user", "content": followup_prompt}],
+            )
+            answer = message.content[0].text.strip()
+            return jsonify({"ok": True, "data": {"followup_answer": answer}})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     # ── Build past-proposals context (last 8 for pricing reference) ───────────
     past = load_proposals()[:8]
@@ -382,6 +471,9 @@ def analyze_opportunity():
         input_text += f"SALES CALL TRANSCRIPT:\n{transcript}\n\n"
     if email:
         input_text += f"EMAIL THREAD:\n{email}\n\n"
+    if clarifications:
+        claras = "\n".join(f"  Q: {q}\n  A: {a}" for q, a in clarifications.items())
+        input_text += f"CLARIFYING ANSWERS FROM SALES REP:\n{claras}\n\n"
 
     system_prompt = f"""You are the Sales Director at Xcelerate Growth Partners — a firm that delivers
 custom growth, leadership, and practice management programs to wealth management firms,
