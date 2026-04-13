@@ -390,17 +390,17 @@ def _pptx_textbox(slide, left, top, width, height, text, font_size,
 def _pptx_footer(slide, page_num):
     W, H = PPTX_W, PPTX_H
     # "Xcelerate Growth Partners" in GREEN (matches PDF template style)
-    _pptx_textbox(slide, W - Inches(4.4), H - Inches(0.50),
-                  Inches(3.8), Inches(0.40),
-                  "Xcelerate Growth Partners", 13,
+    _pptx_textbox(slide, W - Inches(5.2), H - Inches(0.58),
+                  Inches(4.5), Inches(0.50),
+                  "Xcelerate Growth Partners", 18,
                   bold=True, color=PT_GREEN, align=PP_ALIGN.RIGHT)
     # Green page-number box
     _pptx_rect(slide,
-               W - Inches(0.62), H - Inches(0.50),
-               Inches(0.48), Inches(0.40), PT_GREEN)
-    _pptx_textbox(slide, W - Inches(0.62), H - Inches(0.50),
-                  Inches(0.48), Inches(0.40),
-                  str(page_num), 14,
+               W - Inches(0.72), H - Inches(0.58),
+               Inches(0.58), Inches(0.50), PT_GREEN)
+    _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.58),
+                  Inches(0.58), Inches(0.50),
+                  str(page_num), 18,
                   bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
 
 
@@ -443,63 +443,65 @@ def _pptx_cover(prs, company, contact, date, logo_path):
     W, H = PPTX_W, PPTX_H
     _pptx_bg(slide, PT_NAVY)
 
-    # ── Logo (top, centred) ───────────────────────────────────────────────────
+    # ── Logo (top, centred — preserve aspect ratio, never stretch) ───────────
     if logo_path and os.path.exists(logo_path):
-        slide.shapes.add_picture(logo_path,
-                                 W / 2 - Inches(1.5), Inches(0.18),
-                                 Inches(3.0), Inches(1.2))
+        # Only specify width; python-pptx auto-calculates height to preserve ratio
+        logo_w = Inches(2.2)
+        pic = slide.shapes.add_picture(logo_path,
+                                       W / 2 - logo_w / 2, Inches(0.20),
+                                       width=logo_w)
 
     # ── Green accent bar below logo ───────────────────────────────────────────
-    _pptx_rect(slide, 0, Inches(1.5), W, Inches(0.06), PT_GREEN)
+    _pptx_rect(slide, 0, Inches(1.72), W, Inches(0.07), PT_GREEN)
 
-    # ── Contact / Company name (well below logo) ──────────────────────────────
+    # ── Contact / Company name ────────────────────────────────────────────────
     if contact:
-        _pptx_textbox(slide, Inches(1), Inches(1.85),
-                      W - Inches(2), Inches(0.75),
-                      contact, 36,
+        _pptx_textbox(slide, Inches(0.75), Inches(1.92),
+                      W - Inches(1.5), Inches(0.85),
+                      contact, 48,
                       bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
-        _pptx_textbox(slide, Inches(1), Inches(2.68),
-                      W - Inches(2), Inches(0.65),
-                      company, 30,
+        _pptx_textbox(slide, Inches(0.75), Inches(2.85),
+                      W - Inches(1.5), Inches(0.75),
+                      company, 40,
                       bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
     else:
-        _pptx_textbox(slide, Inches(1), Inches(2.1),
-                      W - Inches(2), Inches(0.75),
-                      company, 36,
+        _pptx_textbox(slide, Inches(0.75), Inches(2.2),
+                      W - Inches(1.5), Inches(0.85),
+                      company, 48,
                       bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
 
     # ── Delivery Launch Date label + date ─────────────────────────────────────
-    date_label_y = Inches(3.55) if contact else Inches(3.2)
-    _pptx_textbox(slide, Inches(1), date_label_y,
-                  W - Inches(2), Inches(0.3),
-                  "Delivery Launch Date:", 10,
+    date_label_y = Inches(3.78) if contact else Inches(3.35)
+    _pptx_textbox(slide, Inches(0.75), date_label_y,
+                  W - Inches(1.5), Inches(0.40),
+                  "Delivery Launch Date:", 14,
                   bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    _pptx_textbox(slide, Inches(1), date_label_y + Inches(0.32),
-                  W - Inches(2), Inches(0.55),
-                  date, 22,
+    _pptx_textbox(slide, Inches(0.75), date_label_y + Inches(0.42),
+                  W - Inches(1.5), Inches(0.65),
+                  date, 30,
                   bold=True, color=PT_GREEN, align=PP_ALIGN.CENTER)
 
     # ── Presented By — centred ────────────────────────────────────────────────
-    by_top = H - Inches(1.75)
-    _pptx_textbox(slide, Inches(1), by_top,
-                  W - Inches(2), Inches(0.28),
-                  "Presented By:", 9,
+    by_top = H - Inches(1.90)
+    _pptx_textbox(slide, Inches(0.75), by_top,
+                  W - Inches(1.5), Inches(0.38),
+                  "Presented By:", 14,
                   bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    _pptx_textbox(slide, Inches(1), by_top + Inches(0.3),
-                  W - Inches(2), Inches(0.28),
-                  "Jim Tracy, Co-Founder & CEO", 10,
+    _pptx_textbox(slide, Inches(0.75), by_top + Inches(0.40),
+                  W - Inches(1.5), Inches(0.38),
+                  "Jim Tracy, Co-Founder & CEO", 16,
                   bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    _pptx_textbox(slide, Inches(1), by_top + Inches(0.6),
-                  W - Inches(2), Inches(0.28),
-                  "Mary Deatherage, Co-Founder & President", 10,
+    _pptx_textbox(slide, Inches(0.75), by_top + Inches(0.80),
+                  W - Inches(1.5), Inches(0.38),
+                  "Mary Deatherage, Co-Founder & President", 16,
                   bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    _pptx_textbox(slide, Inches(1), by_top + Inches(0.9),
-                  W - Inches(2), Inches(0.28),
-                  "Xcelerate Growth Partners", 10,
+    _pptx_textbox(slide, Inches(0.75), by_top + Inches(1.20),
+                  W - Inches(1.5), Inches(0.38),
+                  "Xcelerate Growth Partners", 14,
                   bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
 
     # ── Bottom green bar ──────────────────────────────────────────────────────
-    _pptx_rect(slide, 0, H - Inches(0.12), W, Inches(0.12), PT_GREEN)
+    _pptx_rect(slide, 0, H - Inches(0.15), W, Inches(0.15), PT_GREEN)
 
 
 def _pptx_content_slide(prs, title, bullets, subtitle=None,
@@ -614,36 +616,36 @@ def _pptx_services_slide(prs, company, services, notes, page_num, logo_path=None
     W, H = PPTX_W, PPTX_H
     _pptx_bg(slide, PT_WHITE)
 
-    # Large navy title
-    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
-                  W - Inches(0.9), Inches(0.92),
-                  "Recommended Services", 32, bold=True, color=PT_NAVY)
-    # Subtitle
+    # Title — 48pt navy
+    _pptx_textbox(slide, Inches(0.45), Inches(0.12),
+                  W - Inches(0.9), Inches(1.0),
+                  "Recommended Services", 48, bold=True, color=PT_NAVY)
+    # Subtitle — 36pt
     _pptx_textbox(slide, Inches(0.45), Inches(1.18),
-                  W - Inches(0.9), Inches(0.36),
-                  f"Tailored engagement plan for {company}", 14, color=PT_BODY)
+                  W - Inches(0.9), Inches(0.55),
+                  f"Tailored engagement plan for {company}", 36, color=PT_BODY)
     # Green divider
-    _pptx_rect(slide, Inches(0.45), Inches(1.56),
-               W - Inches(0.9), Inches(0.04), PT_GREEN)
+    _pptx_rect(slide, Inches(0.45), Inches(1.78),
+               W - Inches(0.9), Inches(0.05), PT_GREEN)
 
     half    = (len(services) + 1) // 2
-    col_w   = (W - Inches(1.1)) / 2
-    line_h  = Inches(0.52)
-    y_start = Inches(1.68)
+    col_w   = (W - Inches(1.4)) / 2
+    line_h  = Inches(0.70)   # tall enough for 24pt wrapped text
+    y_start = Inches(1.92)
 
     for col_idx, col_svcs in enumerate([services[:half], services[half:]]):
-        x = Inches(0.45) + col_idx * (col_w + Inches(0.2))
+        x = Inches(0.45) + col_idx * (col_w + Inches(0.5))
         y = y_start
         for svc in col_svcs:
             _pptx_textbox(slide, x, y, col_w, line_h,
-                          f"• {svc}", 15, bold=True, color=PT_NAVY)
+                          f"• {svc}", 24, bold=True, color=PT_NAVY)
             y += line_h
 
     if notes:
-        note_y = y_start + half * line_h + Inches(0.12)
+        note_y = y_start + half * line_h + Inches(0.15)
         _pptx_textbox(slide, Inches(0.45), note_y,
-                      W - Inches(0.9), Inches(0.60),
-                      notes, 13, italic=True, color=PT_BODY, wrap=True)
+                      W - Inches(0.9), Inches(0.80),
+                      notes, 18, italic=True, color=PT_BODY, wrap=True)
 
     _pptx_footer(slide, page_num)
 
@@ -653,20 +655,20 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
     W, H = PPTX_W, PPTX_H
     _pptx_bg(slide, PT_WHITE)
 
-    # Large navy title
-    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
-                  W - Inches(0.9), Inches(0.92),
-                  "Proposed Investment", 32, bold=True, color=PT_NAVY)
-    # Subtitle
+    # Title — 48pt navy
+    _pptx_textbox(slide, Inches(0.45), Inches(0.12),
+                  W - Inches(0.9), Inches(1.0),
+                  "Proposed Investment", 48, bold=True, color=PT_NAVY)
+    # Subtitle — 36pt
     _pptx_textbox(slide, Inches(0.45), Inches(1.18),
-                  W - Inches(0.9), Inches(0.36),
-                  f"Fee structure for {company}", 14, color=PT_BODY)
+                  W - Inches(0.9), Inches(0.55),
+                  f"Fee structure for {company}", 36, color=PT_BODY)
     # Green divider
-    _pptx_rect(slide, Inches(0.45), Inches(1.56),
-               W - Inches(0.9), Inches(0.04), PT_GREEN)
+    _pptx_rect(slide, Inches(0.45), Inches(1.78),
+               W - Inches(0.9), Inches(0.05), PT_GREEN)
 
-    row_h = Inches(0.64)
-    y = Inches(1.68)
+    row_h = Inches(0.72)   # tall enough for 24pt text
+    y = Inches(1.92)
 
     item_costs  = [l for l in costs if not l.lower().startswith("total")]
     total_lines = [l for l in costs if l.lower().startswith("total")]
@@ -675,36 +677,45 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
         label, amount = (line.split(":", 1) if ":" in line else (line, ""))
         if i % 2 == 0:
             _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), row_h, PT_LGRAY)
-        _pptx_textbox(slide, Inches(0.6), y + Inches(0.12),
-                      Inches(7.0), row_h - Inches(0.12),
-                      label.strip(), 16, bold=True, color=PT_NAVY)
-        _pptx_textbox(slide, W - Inches(3.9), y + Inches(0.12),
-                      Inches(3.4), row_h - Inches(0.12),
-                      amount.strip(), 16, bold=True,
+        _pptx_textbox(slide, Inches(0.65), y + Inches(0.14),
+                      Inches(7.5), row_h - Inches(0.14),
+                      label.strip(), 24, bold=True, color=PT_NAVY)
+        _pptx_textbox(slide, W - Inches(4.2), y + Inches(0.14),
+                      Inches(3.7), row_h - Inches(0.14),
+                      amount.strip(), 24, bold=True,
                       color=RGBColor(0x3A, 0x7A, 0x3A),
                       align=PP_ALIGN.RIGHT)
         y += row_h
 
-    # Total row — navy background, green amount
+    # Total row — navy background, green amount, slightly larger text
     if total_lines:
         label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
-        y += Inches(0.08)
-        _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), row_h + Inches(0.08), PT_NAVY)
-        _pptx_textbox(slide, Inches(0.6), y + Inches(0.12),
-                      Inches(7.0), row_h,
-                      label.strip(), 18, bold=True, color=PT_WHITE)
-        _pptx_textbox(slide, W - Inches(3.9), y + Inches(0.12),
-                      Inches(3.4), row_h,
-                      amount.strip(), 18, bold=True,
+        y += Inches(0.10)
+        total_row_h = row_h + Inches(0.10)
+        _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), total_row_h, PT_NAVY)
+        _pptx_textbox(slide, Inches(0.65), y + Inches(0.14),
+                      Inches(7.5), total_row_h,
+                      label.strip(), 26, bold=True, color=PT_WHITE)
+        _pptx_textbox(slide, W - Inches(4.2), y + Inches(0.14),
+                      Inches(3.7), total_row_h,
+                      amount.strip(), 26, bold=True,
                       color=PT_GREEN, align=PP_ALIGN.RIGHT)
 
-    _pptx_textbox(slide, Inches(0.4), H - Inches(0.72),
-                  W - Inches(0.8), Inches(0.30),
+    _pptx_textbox(slide, Inches(0.4), H - Inches(0.82),
+                  W - Inches(0.8), Inches(0.34),
                   "All fees are subject to final scope confirmation. "
                   "Travel expenses billed at cost.",
-                  10, italic=True, color=PT_MGRAY)
+                  14, italic=True, color=PT_MGRAY)
 
     _pptx_footer(slide, page_num)
+
+
+def _pptx_image_slide(prs, bg_image_path):
+    """Create a slide using a full-bleed background image (matches PDF template exactly)."""
+    slide = _pptx_blank_slide(prs)
+    if bg_image_path and os.path.exists(bg_image_path):
+        slide.shapes.add_picture(bg_image_path, 0, 0, PPTX_W, PPTX_H)
+    return slide
 
 
 def build_proposal_pptx(company, contact, date,
@@ -714,33 +725,50 @@ def build_proposal_pptx(company, contact, date,
     prs.slide_width  = PPTX_W
     prs.slide_height = PPTX_H
 
-    # 1. Cover
+    # Resolve assets directory (same folder as the logo)
+    if logo_path and os.path.exists(logo_path):
+        assets_dir = os.path.dirname(logo_path)
+    else:
+        assets_dir = os.path.join(os.path.dirname(__file__), '..', 'assets')
+
+    # 1. Cover slide (dynamic — company/contact/date change per proposal)
     _pptx_cover(prs, company, contact, date, logo_path)
 
-    # 2. Standard content slides
-    page = 2
-    for slide_def in STANDARD_SLIDES:
-        if "team" in slide_def:
-            _pptx_team_slide(prs, slide_def["team"], page, logo_path=logo_path)
+    # 2. Standard content slides — use pre-rendered PNG backgrounds from the
+    #    PDF template so the PPTX looks pixel-perfect identical to the PDF.
+    #    Template pages 2–8 map to slide_bg_2.png … slide_bg_8.png.
+    for page_num in range(2, 9):
+        bg_path = os.path.join(assets_dir, f'slide_bg_{page_num}.png')
+        if os.path.exists(bg_path):
+            _pptx_image_slide(prs, bg_path)
         else:
-            two_col = len(slide_def.get("bullets", [])) > 6
-            _pptx_content_slide(
-                prs,
-                title     = slide_def["title"],
-                bullets   = slide_def.get("bullets", []),
-                subtitle  = slide_def.get("subtitle"),
-                page_num  = page,
-                two_col   = two_col,
-                logo_path = logo_path,
-            )
-        page += 1
+            # Fallback: text-based slide if background images are missing
+            slide_idx = page_num - 2          # 0-based into STANDARD_SLIDES
+            if slide_idx < len(STANDARD_SLIDES):
+                slide_def = STANDARD_SLIDES[slide_idx]
+                if "team" in slide_def:
+                    _pptx_team_slide(prs, slide_def["team"], page_num,
+                                     logo_path=logo_path)
+                else:
+                    two_col = len(slide_def.get("bullets", [])) > 6
+                    _pptx_content_slide(
+                        prs,
+                        title    = slide_def["title"],
+                        bullets  = slide_def.get("bullets", []),
+                        subtitle = slide_def.get("subtitle"),
+                        page_num = page_num,
+                        two_col  = two_col,
+                        logo_path= logo_path,
+                    )
 
-    # 3. Custom services slide
+    # 3. Custom services slide (always dynamic — different per proposal)
+    page = 9
     if services:
-        _pptx_services_slide(prs, company, services, notes, page, logo_path=logo_path)
+        _pptx_services_slide(prs, company, services, notes, page,
+                             logo_path=logo_path)
         page += 1
 
-    # 4. Investment slide
+    # 4. Investment slide (always dynamic)
     if costs:
         _pptx_investment_slide(prs, company, costs, page, logo_path=logo_path)
 
