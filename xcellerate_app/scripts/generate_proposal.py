@@ -263,9 +263,13 @@ def _pdf_investment(c, company, costs, page_num):
     c.setFillColor(RL_GREEN)
     c.rect(36, PDF_H - 68, PDF_W - 72, 2, fill=1, stroke=0)
     row_h, row_y = 30, PDF_H - 84
-    # Separate total line from itemized lines
-    item_costs  = [l for l in costs if not l.lower().startswith("total")]
-    total_lines = [l for l in costs if l.lower().startswith("total")]
+    # Separate out summary/total lines from line items
+    summary_keys = ("total investment", "monthly retainer", "one-time fees")
+    item_costs   = [l for l in costs if not any(l.lower().startswith(k) for k in summary_keys)]
+    summary_lines = [l for l in costs if any(l.lower().startswith(k) for k in summary_keys)]
+    total_lines   = [l for l in costs if l.lower().startswith("total")]
+    subtotal_lines= [l for l in summary_lines if not l.lower().startswith("total")]
+
     for i, line in enumerate(item_costs):
         label, amount = (line.split(":", 1) if ":" in line else (line, ""))
         if i % 2 == 0:
@@ -276,6 +280,18 @@ def _pdf_investment(c, company, costs, page_num):
         c.setFillColor(RL_GREEN_DK); c.setFont("Helvetica-Bold", 11)
         c.drawRightString(PDF_W - 48, row_y - 6, amount.strip())
         row_y -= row_h
+    # Subtotal rows (Monthly Retainer / One-Time) with slight indent
+    if subtotal_lines:
+        row_y -= 4
+        for line in subtotal_lines:
+            label, amount = (line.split(":", 1) if ":" in line else (line, ""))
+            c.setFillColor(RL_LGRAY)
+            c.rect(36, row_y - row_h + 10, PDF_W - 72, row_h - 4, fill=1, stroke=0)
+            c.setFillColor(RL_NAVY);  c.setFont("Helvetica-BoldOblique", 10)
+            c.drawString(52, row_y - 5, label.strip())
+            c.setFillColor(RL_GREEN_DK); c.setFont("Helvetica-Bold", 10)
+            c.drawRightString(PDF_W - 48, row_y - 5, amount.strip())
+            row_y -= (row_h - 4)
     # Total row — navy background, larger text
     if total_lines:
         label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
@@ -670,8 +686,11 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
     row_h = Inches(0.72)   # tall enough for 24pt text
     y = Inches(1.92)
 
-    item_costs  = [l for l in costs if not l.lower().startswith("total")]
-    total_lines = [l for l in costs if l.lower().startswith("total")]
+    summary_keys  = ("total investment", "monthly retainer", "one-time fees")
+    item_costs    = [l for l in costs if not any(l.lower().startswith(k) for k in summary_keys)]
+    summary_lines = [l for l in costs if any(l.lower().startswith(k) for k in summary_keys)]
+    total_lines   = [l for l in costs if l.lower().startswith("total")]
+    subtotals     = [l for l in summary_lines if not l.lower().startswith("total")]
 
     for i, line in enumerate(item_costs):
         label, amount = (line.split(":", 1) if ":" in line else (line, ""))
@@ -686,6 +705,23 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
                       color=RGBColor(0x3A, 0x7A, 0x3A),
                       align=PP_ALIGN.RIGHT)
         y += row_h
+
+    # Subtotal rows (Monthly Retainer / One-Time Fees)
+    if subtotals:
+        y += Inches(0.06)
+        sub_row_h = row_h * 0.75
+        for line in subtotals:
+            label, amount = (line.split(":", 1) if ":" in line else (line, ""))
+            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), sub_row_h, RGBColor(0xE8, 0xF0, 0xF8))
+            _pptx_textbox(slide, Inches(0.65), y + Inches(0.08),
+                          Inches(7.5), sub_row_h,
+                          label.strip(), 20, bold=True, italic=True, color=PT_NAVY)
+            _pptx_textbox(slide, W - Inches(4.2), y + Inches(0.08),
+                          Inches(3.7), sub_row_h,
+                          amount.strip(), 20, bold=True,
+                          color=RGBColor(0x0E, 0x68, 0x82),
+                          align=PP_ALIGN.RIGHT)
+            y += sub_row_h
 
     # Total row — navy background, green amount, slightly larger text
     if total_lines:
