@@ -19,8 +19,8 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.25);
     }
     .header-inner {
-      max-width: 900px; margin: 0 auto;
-      padding: 20px 28px 18px;
+      max-width: 1200px; margin: 0 auto;
+      padding: 18px 28px 16px;
       display: flex; align-items: center; gap: 18px;
     }
     .header-logo { height: 52px; filter: brightness(0) invert(1); }
@@ -28,8 +28,87 @@
     .header-text p { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 3px; }
     .green-bar { height: 5px; background: linear-gradient(90deg, #5CB85C, #4daa4d); }
 
-    /* ── Main ───────────────────────────────────────────── */
-    main { max-width: 900px; margin: 28px auto 60px; padding: 0 20px; }
+    /* ── Main two-column layout ─────────────────────────── */
+    main {
+      max-width: 1200px; margin: 24px auto 60px; padding: 0 20px;
+      display: flex; align-items: flex-start; gap: 22px;
+    }
+    .main-col { flex: 1; min-width: 0; }
+
+    /* ── Sidebar ────────────────────────────────────────── */
+    .sidebar {
+      width: 272px; flex-shrink: 0;
+      position: sticky; top: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .sb-panel {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(29,52,97,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      overflow: hidden; border: 1px solid rgba(29,52,97,0.07);
+    }
+    .sb-panel-head {
+      padding: 11px 16px; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.6px; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sb-panel-head.proposals { background: linear-gradient(135deg, #1D3461, #243d73); color: #fff; }
+    .sb-panel-head.analyses  { background: linear-gradient(135deg, #0b4c61, #0e6882); color: #fff; }
+    .sb-count {
+      background: rgba(255,255,255,0.22); color: #fff; border-radius: 10px;
+      padding: 1px 8px; font-size: 11px; font-weight: 700;
+    }
+    .sb-list { display: flex; flex-direction: column; }
+    .sb-item {
+      padding: 10px 14px; border-bottom: 1px solid #f0f3f8;
+      transition: background 0.12s; cursor: default;
+    }
+    .sb-item:last-child { border-bottom: none; }
+    .sb-item:hover { background: #f6f9fd; }
+    .sb-company { font-size: 13px; font-weight: 700; color: #1D3461; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sb-meta { font-size: 11px; color: #999; margin-top: 2px; }
+    .sb-actions { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+    .sb-btn {
+      font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 5px;
+      cursor: pointer; border: none; font-family: inherit; transition: all 0.13s;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .sb-btn-load { background: #e8eef8; color: #1D3461; }
+    .sb-btn-load:hover { background: #d0daf0; }
+    .sb-btn-teal { background: #e0f2f8; color: #0b4c61; }
+    .sb-btn-teal:hover { background: #c8e8f4; }
+    .sb-btn-dl   { background: #edfaed; color: #2a6e2a; }
+    .sb-btn-dl:hover { background: #d4f0d4; }
+    .sb-btn-del  { background: none; color: #ccc; border: 1px solid #e8e8e8 !important; }
+    .sb-btn-del:hover { color: #e05c5c; border-color: #f0c0c0 !important; background: #fff5f5; }
+    .sb-empty { padding: 18px 16px; text-align: center; font-size: 12px; color: #bbb; }
+
+    /* ── Zone labels ────────────────────────────────────── */
+    .zone-wrap {
+      border-radius: 14px; margin-bottom: 10px;
+      border: 1px solid transparent; padding: 16px 16px 6px;
+    }
+    .zone-wrap.ai-zone {
+      background: linear-gradient(180deg, #e4f3f9 0%, #edf6fa 100%);
+      border-color: rgba(14,104,130,0.18);
+    }
+    .zone-wrap.form-zone {
+      background: transparent; border: none; padding: 0;
+    }
+    .zone-label {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .zone-label-line { flex: 1; height: 1px; }
+    .ai-zone .zone-label-line { background: rgba(14,104,130,0.2); }
+    .form-zone-sep .zone-label-line { background: rgba(29,52,97,0.15); }
+    .zone-label-tag {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.8px;
+      text-transform: uppercase; padding: 4px 12px;
+      border-radius: 20px; white-space: nowrap;
+    }
+    .ai-zone .zone-label-tag { background: #0e6882; color: #fff; }
+    .form-zone-sep { display: flex; align-items: center; gap: 10px; margin: 18px 0 16px; }
+    .form-zone-sep .zone-label-tag { background: #1D3461; color: #fff; }
 
     /* ── Cards ──────────────────────────────────────────── */
     .card {
@@ -637,12 +716,19 @@
 
     @media (max-width: 700px) { .sd-input-grid { grid-template-columns: 1fr; } }
 
+    @media (max-width: 1060px) {
+      main { flex-direction: column; }
+      .sidebar { width: 100%; position: static; flex-direction: row; flex-wrap: wrap; gap: 14px; }
+      .sb-panel { flex: 1; min-width: 260px; }
+    }
+
     @media (max-width: 600px) {
       .form-row { grid-template-columns: 1fr; }
       .downloads-grid { grid-template-columns: 1fr; }
       .service-cost-input { width: 90px; }
       .proposal-table th:nth-child(3),
       .proposal-table td:nth-child(3) { display: none; }
+      .sidebar { flex-direction: column; }
     }
   </style>
 </head>
@@ -674,6 +760,17 @@
 </div>
 
 <main>
+
+  <!-- ═══════════════════ MAIN COLUMN ═══════════════════ -->
+  <div class="main-col">
+
+  <!-- ── AI Zone ──────────────────────────────────────── -->
+  <div class="zone-wrap ai-zone">
+    <div class="zone-label">
+      <div class="zone-label-line"></div>
+      <span class="zone-label-tag">🤖 AI Deal Intelligence</span>
+      <div class="zone-label-line"></div>
+    </div>
 
   <!-- 🎯 Sales Director Analysis -->
   <div class="sd-card" id="sd-card">
@@ -859,8 +956,8 @@
     </div>
     <div class="transcript-body" id="transcript-body">
       <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, email or call summary</strong> below.
-        Our Ai will extract the prospect's name, company, relevant services, pricing discussed,
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
         and write a custom intro letter body — then pre-fill the entire form for you to review.
       </p>
       <textarea id="transcript-input"
@@ -895,15 +992,17 @@ Example:
     </div>
   </div>
 
-  <!-- Tab Bar -->
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('new')" id="new-tab-btn">➕ New Proposal</button>
-    <button class="tab-btn" onclick="switchTab('saved')" id="saved-tab-btn">📁 Saved Proposals</button>
-    <button class="tab-btn" onclick="switchTab('analyses')" id="analyses-tab-btn">🎯 Saved Analyses</button>
+  </div><!-- /ai-zone -->
+
+  <!-- ── Form Zone separator ──────────────────────────── -->
+  <div class="form-zone-sep">
+    <div class="zone-label-line"></div>
+    <span class="zone-label-tag">📋 Proposal Builder</span>
+    <div class="zone-label-line"></div>
   </div>
 
-  <!-- Saved Proposals Panel -->
-  <div class="tab-panel" id="panel-saved">
+  <!-- Saved Proposals Panel (hidden, accessible from sidebar) -->
+  <div style="display:none" id="panel-saved">
     <div class="card">
       <div class="card-header">
         <span>Saved Proposals</span>
@@ -1095,6 +1194,36 @@ Example:
   </form>
 
   </div><!-- end panel-new -->
+
+  </div><!-- /main-col -->
+
+  <!-- ═══════════════════ SIDEBAR ═══════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Recent Proposals -->
+    <div class="sb-panel">
+      <div class="sb-panel-head proposals">
+        <span>📁 Saved Proposals</span>
+        <span class="sb-count" id="sb-proposals-count">0</span>
+      </div>
+      <div id="sb-proposals-list" class="sb-list">
+        <div class="sb-empty">No proposals yet</div>
+      </div>
+    </div>
+
+    <!-- Recent Analyses -->
+    <div class="sb-panel">
+      <div class="sb-panel-head analyses">
+        <span>🎯 Saved Analyses</span>
+        <span class="sb-count" id="sb-analyses-count">0</span>
+      </div>
+      <div id="sb-analyses-list" class="sb-list">
+        <div class="sb-empty">No analyses yet</div>
+      </div>
+    </div>
+
+  </aside>
+
 </main>
 
 <script>
@@ -1684,10 +1813,13 @@ Example:
     toggle.classList.toggle("open", !isOpen);
   }
 
-  // Open it by default
+  // SD open by default, transcript closed by default
   document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("transcript-body").classList.add("open");
-    document.getElementById("transcript-toggle").classList.add("open");
+    // Open the Sales Director panel
+    document.getElementById("sd-body").classList.add("open");
+    document.getElementById("sd-toggle").classList.add("open");
+    // Transcript starts closed (omit adding "open")
+    loadSidebarData();
   });
 
   async function parseTranscript() {
@@ -2258,13 +2390,109 @@ Example:
     }
   }
 
-  // Auto-refresh counts on page load
-  fetch("/api/proposals").then(r => r.json()).then(p => {
-    document.getElementById("saved-count-badge").textContent = p.length;
-  }).catch(() => {});
-  fetch("/api/analyses").then(r => r.json()).then(a => {
-    document.getElementById("analyses-count-badge").textContent = a.length;
-  }).catch(() => {});
+  // ── Sidebar data loader ────────────────────────────────
+  async function loadSidebarData() {
+    try {
+      const [pResp, aResp] = await Promise.all([
+        fetch("/api/proposals"), fetch("/api/analyses")
+      ]);
+      const proposals = await pResp.json();
+      const analyses  = await aResp.json();
+      renderSidebarProposals(proposals);
+      renderSidebarAnalyses(analyses);
+    } catch(e) { /* silent fail */ }
+  }
+
+  function renderSidebarProposals(proposals) {
+    const list = document.getElementById("sb-proposals-list");
+    const countEl = document.getElementById("sb-proposals-count");
+    if (countEl) countEl.textContent = proposals.length;
+    if (!proposals.length) {
+      list.innerHTML = '<div class="sb-empty">No proposals saved yet</div>';
+      return;
+    }
+    list.innerHTML = "";
+    proposals.slice(0, 8).forEach(p => {
+      const prefix = p.company.replace(/[^a-zA-Z0-9 \-_]/g,"").trim().replace(/ /g,"_");
+      const base   = `/download/${p.id}/`;
+      const files  = p.files || {};
+      const div = document.createElement("div");
+      div.className = "sb-item";
+      div.innerHTML = `
+        <div class="sb-company">${esc(p.company)}</div>
+        <div class="sb-meta">${esc(p.contact || "")}${p.contact && p.date ? " · " : ""}${esc(p.date || "")}</div>
+        <div class="sb-actions">
+          <button class="sb-btn sb-btn-load" onclick="sbRegenProposal('${p.id}',this)">↻ Regen</button>
+          ${files.letter_pdf  ? `<a class="sb-btn sb-btn-dl" href="${base}${prefix}_Intro_Letter.pdf" download>Ltr</a>` : ""}
+          ${files.proposal_pdf ? `<a class="sb-btn sb-btn-dl" href="${base}${prefix}_Proposal.pdf" download>PDF</a>` : ""}
+          ${files.proposal_pptx ? `<a class="sb-btn sb-btn-dl" href="${base}${prefix}_Proposal.pptx" download>PPT</a>` : ""}
+          <button class="sb-btn sb-btn-del" onclick="sbDeleteProposal('${p.id}',this)" title="Delete">✕</button>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+
+  function renderSidebarAnalyses(analyses) {
+    const list = document.getElementById("sb-analyses-list");
+    const countEl = document.getElementById("sb-analyses-count");
+    if (countEl) countEl.textContent = analyses.length;
+    if (!analyses.length) {
+      list.innerHTML = '<div class="sb-empty">No analyses saved yet</div>';
+      return;
+    }
+    list.innerHTML = "";
+    analyses.slice(0, 8).forEach(a => {
+      const div = document.createElement("div");
+      div.className = "sb-item";
+      div.innerHTML = `
+        <div class="sb-company">${esc(a.company || "Unknown")}</div>
+        <div class="sb-meta">${esc(a.contact || "")}${a.contact && a.total_range ? " · " : ""}${esc(a.total_range || "")}</div>
+        <div class="sb-meta" style="margin-top:1px">${esc(a.created_at || "")}</div>
+        <div class="sb-actions">
+          <button class="sb-btn sb-btn-teal" onclick="sbLoadAnalysis('${a.id}')">↺ Load</button>
+          <button class="sb-btn sb-btn-del" onclick="sbDeleteAnalysis('${a.id}',this)" title="Delete">✕</button>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+
+  async function sbRegenProposal(id, btn) {
+    btn.disabled = true; btn.textContent = "…";
+    try {
+      const resp = await fetch(`/regenerate/${id}`, { method: "POST" });
+      if (resp.ok) { btn.textContent = "✓"; setTimeout(() => { btn.disabled=false; btn.textContent="↻ Regen"; }, 2000); loadSidebarData(); }
+      else { btn.textContent="✗"; btn.disabled=false; }
+    } catch(e) { btn.textContent="✗"; btn.disabled=false; }
+  }
+
+  async function sbDeleteProposal(id, btn) {
+    if (!confirm("Delete this proposal?")) return;
+    await fetch(`/api/proposals/${id}`, { method: "DELETE" });
+    btn.closest(".sb-item").remove();
+    loadSidebarData();
+  }
+
+  async function sbLoadAnalysis(id) {
+    try {
+      const resp = await fetch(`/api/analyses/${id}`);
+      const json = await resp.json();
+      if (!resp.ok) { alert("Could not load analysis."); return; }
+      _sdData = json;
+      renderSalesDirectorResults(_sdData);
+      const body = document.getElementById("sd-body");
+      const toggle = document.getElementById("sd-toggle");
+      body.classList.add("open"); toggle.classList.add("open");
+      _sdSetStep(3);
+      document.getElementById("sd-card").scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch(e) { alert("Error: " + e.message); }
+  }
+
+  async function sbDeleteAnalysis(id, btn) {
+    if (!confirm("Delete this analysis?")) return;
+    await fetch(`/api/analyses/${id}`, { method: "DELETE" });
+    btn.closest(".sb-item").remove();
+    loadSidebarData();
+  }
 </script>
 </body>
 </html>
