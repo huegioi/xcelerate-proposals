@@ -956,8 +956,8 @@
     </div>
     <div class="transcript-body" id="transcript-body">
       <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, email, or call summary</strong> below.
-        Our Ai will extract the prospect's name, company, relevant services, pricing discussed,
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
         and write a custom intro letter body — then pre-fill the entire form for you to review.
       </p>
       <textarea id="transcript-input"
@@ -1094,8 +1094,12 @@ Example:
           <a class="btn-download" id="dl-proposal-pptx" href="#" download>⬇ Download</a>
         </div>
       </div>
-      <div style="text-align:center">
+      <div style="text-align:center; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
         <button class="btn-start-over" onclick="resetForm()">← Generate Another Package</button>
+        <button type="button" id="results-save-analysis-btn" style="display:none"
+          onclick="saveAnalysis()" class="btn-sd-save">
+          💾 Save Analysis
+        </button>
       </div>
     </div>
   </div>
@@ -1590,6 +1594,11 @@ Example:
       b.style.display = "block";
       b.textContent = "Note: " + data.errors.join(" | ");
     }
+    // Show inline Save Analysis button if SD data is available
+    const saveBtn = document.getElementById("results-save-analysis-btn");
+    if (saveBtn) saveBtn.style.display = _sdData ? "inline-flex" : "none";
+
+    loadSidebarData();
     results.scrollIntoView({ behavior: "smooth" });
   }
 
@@ -2352,19 +2361,18 @@ Example:
     setTimeout(() => {
       document.getElementById("company").scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
-
-    const body   = document.getElementById("sd-body");
-    const toggle = document.getElementById("sd-toggle");
-    body.classList.remove("open");
-    toggle.classList.remove("open");
+    // SD panel intentionally left open so "Save Analysis" button remains accessible
   }
 
   // ── Save Analysis ────────────────────────────────────────
   async function saveAnalysis() {
     if (!_sdData) return;
-    const btn = document.getElementById("sd-save-btn");
-    btn.textContent = "Saving…";
-    btn.disabled = true;
+    const btn      = document.getElementById("sd-save-btn");
+    const btn2     = document.getElementById("results-save-analysis-btn");
+    const setBtns  = (text, disabled) => {
+      [btn, btn2].forEach(b => { if (b) { b.textContent = text; b.disabled = disabled; } });
+    };
+    setBtns("Saving…", true);
     try {
       const resp = await fetch("/api/analyses", {
         method: "POST",
@@ -2373,24 +2381,23 @@ Example:
       });
       const json = await resp.json();
       if (resp.ok) {
-        btn.textContent = "✅ Saved!";
-        btn.classList.add("saved");
+        [btn, btn2].forEach(b => { if (b) { b.textContent = "✅ Saved!"; b.classList.add("saved"); } });
         setTimeout(() => {
-          btn.textContent = "💾 Save Analysis";
-          btn.classList.remove("saved");
-          btn.disabled = false;
+          [btn, btn2].forEach(b => {
+            if (b) { b.textContent = "💾 Save Analysis"; b.classList.remove("saved"); b.disabled = false; }
+          });
         }, 3000);
-        // Update badge
+        // Update all badges and sidebar
+        loadSidebarData();
         fetch("/api/analyses").then(r => r.json()).then(list => {
-          document.getElementById("analyses-count-badge").textContent = list.length;
+          const badge = document.getElementById("analyses-count-badge");
+          if (badge) badge.textContent = list.length;
         }).catch(() => {});
       } else {
-        btn.textContent = "⚠ Error";
-        btn.disabled = false;
+        setBtns("⚠ Error", false);
       }
     } catch(e) {
-      btn.textContent = "⚠ Error";
-      btn.disabled = false;
+      setBtns("⚠ Error", false);
     }
   }
 
