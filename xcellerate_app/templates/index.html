@@ -694,6 +694,33 @@
     .total-bd-amount { font-weight: 700; color: #1D3461; }
     .total-breakdown-row.grand .total-bd-label { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 700; }
     .total-breakdown-row.grand .total-bd-amount { color: #5CB85C; font-size: 16px; }
+    .total-grand-wrap { display: flex; align-items: center; gap: 8px; }
+    .total-override-input {
+      background: transparent; border: none;
+      border-bottom: 2px solid rgba(92,184,92,0.4);
+      color: #5CB85C; font-size: 18px; font-weight: 800;
+      text-align: right; width: 160px; padding: 2px 4px;
+      outline: none; font-family: inherit;
+    }
+    .total-override-input:focus { border-bottom-color: #5CB85C; }
+    .total-override-input::placeholder { color: rgba(92,184,92,0.4); }
+    .total-recalc-btn {
+      background: none; border: none; color: rgba(255,255,255,0.4);
+      cursor: pointer; font-size: 15px; padding: 0 2px;
+      display: none; line-height: 1; transition: color 0.15s;
+    }
+    .total-recalc-btn:hover { color: rgba(255,255,255,0.85); }
+    .total-only-wrap {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 18px 10px;
+      background: #f5f7fc; border-top: 1px dashed #dde3f0;
+    }
+    .total-only-wrap label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: #4a5a7a; cursor: pointer; font-weight: 600;
+      user-select: none;
+    }
+    .total-only-wrap input[type=checkbox] { width: 15px; height: 15px; accent-color: #1D3461; cursor: pointer; }
 
     /* ── Transcript card ── */
     .transcript-card {
@@ -795,6 +822,15 @@
         <div class="sd-step-tab active" id="sd-tab-1">① Input</div>
         <div class="sd-step-tab" id="sd-tab-2">② Clarify</div>
         <div class="sd-step-tab" id="sd-tab-3">③ Results</div>
+        <button type="button" id="sd-new-btn" onclick="resetSdAnalysis()"
+          style="display:none; margin-left:auto; font-size:11px; font-weight:700;
+            background:#fff; border:1.5px solid #c0c8d8; color:#5a6a8a;
+            border-radius:6px; padding:4px 12px; cursor:pointer; white-space:nowrap;
+            transition:background 0.15s,color 0.15s;"
+          onmouseover="this.style.background='#f0f3f9';this.style.color='#1D3461'"
+          onmouseout="this.style.background='#fff';this.style.color='#5a6a8a'">
+          ＋ New Analysis
+        </button>
       </div>
 
       <!-- ── Step 1: Input ─────────────────────────────── -->
@@ -956,8 +992,8 @@
     </div>
     <div class="transcript-body" id="transcript-body">
       <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, emails, or call summary</strong> below.
-        Our Ai will extract the prospect's name, company, relevant services, pricing discussed,
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
         and write a custom intro letter body — then pre-fill the entire form for you to review.
       </p>
       <textarea id="transcript-input"
@@ -1163,7 +1199,18 @@ Example:
           </div>
           <div class="total-breakdown-row grand">
             <span class="total-bd-label">Total Investment</span>
-            <span class="total-bd-amount" id="total-display">$0</span>
+            <div class="total-grand-wrap">
+              <button type="button" id="total-recalc-btn" class="total-recalc-btn"
+                onclick="recalcTotal()" title="Reset to calculated total">↻</button>
+              <input type="text" id="total-display" class="total-override-input"
+                placeholder="$0" oninput="onTotalManualEdit()" />
+            </div>
+          </div>
+          <div class="total-only-wrap">
+            <label>
+              <input type="checkbox" id="total-only-toggle" />
+              Hide line items — show total only in proposal
+            </label>
           </div>
         </div>
 
@@ -1388,6 +1435,22 @@ Example:
   // Create the initial blank custom row
   addCustomRow();
 
+  // ── Total override state ───────────────────────────────
+  let _totalManuallySet = false;
+
+  function onTotalManualEdit() {
+    _totalManuallySet = true;
+    const btn = document.getElementById("total-recalc-btn");
+    if (btn) btn.style.display = "inline-block";
+  }
+
+  function recalcTotal() {
+    _totalManuallySet = false;
+    const btn = document.getElementById("total-recalc-btn");
+    if (btn) btn.style.display = "none";
+    updateTotal();
+  }
+
   // ── Running total ──────────────────────────────────────
   function parseCost(val) {
     const n = parseFloat(val.replace(/[^0-9.]/g, ""));
@@ -1432,7 +1495,9 @@ Example:
     const oEl = document.getElementById("onetime-display");
     if (mEl) mEl.textContent = formatCurrency(monthly) + "/mo";
     if (oEl) oEl.textContent = formatCurrency(onetime);
-    document.getElementById("total-display").textContent = formatCurrency(total);
+    if (!_totalManuallySet) {
+      document.getElementById("total-display").value = formatCurrency(total);
+    }
   }
 
   // ── Build hidden inputs before submit ─────────────────
@@ -1480,11 +1545,26 @@ Example:
       }
     });
 
-    const total = monthly + onetime;
-    if (costLines.length > 0) {
-      if (monthly > 0) costLines.push(`Monthly Retainer: ${formatCurrency(monthly)}/mo`);
-      if (onetime > 0) costLines.push(`One-Time Fees: ${formatCurrency(onetime)}`);
-      costLines.push(`Total Investment: ${formatCurrency(total)}`);
+    const calcTotal = monthly + onetime;
+
+    // Use manually-entered total if set, otherwise use calculated
+    const totalInput = document.getElementById("total-display");
+    const displayTotal = _totalManuallySet
+      ? parseCost(totalInput ? totalInput.value : "0") || calcTotal
+      : calcTotal;
+
+    const totalOnlyMode = document.getElementById("total-only-toggle")?.checked;
+
+    if (totalOnlyMode) {
+      // Discard all line items — send only the grand total
+      costLines.length = 0;
+      if (displayTotal > 0) costLines.push(`Total Investment: ${formatCurrency(displayTotal)}`);
+    } else {
+      if (costLines.length > 0) {
+        if (monthly > 0) costLines.push(`Monthly Retainer: ${formatCurrency(monthly)}/mo`);
+        if (onetime > 0) costLines.push(`One-Time Fees: ${formatCurrency(onetime)}`);
+        costLines.push(`Total Investment: ${formatCurrency(displayTotal)}`);
+      }
     }
 
     costLines.forEach(line => addHidden("cost_lines", line));
@@ -2035,6 +2115,35 @@ Example:
     } else {
       document.getElementById("sd-results").classList.remove("visible");
     }
+    // Show "New Analysis" button only when results are visible
+    const newBtn = document.getElementById("sd-new-btn");
+    if (newBtn) newBtn.style.display = step === 3 ? "inline-block" : "none";
+  }
+
+  function resetSdAnalysis() {
+    _sdData = null;
+    // Clear inputs
+    const t = document.getElementById("sd-transcript");
+    const e = document.getElementById("sd-email");
+    if (t) t.value = "";
+    if (e) e.value = "";
+    // Clear follow-up
+    const fi = document.getElementById("sd-followup-input");
+    const fr = document.getElementById("sd-followup-response");
+    if (fi) fi.value = "";
+    if (fr) fr.textContent = "";
+    // Reset start button
+    const startBtn  = document.getElementById("sd-start-btn");
+    const startText = document.getElementById("sd-start-text");
+    const startIcon = document.getElementById("sd-start-icon");
+    if (startBtn)  { startBtn.disabled = false; }
+    if (startText) startText.textContent = "Start Analysis";
+    if (startIcon) startIcon.textContent = "🎯";
+    // Hide results-screen save button
+    const rsBtn = document.getElementById("results-save-analysis-btn");
+    if (rsBtn) rsBtn.style.display = "none";
+    // Go back to step 1
+    _sdSetStep(1);
   }
 
   function backToStep1() {
