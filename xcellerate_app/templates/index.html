@@ -1279,7 +1279,7 @@ Example:
         <span class="service-name">${svc}</span>
       </div>
       <div class="service-cost-wrap">
-        <button class="fee-type-btn monthly" id="fee-type-${i}"
+        <button type="button" class="fee-type-btn monthly" id="fee-type-${i}"
           onclick="event.stopPropagation();toggleFeeType(${i},false)" title="Click to toggle Monthly / One-Time">Monthly</button>
         <span class="cost-prefix">$</span>
         <input type="text" class="service-cost-input" id="cost-${i}"
@@ -1338,7 +1338,7 @@ Example:
           oninput="onCrowInput(${id})" />
       </div>
       <div class="service-cost-wrap">
-        <button class="fee-type-btn ${feeType}" id="${feeId}"
+        <button type="button" class="fee-type-btn ${feeType}" id="${feeId}"
           onclick="event.stopPropagation();toggleFeeType(${id},true)">${feeType === 'monthly' ? 'Monthly' : 'One-Time'}</button>
         <span class="cost-prefix">$</span>
         <input type="text" class="service-cost-input" id="${costId}"
