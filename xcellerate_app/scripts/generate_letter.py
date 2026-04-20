@@ -67,10 +67,31 @@ def build_letter(company: str, contact: str, date: str,
            fill=1, stroke=0)
 
     # ── Company name (large centred heading) ──────────────────────────────────
+    # Auto-scale font so the name always fits within the page margins
     company_y = CONTENT_TOP - 10
+    MAX_NAME_W = PAGE_W - 120   # 60 pt margin each side
+    name_text  = company.upper()
+    font_size  = 36
+    font_face  = "Helvetica-Bold"
     c.setFillColor(NAVY)
-    c.setFont("Helvetica-Bold", 36)
-    c.drawCentredString(CONTENT_MID, company_y, company.upper())
+
+    # Shrink font until it fits, down to a minimum of 16pt
+    while c.stringWidth(name_text, font_face, font_size) > MAX_NAME_W and font_size > 16:
+        font_size -= 1
+
+    # If still too wide at 16pt, split into two roughly equal lines
+    if c.stringWidth(name_text, font_face, font_size) > MAX_NAME_W:
+        words = name_text.split()
+        mid   = len(words) // 2
+        line1 = " ".join(words[:mid])
+        line2 = " ".join(words[mid:])
+        c.setFont(font_face, font_size)
+        c.drawCentredString(CONTENT_MID, company_y,        line1)
+        c.drawCentredString(CONTENT_MID, company_y - font_size * 1.3, line2)
+        company_y -= font_size * 1.3   # shift everything below down by one extra line
+    else:
+        c.setFont(font_face, font_size)
+        c.drawCentredString(CONTENT_MID, company_y, name_text)
 
     # Contact name (if provided)
     if contact:
