@@ -956,8 +956,8 @@
     </div>
     <div class="transcript-body" id="transcript-body">
       <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, email or call summary</strong> below.
-        Our Ai will extract the prospect's name, company, relevant services, pricing discussed,
+        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
+        Claude will extract the prospect's name, company, relevant services, pricing discussed,
         and write a custom intro letter body — then pre-fill the entire form for you to review.
       </p>
       <textarea id="transcript-input"
@@ -1608,16 +1608,20 @@ Example:
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
     if (tab === "saved") {
-      document.getElementById("saved-tab-btn").classList.add("active");
-      document.getElementById("panel-saved").classList.add("active");
-      loadSavedProposals();
+      const btn = document.getElementById("saved-tab-btn");
+      if (btn) btn.classList.add("active");
+      const panel = document.getElementById("panel-saved");
+      if (panel) { panel.classList.add("active"); loadSavedProposals(); }
     } else if (tab === "analyses") {
-      document.getElementById("analyses-tab-btn").classList.add("active");
-      document.getElementById("panel-analyses").classList.add("active");
-      loadSavedAnalyses();
+      const btn = document.getElementById("analyses-tab-btn");
+      if (btn) btn.classList.add("active");
+      const panel = document.getElementById("panel-analyses");
+      if (panel) { panel.classList.add("active"); loadSavedAnalyses(); }
     } else {
-      document.getElementById("new-tab-btn").classList.add("active");
-      document.getElementById("panel-new").classList.add("active");
+      const btn = document.getElementById("new-tab-btn");
+      if (btn) btn.classList.add("active");
+      const panel = document.getElementById("panel-new");
+      if (panel) panel.classList.add("active");
     }
   }
 
