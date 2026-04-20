@@ -31,11 +31,17 @@ SERVICES_CATALOG = [
 ]
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
+# DATA_DIR and OUTPUTS_DIR can be overridden via env vars so that Railway
+# persistent volumes (or any external mount) survive redeploys.
+# Example Railway setup:
+#   DATA_DIR    = /data
+#   OUTPUTS_DIR = /data/outputs
+#   Then add a Railway Volume mounted at /data
 BASE_DIR      = Path(__file__).parent
 SCRIPTS_DIR   = BASE_DIR / "scripts"
 ASSETS_DIR    = BASE_DIR / "assets"
-OUTPUTS_DIR   = BASE_DIR / "outputs"
-DATA_DIR      = BASE_DIR / "data"
+OUTPUTS_DIR   = Path(os.environ.get("OUTPUTS_DIR", str(BASE_DIR / "outputs")))
+DATA_DIR      = Path(os.environ.get("DATA_DIR",    str(BASE_DIR / "data")))
 PROPOSALS_FILE  = DATA_DIR / "proposals.json"
 ANALYSES_FILE   = DATA_DIR / "analyses.json"
 
