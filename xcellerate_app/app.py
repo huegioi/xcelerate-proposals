@@ -3,7 +3,7 @@
 Xcelerate Growth Partners — Proposal Package Generator
 """
 
-import os, sys, uuid, json, subprocess
+import os, sys, uuid, json, re, subprocess
 from pathlib import Path
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, jsonify
@@ -47,6 +47,33 @@ ANALYSES_FILE   = DATA_DIR / "analyses.json"
 
 DEFAULT_LOGO      = ASSETS_DIR / "xcelerate_logo.png"
 DEFAULT_BASE_PDF  = ASSETS_DIR / "base_proposal_template.pdf"
+
+
+def extract_json(raw: str) -> dict:
+    """
+    Robustly extract a JSON object from a Claude response that may contain
+    extra text before/after the JSON, or markdown code fences.
+    """
+    # Strip markdown fences
+    text = raw.strip()
+    if text.startswith("```"):
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+        text = text.strip()
+
+    # Try direct parse first (fast path)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # Find the outermost { ... } block and parse that
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        return json.loads(match.group())
+
+    raise ValueError(f"No JSON object found in response: {text[:200]}")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24))
@@ -390,19 +417,11 @@ Transcript:
             messages=[{"role": "user", "content": prompt}],
         )
         raw = message.content[0].text.strip()
-
-        # Strip markdown code fences if model wrapped the JSON
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.strip()
-
-        parsed = json.loads(raw)
+        parsed = extract_json(raw)
         return jsonify({"ok": True, "data": parsed})
 
-    except json.JSONDecodeError as e:
-        return jsonify({"error": f"Could not parse Claude's response as JSON: {e}", "raw": raw[:500]}), 500
+    except (json.JSONDecodeError, ValueError) as e:
+        return jsonify({"error": f"Could not parse Claude's response as JSON: {e}"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -460,13 +479,9 @@ Xcelerate service catalog (for context):
             messages=[{"role": "user", "content": prompt}],
         )
         raw = message.content[0].text.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"): raw = raw[4:]
-            raw = raw.strip()
-        parsed = json.loads(raw)
+        parsed = extract_json(raw)
         return jsonify({"ok": True, "data": parsed})
-    except json.JSONDecodeError as e:
+    except (json.JSONDecodeError, ValueError) as e:
         return jsonify({"error": f"Could not parse response: {e}"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -611,19 +626,11 @@ JSON schema:
             messages=[{"role": "user", "content": input_text}],
         )
         raw = message.content[0].text.strip()
-
-        # Strip markdown code fences if model wrapped the JSON
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.strip()
-
-        parsed = json.loads(raw)
+        parsed = extract_json(raw)
         return jsonify({"ok": True, "data": parsed})
 
-    except json.JSONDecodeError as e:
-        return jsonify({"error": f"Could not parse response as JSON: {e}", "raw": raw[:500]}), 500
+    except (json.JSONDecodeError, ValueError) as e:
+        return jsonify({"error": f"Could not parse response as JSON: {e}"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
