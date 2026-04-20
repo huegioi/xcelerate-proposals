@@ -90,7 +90,11 @@ def build_letter(company: str, contact: str, date: str,
     # ── Body paragraphs ───────────────────────────────────────────────────────
     # Build default body text using the variable fields
     if body_override:
-        paragraphs = [body_override]
+        # Respect paragraph breaks — split on blank lines (double newline)
+        raw_paras = body_override.replace('\r\n', '\n').replace('\r', '\n').split('\n\n')
+        paragraphs = [p.replace('\n', ' ').strip() for p in raw_paras if p.strip()]
+        if not paragraphs:
+            paragraphs = [body_override.strip()]
     else:
         paragraphs = [
             f"We're looking forward to learning from each other and how we can "
