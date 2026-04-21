@@ -37,7 +37,7 @@ from pypdf import PdfReader, PdfWriter
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.util import Inches, Pt
 
 
@@ -414,10 +414,11 @@ def _pptx_footer(slide, page_num):
     _pptx_rect(slide,
                W - Inches(0.72), H - Inches(0.58),
                Inches(0.58), Inches(0.50), PT_GREEN)
-    _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.58),
-                  Inches(0.58), Inches(0.50),
-                  str(page_num), 18,
-                  bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    pn_box = _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.58),
+                           Inches(0.58), Inches(0.50),
+                           str(page_num), 18,
+                           bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    pn_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
 
 
 def _pptx_slide_header(slide, title, logo_path, subtitle=None):
@@ -644,7 +645,7 @@ def _pptx_services_slide(prs, company, services, notes, page_num, logo_path=None
     _pptx_rect(slide, Inches(0.45), Inches(1.48),
                W - Inches(0.9), Inches(0.04), PT_GREEN)
 
-    content_top  = Inches(1.60)
+    content_top  = Inches(1.90)   # extra breathing room below the green divider
     footer_h     = Inches(0.65)   # space reserved for footer
     note_h       = Inches(0.55) if notes else Inches(0)
     note_gap     = Inches(0.10) if notes else Inches(0)
@@ -698,80 +699,131 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
     total_lines   = [l for l in costs if l.lower().startswith("total")]
     subtotals     = [l for l in summary_lines if not l.lower().startswith("total")]
 
-    # ── Dynamic row sizing — fit all rows in available space ─────────────────
-    content_top    = Inches(1.60)
+    # ── Split items into Monthly vs One-Time groups ───────────────────────────
+    monthly_items = [l for l in item_costs if '/mo' in l]
+    onetime_items = [l for l in item_costs if '/mo' not in l and 'one-time' in l.lower()]
+    other_items   = [l for l in item_costs if '/mo' not in l and 'one-time' not in l.lower()]
+    # If no explicit type detected, treat all as a single flat list
+    show_groups   = bool(monthly_items and onetime_items)
+    # Groups to render in order
+    groups = []
+    if show_groups:
+        if monthly_items:
+            groups.append(("Monthly Services", PT_NAVY,              monthly_items))
+        if onetime_items:
+            groups.append(("One-Time Services", RGBColor(0x0E, 0x68, 0x82), onetime_items))
+        if other_items:
+            groups.append(("Additional Services", PT_NAVY,            other_items))
+    else:
+        groups.append((None, None, item_costs))   # no headers
+
+    # ── Dynamic row sizing — fit everything in available space ────────────────
+    content_top    = Inches(1.62)
     disclaimer_h   = Inches(0.40)
     footer_h       = Inches(0.65)
     content_bottom = H - footer_h - disclaimer_h - Inches(0.08)
     available_h    = content_bottom - content_top
 
-    gap_sub   = Inches(0.06) if subtotals   else Inches(0)
-    gap_total = Inches(0.10) if total_lines else Inches(0)
-    # Weight: total row = 1.3×, subtotal rows = 0.8×, item rows = 1×
+    n_section_hdrs = sum(1 for lbl, _, _ in groups if lbl)
+    hdr_h_factor   = 0.45   # section headers are 45% of a normal row
+    gap_sub        = Inches(0.06) if subtotals   else Inches(0)
+    gap_total      = Inches(0.10) if total_lines else Inches(0)
+    gap_groups     = Inches(0.06) * max(0, n_section_hdrs - 1)  # gap between groups
+
     n_units = (len(item_costs)
+               + n_section_hdrs * hdr_h_factor
                + len(subtotals) * 0.8
                + (1.3 if total_lines else 0))
     if n_units > 0:
-        base_row_h = (available_h - gap_sub - gap_total) / n_units
-        base_row_h = min(base_row_h, Inches(0.72))   # cap: don't stretch too tall
-        base_row_h = max(base_row_h, Inches(0.38))   # floor: keep text readable
+        base_row_h = (available_h - gap_sub - gap_total - gap_groups) / n_units
+        base_row_h = min(base_row_h, Inches(0.72))
+        base_row_h = max(base_row_h, Inches(0.36))
     else:
         base_row_h = Inches(0.65)
 
-    sub_row_h   = base_row_h * 0.8
-    total_row_h = base_row_h * 1.3
-    # Scale fonts proportionally to row height
-    font_item  = max(12, min(24, round(base_row_h  / Inches(0.72)  * 24)))
-    font_sub   = max(11, min(20, round(sub_row_h   / Inches(0.54)  * 20)))
-    font_total = max(14, min(26, round(total_row_h / Inches(0.82)  * 26)))
+    section_hdr_h = base_row_h * hdr_h_factor
+    sub_row_h     = base_row_h * 0.8
+    total_row_h   = base_row_h * 1.3
+    font_item     = max(12, min(24, round(base_row_h  / Inches(0.72) * 24)))
+    font_hdr      = max(10, min(16, round(section_hdr_h / Inches(0.32) * 14)))
+    font_sub      = max(11, min(20, round(sub_row_h   / Inches(0.54) * 20)))
+    font_total    = max(14, min(26, round(total_row_h  / Inches(0.82) * 26)))
 
     y = content_top
 
-    for i, line in enumerate(item_costs):
-        label, amount = (line.split(":", 1) if ":" in line else (line, ""))
-        if i % 2 == 0:
-            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), base_row_h, PT_LGRAY)
-        padding = min(Inches(0.12), base_row_h * 0.18)
+    def _render_item_row(line, stripe_idx, row_h, fnt):
+        nonlocal y
+        label, raw_amount = (line.split(":", 1) if ":" in line else (line, ""))
+        # Strip type suffix for clean display; keep /mo for monthly clarity
+        display_amount = raw_amount.strip()
+        display_amount = display_amount.replace(' one-time', '').replace('one-time', '')
+        # Alternating stripe within group
+        if stripe_idx % 2 == 0:
+            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), row_h, PT_LGRAY)
+        padding = min(Inches(0.12), row_h * 0.18)
         _pptx_textbox(slide, Inches(0.65), y + padding,
-                      Inches(7.5), base_row_h - padding,
-                      label.strip(), font_item, bold=True, color=PT_NAVY)
+                      Inches(7.5), row_h - padding,
+                      label.strip(), fnt, bold=True, color=PT_NAVY)
         _pptx_textbox(slide, W - Inches(4.2), y + padding,
-                      Inches(3.7), base_row_h - padding,
-                      amount.strip(), font_item, bold=True,
-                      color=RGBColor(0x3A, 0x7A, 0x3A),
-                      align=PP_ALIGN.RIGHT)
-        y += base_row_h
+                      Inches(3.7), row_h - padding,
+                      display_amount, fnt, bold=True,
+                      color=RGBColor(0x3A, 0x7A, 0x3A), align=PP_ALIGN.RIGHT)
+        y += row_h
 
-    # Subtotal rows (Monthly Retainer / One-Time Fees)
+    first_group = True
+    for group_label, hdr_color, group_items in groups:
+        if not group_items:
+            continue
+        if not first_group:
+            y += Inches(0.06)   # small gap between groups
+        first_group = False
+        # Section header row
+        if group_label:
+            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), section_hdr_h, hdr_color)
+            padding = min(Inches(0.06), section_hdr_h * 0.2)
+            hdr_box = _pptx_textbox(slide, Inches(0.65), y + padding,
+                                    W - Inches(1.3), section_hdr_h,
+                                    group_label.upper(), font_hdr,
+                                    bold=True, color=PT_WHITE)
+            hdr_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+            y += section_hdr_h
+        # Item rows
+        for stripe_i, line in enumerate(group_items):
+            _render_item_row(line, stripe_i, base_row_h, font_item)
+
+    # ── Subtotal rows (Monthly Retainer / One-Time Fees) ─────────────────────
     if subtotals:
         y += gap_sub
         for line in subtotals:
             label, amount = (line.split(":", 1) if ":" in line else (line, ""))
             _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), sub_row_h, RGBColor(0xE8, 0xF0, 0xF8))
             padding = min(Inches(0.08), sub_row_h * 0.15)
-            _pptx_textbox(slide, Inches(0.65), y + padding,
-                          Inches(7.5), sub_row_h,
-                          label.strip(), font_sub, bold=True, italic=True, color=PT_NAVY)
-            _pptx_textbox(slide, W - Inches(4.2), y + padding,
-                          Inches(3.7), sub_row_h,
-                          amount.strip(), font_sub, bold=True,
-                          color=RGBColor(0x0E, 0x68, 0x82),
-                          align=PP_ALIGN.RIGHT)
+            sub_lbl = _pptx_textbox(slide, Inches(0.65), y + padding,
+                                    Inches(7.5), sub_row_h,
+                                    label.strip(), font_sub, bold=True, italic=True, color=PT_NAVY)
+            sub_lbl.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+            sub_amt = _pptx_textbox(slide, W - Inches(4.2), y + padding,
+                                    Inches(3.7), sub_row_h,
+                                    "  " + amount.strip(), font_sub, bold=True,
+                                    color=RGBColor(0x0E, 0x68, 0x82), align=PP_ALIGN.RIGHT)
+            sub_amt.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
             y += sub_row_h
 
-    # Total row — navy background, green amount
+    # ── Total row ─────────────────────────────────────────────────────────────
     if total_lines:
         label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
         y += gap_total
         _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), total_row_h, PT_NAVY)
         padding = min(Inches(0.14), total_row_h * 0.18)
-        _pptx_textbox(slide, Inches(0.65), y + padding,
-                      Inches(7.5), total_row_h,
-                      label.strip(), font_total, bold=True, color=PT_WHITE)
-        _pptx_textbox(slide, W - Inches(4.2), y + padding,
-                      Inches(3.7), total_row_h,
-                      amount.strip(), font_total, bold=True,
-                      color=PT_GREEN, align=PP_ALIGN.RIGHT)
+        tot_lbl = _pptx_textbox(slide, Inches(0.65), y + padding,
+                                Inches(7.5), total_row_h,
+                                label.strip(), font_total, bold=True, color=PT_WHITE)
+        tot_lbl.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+        tot_amt = _pptx_textbox(slide, W - Inches(4.2), y + padding,
+                                Inches(3.7), total_row_h,
+                                "  " + amount.strip(), font_total, bold=True,
+                                color=PT_GREEN, align=PP_ALIGN.RIGHT)
+        tot_amt.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
 
     # Disclaimer — anchored just above the footer, never overlaps content
     _pptx_textbox(slide, Inches(0.4), H - footer_h - disclaimer_h,
