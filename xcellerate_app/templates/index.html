@@ -1,2625 +1,960 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Xcelerate Growth Partners — Proposal Generator</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: #edf0f7;
-      color: #2c2c2c;
-      min-height: 100vh;
-    }
-
-    /* ── Header ─────────────────────────────────────────── */
-    header {
-      background: linear-gradient(135deg, #1a2e58 0%, #1D3461 60%, #243d73 100%);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-    }
-    .header-inner {
-      max-width: 1200px; margin: 0 auto;
-      padding: 18px 28px 16px;
-      display: flex; align-items: center; gap: 18px;
-    }
-    .header-logo { height: 52px; filter: brightness(0) invert(1); }
-    .header-text h1 { color: #fff; font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
-    .header-text p { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 3px; }
-    .green-bar { height: 5px; background: linear-gradient(90deg, #5CB85C, #4daa4d); }
-
-    /* ── Main two-column layout ─────────────────────────── */
-    main {
-      max-width: 1200px; margin: 24px auto 60px; padding: 0 20px;
-      display: flex; align-items: flex-start; gap: 22px;
-    }
-    .main-col { flex: 1; min-width: 0; }
-
-    /* ── Sidebar ────────────────────────────────────────── */
-    .sidebar {
-      width: 272px; flex-shrink: 0;
-      position: sticky; top: 20px;
-      display: flex; flex-direction: column; gap: 14px;
-    }
-    .sb-panel {
-      background: #fff; border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(29,52,97,0.08), 0 1px 4px rgba(0,0,0,0.04);
-      overflow: hidden; border: 1px solid rgba(29,52,97,0.07);
-    }
-    .sb-panel-head {
-      padding: 11px 16px; font-size: 11px; font-weight: 800;
-      letter-spacing: 0.6px; text-transform: uppercase;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .sb-panel-head.proposals { background: linear-gradient(135deg, #1D3461, #243d73); color: #fff; }
-    .sb-panel-head.analyses  { background: linear-gradient(135deg, #0b4c61, #0e6882); color: #fff; }
-    .sb-count {
-      background: rgba(255,255,255,0.22); color: #fff; border-radius: 10px;
-      padding: 1px 8px; font-size: 11px; font-weight: 700;
-    }
-    .sb-list { display: flex; flex-direction: column; }
-    .sb-item {
-      padding: 10px 14px; border-bottom: 1px solid #f0f3f8;
-      transition: background 0.12s; cursor: default;
-    }
-    .sb-item:last-child { border-bottom: none; }
-    .sb-item:hover { background: #f6f9fd; }
-    .sb-company { font-size: 13px; font-weight: 700; color: #1D3461; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sb-meta { font-size: 11px; color: #999; margin-top: 2px; }
-    .sb-actions { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
-    .sb-btn {
-      font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 5px;
-      cursor: pointer; border: none; font-family: inherit; transition: all 0.13s;
-      text-decoration: none; display: inline-flex; align-items: center;
-    }
-    .sb-btn-load { background: #e8eef8; color: #1D3461; }
-    .sb-btn-load:hover { background: #d0daf0; }
-    .sb-btn-teal { background: #e0f2f8; color: #0b4c61; }
-    .sb-btn-teal:hover { background: #c8e8f4; }
-    .sb-btn-dl   { background: #edfaed; color: #2a6e2a; }
-    .sb-btn-dl:hover { background: #d4f0d4; }
-    .sb-btn-del  { background: none; color: #ccc; border: 1px solid #e8e8e8 !important; }
-    .sb-btn-del:hover { color: #e05c5c; border-color: #f0c0c0 !important; background: #fff5f5; }
-    .sb-empty { padding: 18px 16px; text-align: center; font-size: 12px; color: #bbb; }
-
-    /* ── Zone labels ────────────────────────────────────── */
-    .zone-wrap {
-      border-radius: 14px; margin-bottom: 10px;
-      border: 1px solid transparent; padding: 16px 16px 6px;
-    }
-    .zone-wrap.ai-zone {
-      background: linear-gradient(180deg, #e4f3f9 0%, #edf6fa 100%);
-      border-color: rgba(14,104,130,0.18);
-    }
-    .zone-wrap.form-zone {
-      background: transparent; border: none; padding: 0;
-    }
-    .zone-label {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 14px;
-    }
-    .zone-label-line { flex: 1; height: 1px; }
-    .ai-zone .zone-label-line { background: rgba(14,104,130,0.2); }
-    .form-zone-sep .zone-label-line { background: rgba(29,52,97,0.15); }
-    .zone-label-tag {
-      font-size: 11px; font-weight: 800; letter-spacing: 0.8px;
-      text-transform: uppercase; padding: 4px 12px;
-      border-radius: 20px; white-space: nowrap;
-    }
-    .ai-zone .zone-label-tag { background: #0e6882; color: #fff; }
-    .form-zone-sep { display: flex; align-items: center; gap: 10px; margin: 18px 0 16px; }
-    .form-zone-sep .zone-label-tag { background: #1D3461; color: #fff; }
-
-    /* ── Cards ──────────────────────────────────────────── */
-    .card {
-      background: #fff; border-radius: 12px;
-      box-shadow: 0 2px 16px rgba(29,52,97,0.08), 0 1px 4px rgba(0,0,0,0.04);
-      margin-bottom: 20px; overflow: hidden;
-      border: 1px solid rgba(29,52,97,0.06);
-    }
-    .card-header {
-      background: linear-gradient(135deg, #1D3461, #243d73); color: #fff;
-      padding: 13px 22px; font-size: 12px; font-weight: 700;
-      letter-spacing: 0.7px; text-transform: uppercase;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .card-header .badge {
-      background: #5CB85C; color: #fff; border-radius: 12px;
-      padding: 2px 10px; font-size: 11px; font-weight: 700;
-    }
-    .card-body { padding: 22px; }
-
-    /* ── Form fields ────────────────────────────────────── */
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
-    .form-row.single { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    label.field-label { font-size: 12px; font-weight: 700; color: #1D3461; text-transform: uppercase; letter-spacing: 0.4px; }
-    label.field-label .req { color: #5CB85C; }
-    label.field-label .opt { color: #bbb; font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; }
-    input[type="text"], input[type="date"], textarea {
-      border: 1.5px solid #dde2ec; border-radius: 8px;
-      padding: 10px 13px; font-size: 14px; color: #2c2c2c;
-      background: #fafbfd; width: 100%; font-family: inherit;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
-      outline: none; border-color: #5CB85C;
-      box-shadow: 0 0 0 3px rgba(92,184,92,0.12); background: #fff;
-    }
-    textarea { resize: vertical; min-height: 88px; }
-
-    /* ── Services list ───────────────────────────────────── */
-    .services-list { display: flex; flex-direction: column; gap: 7px; }
-
-    .service-row {
-      display: flex; align-items: center; gap: 12px;
-      border: 1.5px solid #e4e9f2; border-radius: 9px;
-      padding: 10px 14px; transition: all 0.15s;
-      cursor: pointer; background: #fafbfd;
-    }
-    .service-row:hover { border-color: #b0ceb0; background: #f6fef6; box-shadow: 0 1px 6px rgba(92,184,92,0.1); }
-    .service-row.checked { border-color: #5CB85C; background: #f0faf0; box-shadow: 0 1px 8px rgba(92,184,92,0.15); }
-
-    .service-check-wrap {
-      display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer;
-    }
-    .service-check-wrap input[type="checkbox"] { display: none; }
-    .checkmark {
-      width: 18px; height: 18px; min-width: 18px; border: 2px solid #c5cfe0;
-      border-radius: 4px; display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s; font-size: 11px; font-weight: 700; color: #fff;
-    }
-    .service-row.checked .checkmark { background: #5CB85C; border-color: #5CB85C; }
-    .checkmark::after { content: "✓"; }
-    .service-name { font-size: 13px; color: #2c2c2c; line-height: 1.4; }
-
-    .service-cost-wrap { display: flex; align-items: center; gap: 6px; }
-    .cost-prefix { font-size: 13px; color: #aaa; font-weight: 600; }
-    .service-cost-input {
-      width: 110px; border: 1.5px solid #dde2ec; border-radius: 6px;
-      padding: 7px 10px; font-size: 13px; color: #2c2c2c;
-      background: #fafbfc; font-family: inherit;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      text-align: right;
-    }
-    .service-cost-input:focus {
-      outline: none; border-color: #5CB85C;
-      box-shadow: 0 0 0 3px rgba(92,184,92,0.12); background: #fff;
-    }
-    .service-cost-input::placeholder { color: #ccc; }
-
-    /* Custom service row */
-    .custom-service-row {
-      border: 1.5px dashed #c5cfe0; border-radius: 7px;
-      padding: 10px 14px; display: flex; align-items: center; gap: 12px;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .custom-service-row:focus-within { border-color: #5CB85C; background: #fafffe; border-style: solid; }
-    .custom-service-row .service-check-wrap { flex: 1; gap: 10px; }
-    .custom-service-name-input {
-      flex: 1; border: none; background: transparent;
-      font-size: 13px; color: #2c2c2c; font-family: inherit;
-      padding: 0; outline: none;
-    }
-    .custom-service-name-input::placeholder { color: #bbb; }
-
-    /* Total row */
-    .total-row {
-      display: flex; align-items: center; justify-content: space-between;
-      background: #1D3461; border-radius: 7px;
-      padding: 12px 18px; margin-top: 4px;
-    }
-    .total-label { color: #fff; font-size: 14px; font-weight: 700; }
-    .total-amount { color: #5CB85C; font-size: 18px; font-weight: 700; letter-spacing: 0.3px; }
-
-    /* ── Notes section ──────────────────────────────────── */
-
-    /* ── Submit button ──────────────────────────────────── */
-    .submit-row { display: flex; justify-content: center; margin-top: 6px; }
-    .btn-generate {
-      background: #5CB85C; color: #fff; border: none; border-radius: 8px;
-      padding: 16px 52px; font-size: 16px; font-weight: 700; cursor: pointer;
-      letter-spacing: 0.3px; box-shadow: 0 3px 10px rgba(92,184,92,0.3);
-      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-    }
-    .btn-generate:hover { background: #4caa4c; transform: translateY(-1px); box-shadow: 0 5px 16px rgba(92,184,92,0.4); }
-    .btn-generate:disabled { background: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
-    .spinner { display: inline-block; width: 15px; height: 15px; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Progress overlay ───────────────────────────────── */
-    #progress-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(29,52,97,0.55); z-index: 100;
-      align-items: center; justify-content: center;
-    }
-    #progress-overlay.visible { display: flex; }
-    .progress-box {
-      background: #fff; border-radius: 12px; padding: 38px 46px;
-      text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 340px; width: 90%;
-    }
-    .progress-spinner { width: 50px; height: 50px; border: 4px solid #eef0f5; border-top-color: #5CB85C; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 18px; }
-    .progress-title { font-size: 17px; font-weight: 700; color: #1D3461; margin-bottom: 6px; }
-    .progress-sub { font-size: 13px; color: #888; }
-    .progress-steps { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
-    .progress-step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #bbb; text-align: left; }
-    .progress-step.active { color: #1D3461; font-weight: 600; }
-    .progress-step.done { color: #5CB85C; }
-    .step-dot { width: 8px; height: 8px; border-radius: 50%; background: #dde2ec; flex-shrink: 0; }
-    .progress-step.active .step-dot { background: #1D3461; }
-    .progress-step.done .step-dot { background: #5CB85C; }
-
-    /* ── Results ────────────────────────────────────────── */
-    #results { display: none; }
-    .results-header { background: #1D3461; border-radius: 8px 8px 0 0; padding: 20px 22px; }
-    .results-header h2 { color: #fff; font-size: 17px; }
-    .results-header p { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 3px; }
-    .results-body { background: #fff; border-radius: 0 0 8px 8px; padding: 22px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .downloads-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .download-card { border: 1.5px solid #dde2ec; border-radius: 8px; padding: 18px; text-align: center; transition: border-color 0.15s, box-shadow 0.15s; }
-    .download-card:hover { border-color: #5CB85C; box-shadow: 0 2px 10px rgba(92,184,92,0.12); }
-    .download-card .doc-icon { font-size: 32px; margin-bottom: 8px; }
-    .download-card .doc-title { font-size: 13px; font-weight: 700; color: #1D3461; margin-bottom: 3px; }
-    .download-card .doc-type { font-size: 11px; color: #999; margin-bottom: 12px; }
-    .btn-download { display: inline-flex; align-items: center; gap: 5px; background: #1D3461; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background 0.15s; }
-    .btn-download:hover { background: #26478a; }
-    .download-card.unavailable { opacity: 0.4; pointer-events: none; }
-    .btn-start-over { background: none; border: 1.5px solid #1D3461; border-radius: 6px; padding: 10px 24px; color: #1D3461; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 18px; transition: all 0.15s; font-family: inherit; }
-    .btn-start-over:hover { background: #1D3461; color: #fff; }
-    .error-banner { background: #fff3f3; border: 1.5px solid #f5c5c5; border-radius: 6px; padding: 12px 16px; color: #c0392b; font-size: 13px; margin-bottom: 14px; display: none; }
-
-    /* ── Saved proposals ────────────────────────────────── */
-    .saved-empty { text-align: center; padding: 28px; color: #aaa; font-size: 13px; }
-    .saved-empty .empty-icon { font-size: 28px; margin-bottom: 8px; }
-
-    .proposal-table { width: 100%; border-collapse: collapse; }
-    .proposal-table th {
-      text-align: left; font-size: 11px; font-weight: 700;
-      color: #1D3461; text-transform: uppercase; letter-spacing: 0.5px;
-      padding: 8px 12px; border-bottom: 2px solid #eef0f5;
-    }
-    .proposal-table td {
-      padding: 11px 12px; font-size: 13px; color: #2c2c2c;
-      border-bottom: 1px solid #f0f2f5; vertical-align: middle;
-    }
-    .proposal-table tr:last-child td { border-bottom: none; }
-    .proposal-table tr:hover td { background: #fafbff; }
-    .td-company { font-weight: 600; color: #1D3461; }
-    .td-date { color: #888; font-size: 12px; }
-    .td-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-    .btn-sm {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 5px 11px; border-radius: 5px; font-size: 12px;
-      font-weight: 600; cursor: pointer; border: none; font-family: inherit;
-      transition: all 0.15s; text-decoration: none; white-space: nowrap;
-    }
-    .btn-regen  { background: #1D3461; color: #fff; }
-    .btn-regen:hover { background: #26478a; }
-    .btn-dl     { background: #5CB85C; color: #fff; }
-    .btn-dl:hover { background: #4caa4c; }
-    .btn-dl-gray { background: #e8eaf0; color: #888; cursor: default; }
-    .btn-delete { background: none; border: 1.5px solid #e0e0e0 !important; color: #bbb; }
-    .btn-delete:hover { border-color: #e05c5c !important; color: #e05c5c; background: #fff5f5; }
-    .saved-loading { text-align:center; padding: 20px; color: #aaa; font-size: 13px; }
-
-    .tab-bar {
-      display: flex; gap: 6px; margin-bottom: 20px;
-      background: #fff; border-radius: 10px; padding: 5px;
-      box-shadow: 0 2px 12px rgba(29,52,97,0.07);
-      border: 1px solid rgba(29,52,97,0.06);
-    }
-    .tab-btn {
-      flex: 1; padding: 10px 20px; font-size: 13px; font-weight: 600;
-      color: #888; cursor: pointer; border: none; background: none;
-      border-radius: 7px; transition: all 0.15s; font-family: inherit;
-    }
-    .tab-btn.active { color: #fff; background: linear-gradient(135deg, #1D3461, #243d73); box-shadow: 0 2px 8px rgba(29,52,97,0.25); }
-    .tab-btn:hover:not(.active) { color: #1D3461; background: #f0f3f9; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* ── Transcript Parser ──────────────────────────────── */
-    .transcript-header {
-      background: linear-gradient(135deg, #1D3461 0%, #264a87 100%);
-      padding: 14px 22px;
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; user-select: none;
-    }
-    .transcript-header-left { display: flex; align-items: center; gap: 12px; }
-    .transcript-header h3 { color: #fff; font-size: 14px; font-weight: 700; margin: 0; }
-    .transcript-header p { color: rgba(255,255,255,0.65); font-size: 12px; margin: 2px 0 0; }
-    .ai-badge {
-      background: #5CB85C; color: #fff; border-radius: 20px;
-      padding: 3px 12px; font-size: 11px; font-weight: 700;
-      letter-spacing: 0.5px; white-space: nowrap;
-    }
-    .transcript-toggle {
-      color: rgba(255,255,255,0.7); font-size: 18px; transition: transform 0.2s;
-    }
-    .transcript-toggle.open { transform: rotate(180deg); }
-    .transcript-body {
-      padding: 20px 22px;
-      display: none;
-    }
-    .transcript-body.open { display: block; }
-    .transcript-desc {
-      font-size: 13px; color: #666; margin-bottom: 14px; line-height: 1.6;
-    }
-    .transcript-desc strong { color: #1D3461; }
-    textarea#transcript-input {
-      width: 100%; min-height: 160px; resize: vertical;
-      border: 1.5px solid #dde2ec; border-radius: 6px;
-      padding: 11px 14px; font-size: 13px; color: #2c2c2c;
-      background: #fafbfc; font-family: inherit; line-height: 1.6;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    textarea#transcript-input:focus {
-      outline: none; border-color: #5CB85C;
-      box-shadow: 0 0 0 3px rgba(92,184,92,0.15); background: #fff;
-    }
-    .transcript-actions {
-      display: flex; align-items: center; gap: 14px; margin-top: 12px; flex-wrap: wrap;
-    }
-    .btn-parse {
-      background: #5CB85C; color: #fff; border: none; border-radius: 7px;
-      padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background 0.15s, transform 0.1s;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .btn-parse:hover { background: #4caa4c; transform: translateY(-1px); }
-    .btn-parse:disabled { background: #aaa; cursor: not-allowed; transform: none; }
-    .parse-hint { font-size: 12px; color: #aaa; }
-    .parse-result {
-      margin-top: 16px; border-radius: 7px; overflow: hidden;
-      border: 1.5px solid #d0ecd0; display: none;
-    }
-    .parse-result.visible { display: block; }
-    .parse-result-header {
-      background: #edfaed; padding: 10px 16px;
-      font-size: 13px; font-weight: 700; color: #2e7d32;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .parse-result-body { padding: 14px 16px; background: #fff; }
-    .parsed-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
-    .parsed-chip {
-      background: #eef1f8; border-radius: 20px; padding: 4px 12px;
-      font-size: 12px; color: #1D3461; font-weight: 600;
-    }
-    .parsed-chip.svc { background: #edfaed; color: #2e7d32; }
-    .parsed-info { font-size: 13px; color: #555; margin-bottom: 6px; }
-    .parsed-info strong { color: #1D3461; }
-    .btn-apply {
-      margin-top: 14px; background: #1D3461; color: #fff; border: none;
-      border-radius: 7px; padding: 10px 24px; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: inherit; transition: background 0.15s;
-    }
-    .btn-apply:hover { background: #26478a; }
-    .parse-error {
-      margin-top: 12px; background: #fff3f3; border: 1.5px solid #f5c5c5;
-      border-radius: 6px; padding: 11px 14px; color: #c0392b; font-size: 13px;
-      display: none;
-    }
-    .parse-error.visible { display: block; }
-
-    /* ── Sales Director Panel ───────────────────────────── */
-    .sd-card {
-      background: #fff; border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(11,76,97,0.12), 0 1px 4px rgba(0,0,0,0.04);
-      margin-bottom: 20px; overflow: hidden;
-      border: 1px solid rgba(14,143,170,0.18);
-    }
-    .sd-header {
-      background: linear-gradient(135deg, #0b4c61 0%, #0e6882 55%, #128faa 100%);
-      padding: 16px 22px;
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; user-select: none;
-    }
-    .sd-header-left { display:flex; align-items:center; gap:12px; }
-    .sd-header-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center; font-size: 19px;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .sd-header h3 { color: #fff; font-size: 15px; font-weight: 800; margin: 0; letter-spacing: -0.2px; }
-    .sd-header p { color: rgba(255,255,255,0.62); font-size: 12px; margin: 2px 0 0; }
-    .sd-badge {
-      background: rgba(255,255,255,0.16); color: #fff; border-radius: 20px;
-      padding: 4px 12px; font-size: 11px; font-weight: 700;
-      letter-spacing: 0.5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.24);
-    }
-    .sd-toggle { color: rgba(255,255,255,0.65); font-size: 18px; transition: transform 0.2s; }
-    .sd-toggle.open { transform: rotate(180deg); }
-    .sd-body { padding: 22px; display: none; }
-    .sd-body.open { display: block; }
-
-    /* Step indicator */
-    .sd-steps-indicator {
-      display: flex; gap: 0; margin-bottom: 22px;
-      background: #f0f5f7; border-radius: 9px; padding: 4px;
-    }
-    .sd-step-tab {
-      flex: 1; text-align: center; padding: 8px 12px; font-size: 12px;
-      font-weight: 700; border-radius: 6px; color: #aaa; transition: all 0.2s;
-    }
-    .sd-step-tab.active {
-      background: #fff; color: #0b7a9e;
-      box-shadow: 0 1px 6px rgba(11,120,158,0.18);
-    }
-    .sd-step-tab.done { color: #5CB85C; }
-
-    .sd-input-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;
-    }
-    .sd-input-label {
-      font-size: 11px; font-weight: 700; color: #5a7080; margin-bottom: 6px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .sd-textarea {
-      width: 100%; min-height: 130px; resize: vertical;
-      border: 1.5px solid #cfe0e8; border-radius: 9px;
-      padding: 11px 13px; font-size: 13px; color: #2c2c2c;
-      background: #f8fbfd; font-family: inherit; line-height: 1.6;
-      transition: border-color 0.15s, box-shadow 0.15s; box-sizing: border-box;
-    }
-    .sd-textarea:focus {
-      outline: none; border-color: #0e88a8;
-      box-shadow: 0 0 0 3px rgba(14,136,168,0.12); background: #fff;
-    }
-    .btn-sd-start {
-      background: linear-gradient(135deg, #0e6882, #1299bc); color: #fff;
-      border: none; border-radius: 9px;
-      padding: 12px 32px; font-size: 14px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: all 0.15s;
-      display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 3px 10px rgba(14,104,130,0.35);
-    }
-    .btn-sd-start:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(14,104,130,0.4); }
-    .btn-sd-start:disabled { background: #b0c8d0; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    /* ── Clarify step ── */
-    .sd-clarify-intro {
-      display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px;
-      background: linear-gradient(135deg, #e8f6fc, #d4eef8);
-      border: 1.5px solid #88cee4; border-radius: 12px; padding: 16px 18px;
-    }
-    .sd-ai-avatar {
-      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, #0e6882, #128faa);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 17px; color: #fff; box-shadow: 0 2px 8px rgba(14,104,130,0.3);
-    }
-    .sd-clarify-summary {
-      font-size: 13.5px; color: #0a3d52; line-height: 1.7; padding-top: 3px;
-    }
-    .sd-questions-wrap { display: flex; flex-direction: column; gap: 12px; margin-bottom: 4px; }
-    .sd-q-item {
-      background: #fff; border: 1.5px solid #cce0e8; border-radius: 10px;
-      padding: 14px 16px; transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .sd-q-item:focus-within { border-color: #0e88a8; box-shadow: 0 0 0 3px rgba(14,136,168,0.1); }
-    .sd-q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
-    .sd-q-num {
-      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, #0e6882, #128faa);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 800; color: #fff;
-    }
-    .sd-q-label { font-size: 13px; font-weight: 600; color: #1a3a47; line-height: 1.4; }
-    .sd-q-input {
-      border: 1.5px solid #ddeef4; border-radius: 7px;
-      padding: 9px 12px; font-size: 13px; font-family: inherit;
-      background: #f6fbfd; color: #2c2c2c; transition: all 0.15s; width: 100%;
-    }
-    .sd-q-input:focus { outline: none; border-color: #0e88a8; background: #fff; box-shadow: 0 0 0 3px rgba(14,136,168,0.1); }
-    .sd-q-input::placeholder { color: #aac0cc; }
-    .sd-clarify-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
-    .btn-sd-back {
-      background: none; border: 1.5px solid #c8d8e0; border-radius: 8px;
-      padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-      font-family: inherit; color: #7a96a4; transition: all 0.15s;
-    }
-    .btn-sd-back:hover { border-color: #8ab0be; color: #3a6070; background: #f0f8fb; }
-    .btn-sd-analyze {
-      background: linear-gradient(135deg, #0e6882, #1299bc); color: #fff;
-      border: none; border-radius: 9px;
-      padding: 11px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: all 0.15s;
-      display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 3px 10px rgba(14,104,130,0.3);
-    }
-    .btn-sd-analyze:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); transform: translateY(-1px); }
-    .btn-sd-analyze:disabled { background: #b0c8d0; cursor: not-allowed; transform: none; box-shadow: none; }
-    .sd-skip-note { font-size: 11px; color: #9ab0bb; font-style: italic; }
-
-    .sd-error {
-      margin-top: 12px; background: #fff3f3; border: 1.5px solid #f5c5c5;
-      border-radius: 8px; padding: 11px 14px; color: #c0392b; font-size: 13px;
-      display: none;
-    }
-    .sd-error.visible { display: block; }
-
-    /* ── Results ── */
-    .sd-results { margin-top: 20px; display: none; }
-    .sd-results.visible { display: block; }
-    .sd-section {
-      border: 1px solid #dde8ee; border-radius: 10px; margin-bottom: 12px; overflow: hidden;
-    }
-    .sd-section-head {
-      background: linear-gradient(135deg, #f2f8fa, #e8f2f6); padding: 10px 16px;
-      font-size: 12px; font-weight: 800; color: #0b4c61;
-      text-transform: uppercase; letter-spacing: 0.6px;
-      border-bottom: 1px solid #d8e8ee; display: flex; align-items: center; gap: 8px;
-    }
-    .sd-section-body { padding: 14px 16px; font-size: 13px; color: #333; line-height: 1.75; }
-    .sd-svc-list { display: flex; flex-direction: column; gap: 8px; }
-    .sd-svc-row {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      gap: 12px; padding: 10px 14px; background: #f6fbfd; border-radius: 9px;
-      border: 1px solid #d8eaf2; flex-wrap: wrap; transition: border-color 0.15s;
-    }
-    .sd-svc-row:hover { border-color: #90c8e0; background: #eef7fb; }
-    .sd-svc-info { flex: 1; min-width: 0; }
-    .sd-svc-name { font-weight: 700; color: #0b4c61; font-size: 13px; }
-    .sd-svc-rationale { font-size: 12px; color: #6a8898; margin-top: 3px; line-height: 1.5; }
-    .sd-svc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-    .sd-svc-price {
-      background: linear-gradient(135deg, #edfaed, #d8f5d8); color: #2a6e2a;
-      border-radius: 20px; padding: 4px 13px; font-size: 12px; font-weight: 700;
-      white-space: nowrap; border: 1px solid #b8e0b8;
-    }
-    .sd-svc-type-badge {
-      font-size: 10px; font-weight: 700; color: #6a8898;
-      background: #e8f2f6; border-radius: 10px; padding: 2px 8px;
-      text-transform: uppercase; letter-spacing: 0.4px;
-    }
-    /* Package total breakdown */
-    .sd-pkg-totals { margin-top: 14px; border-radius: 10px; overflow: hidden; border: 1px solid #d8eaf2; }
-    .sd-pkg-total-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 9px 16px; background: #f2f8fb;
-      border-bottom: 1px solid #d8eaf2; font-size: 13px;
-    }
-    .sd-pkg-total-row:last-child { border-bottom: none; }
-    .sd-pkg-total-row.grand {
-      background: linear-gradient(135deg, #0b4c61, #0e6882); color: #fff;
-      padding: 12px 16px; font-weight: 700;
-    }
-    .sd-pkg-total-label { color: #4a7080; font-weight: 600; }
-    .sd-pkg-total-row.grand .sd-pkg-total-label { color: rgba(255,255,255,0.8); font-size: 13px; }
-    .sd-pkg-total-amount { font-weight: 700; color: #0b4c61; }
-    .sd-pkg-total-row.grand .sd-pkg-total-amount { color: #7de0a8; font-size: 15px; }
-
-    .sd-obj-list { display: flex; flex-direction: column; gap: 12px; }
-    .sd-obj-item {
-      background: #f4fbfd; border-radius: 9px; padding: 12px 14px;
-      border-left: 3px solid #15a3c8;
-    }
-    .sd-obj-q { font-weight: 700; color: #1a3a47; font-size: 13px; }
-    .sd-obj-a { color: #4a6878; font-size: 13px; margin-top: 4px; line-height: 1.6; }
-    .sd-next-steps { padding: 0; margin: 0; list-style: none; }
-    .sd-next-steps li {
-      padding: 8px 0; border-bottom: 1px solid #e8f2f6;
-      font-size: 13px; display: flex; gap: 12px; align-items: flex-start; line-height: 1.5;
-    }
-    .sd-next-steps li:last-child { border-bottom: none; }
-    .sd-step-num {
-      background: linear-gradient(135deg, #0e6882, #128faa); color: #fff; border-radius: 50%;
-      width: 22px; height: 22px; font-size: 11px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      margin-top: 1px;
-    }
-    .sd-email-pre {
-      background: #f6fbfd; border-radius: 8px; padding: 14px 16px;
-      font-size: 13px; white-space: pre-wrap; font-family: inherit;
-      border: 1px solid #cce0e8; line-height: 1.75; color: #2c3a42;
-    }
-    .sd-email-subject { font-weight: 700; color: #0b4c61; margin-bottom: 10px; font-size: 13px; }
-    .btn-copy-email {
-      background: #e0eff5; color: #0b4c61; border: none; border-radius: 7px;
-      padding: 7px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
-      font-family: inherit; margin-bottom: 10px; transition: background 0.15s;
-    }
-    .btn-copy-email:hover { background: #c8e0ea; }
-
-    /* SD action row (apply + save) */
-    .sd-action-row { display: flex; gap: 10px; margin-top: 8px; }
-    .btn-sd-apply {
-      flex: 1; background: linear-gradient(135deg, #1D3461, #243d73);
-      color: #fff; border: none; border-radius: 10px;
-      padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: all 0.15s;
-      box-shadow: 0 4px 16px rgba(29,52,97,0.25);
-    }
-    .btn-sd-apply:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(29,52,97,0.35); }
-    .btn-sd-save {
-      background: #e8f2f6; color: #0b4c61; border: 1.5px solid #cce0e8;
-      border-radius: 10px; padding: 15px 22px; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: inherit; transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .btn-sd-save:hover { background: #d4eaf2; border-color: #90c0d0; }
-    .btn-sd-save.saved { background: #edfaed; color: #2a6e2a; border-color: #b8e0b8; }
-
-    /* Follow-up chat */
-    .sd-followup-wrap { margin-top: 16px; }
-    .sd-followup-label {
-      font-size: 11px; font-weight: 700; color: #6a8898; text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 8px;
-    }
-    .sd-followup {
-      display: flex; gap: 0;
-      border: 1.5px solid #cce0e8; border-radius: 10px; overflow: hidden;
-      background: #f6fbfd;
-    }
-    .sd-followup-input {
-      flex: 1; border: none; padding: 11px 14px; font-size: 13px;
-      font-family: inherit; background: transparent; color: #2c2c2c; outline: none;
-    }
-    .sd-followup-input::placeholder { color: #a0c0cc; }
-    .btn-sd-followup {
-      background: linear-gradient(135deg, #0e6882, #128faa); color: #fff; border: none;
-      padding: 11px 20px; font-size: 13px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background 0.15s; white-space: nowrap;
-    }
-    .btn-sd-followup:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); }
-    .btn-sd-followup:disabled { background: #b0c8d0; cursor: not-allowed; }
-    .sd-followup-response {
-      margin-top: 10px; background: #e8f6fc; border: 1px solid #88cee4;
-      border-radius: 10px; padding: 13px 15px; font-size: 13px; color: #0a3d52;
-      line-height: 1.7; display: none;
-    }
-    .sd-followup-response.visible { display: block; }
-
-    /* ── Fee type toggle on service rows ── */
-    .fee-type-btn {
-      font-size: 10px; font-weight: 700; border-radius: 6px; padding: 3px 9px;
-      cursor: pointer; border: 1.5px solid #dde2ec; background: #f0f3f9;
-      color: #6a7a9a; font-family: inherit; transition: all 0.15s;
-      white-space: nowrap; flex-shrink: 0;
-    }
-    .fee-type-btn.monthly { border-color: #1D3461; background: #1D3461; color: #fff; }
-    .fee-type-btn.onetime { border-color: #0e6882; background: #0e6882; color: #fff; }
-
-    /* ── Total breakdown ── */
-    .total-breakdown { margin-top: 14px; border-radius: 9px; overflow: hidden; border: 1px solid #e4e9f2; }
-    .total-breakdown-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 9px 18px; font-size: 13px;
-      border-bottom: 1px solid #e4e9f2; background: #fafbfd;
-    }
-    .total-breakdown-row:last-child { border-bottom: none; }
-    .total-breakdown-row.grand { background: #1D3461; }
-    .total-bd-label { font-weight: 600; color: #5a6a8a; }
-    .total-bd-amount { font-weight: 700; color: #1D3461; }
-    .total-breakdown-row.grand .total-bd-label { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 700; }
-    .total-breakdown-row.grand .total-bd-amount { color: #5CB85C; font-size: 16px; }
-    .total-grand-wrap { display: flex; align-items: center; gap: 8px; }
-    .total-override-input {
-      background: transparent; border: none;
-      border-bottom: 2px solid rgba(92,184,92,0.4);
-      color: #5CB85C; font-size: 18px; font-weight: 800;
-      text-align: right; width: 160px; padding: 2px 4px;
-      outline: none; font-family: inherit;
-    }
-    .total-override-input:focus { border-bottom-color: #5CB85C; }
-    .total-override-input::placeholder { color: rgba(92,184,92,0.4); }
-    .total-recalc-btn {
-      background: none; border: none; color: rgba(255,255,255,0.4);
-      cursor: pointer; font-size: 15px; padding: 0 2px;
-      display: none; line-height: 1; transition: color 0.15s;
-    }
-    .total-recalc-btn:hover { color: rgba(255,255,255,0.85); }
-    .total-only-wrap {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 18px 10px;
-      background: #f5f7fc; border-top: 1px dashed #dde3f0;
-    }
-    .total-only-wrap label {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12px; color: #4a5a7a; cursor: pointer; font-weight: 600;
-      user-select: none;
-    }
-    .total-only-wrap input[type=checkbox] { width: 15px; height: 15px; accent-color: #1D3461; cursor: pointer; }
-
-    /* ── Transcript card ── */
-    .transcript-card {
-      background: #fff; border-radius: 12px;
-      box-shadow: 0 2px 16px rgba(29,52,97,0.07), 0 1px 4px rgba(0,0,0,0.04);
-      margin-bottom: 20px; overflow: hidden;
-      border: 1px solid rgba(92,184,92,0.15);
-    }
-
-    /* ── Saved analyses ── */
-    .analysis-table { width: 100%; border-collapse: collapse; }
-    .analysis-table th {
-      text-align: left; font-size: 11px; font-weight: 700;
-      color: #0b4c61; text-transform: uppercase; letter-spacing: 0.5px;
-      padding: 8px 12px; border-bottom: 2px solid #dde8ee;
-    }
-    .analysis-table td { padding: 11px 12px; font-size: 13px; border-bottom: 1px solid #eef2f5; vertical-align: middle; }
-    .analysis-table tr:last-child td { border-bottom: none; }
-    .analysis-table tr:hover td { background: #f6fbfd; }
-
-    @media (max-width: 700px) { .sd-input-grid { grid-template-columns: 1fr; } }
-
-    @media (max-width: 1060px) {
-      main { flex-direction: column; }
-      .sidebar { width: 100%; position: static; flex-direction: row; flex-wrap: wrap; gap: 14px; }
-      .sb-panel { flex: 1; min-width: 260px; }
-    }
-
-    @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; }
-      .downloads-grid { grid-template-columns: 1fr; }
-      .service-cost-input { width: 90px; }
-      .proposal-table th:nth-child(3),
-      .proposal-table td:nth-child(3) { display: none; }
-      .sidebar { flex-direction: column; }
-    }
-  </style>
-</head>
-<body>
-
-<header>
-  <div class="header-inner">
-    <img src="/static/logo.png" alt="Xcelerate Growth Partners" class="header-logo" onerror="this.style.display='none'">
-    <div class="header-text">
-      <h1>Xcelerate Growth Partners</h1>
-      <p>Proposal Package Generator — Intro Letter · Proposal PDF · PowerPoint</p>
-    </div>
-  </div>
-</header>
-<div class="green-bar"></div>
-
-<!-- Progress Overlay -->
-<div id="progress-overlay">
-  <div class="progress-box">
-    <div class="progress-spinner"></div>
-    <div class="progress-title">Building Your Package</div>
-    <div class="progress-sub">Generating all three documents…</div>
-    <div class="progress-steps">
-      <div class="progress-step" id="step-letter"><div class="step-dot"></div> Intro Letter PDF</div>
-      <div class="progress-step" id="step-proposal"><div class="step-dot"></div> Proposal Deck PDF</div>
-      <div class="progress-step" id="step-pptx"><div class="step-dot"></div> Proposal PowerPoint</div>
-    </div>
-  </div>
-</div>
-
-<main>
-
-  <!-- ═══════════════════ MAIN COLUMN ═══════════════════ -->
-  <div class="main-col">
-
-  <!-- ── AI Zone ──────────────────────────────────────── -->
-  <div class="zone-wrap ai-zone">
-    <div class="zone-label">
-      <div class="zone-label-line"></div>
-      <span class="zone-label-tag">🤖 AI Deal Intelligence</span>
-      <div class="zone-label-line"></div>
-    </div>
-
-  <!-- 🎯 Sales Director Analysis -->
-  <div class="sd-card" id="sd-card">
-    <div class="sd-header" onclick="toggleSalesDirector()">
-      <div class="sd-header-left">
-        <div class="sd-header-icon">🎯</div>
-        <div>
-          <h3>Sales Director Analysis</h3>
-          <p>Get a recommended package, deal coaching, objection handling &amp; a ready-to-send follow-up email</p>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <span class="sd-badge">Deal Intelligence</span>
-        <span class="sd-toggle" id="sd-toggle">▾</span>
-      </div>
-    </div>
-
-    <div class="sd-body" id="sd-body">
-
-      <!-- Step Indicator -->
-      <div class="sd-steps-indicator">
-        <div class="sd-step-tab active" id="sd-tab-1">① Input</div>
-        <div class="sd-step-tab" id="sd-tab-2">② Clarify</div>
-        <div class="sd-step-tab" id="sd-tab-3">③ Results</div>
-        <button type="button" id="sd-new-btn" onclick="resetSdAnalysis()"
-          style="display:none; margin-left:auto; font-size:11px; font-weight:700;
-            background:#fff; border:1.5px solid #c0c8d8; color:#5a6a8a;
-            border-radius:6px; padding:4px 12px; cursor:pointer; white-space:nowrap;
-            transition:background 0.15s,color 0.15s;"
-          onmouseover="this.style.background='#f0f3f9';this.style.color='#1D3461'"
-          onmouseout="this.style.background='#fff';this.style.color='#5a6a8a'">
-          ＋ New Analysis
-        </button>
-      </div>
-
-      <!-- ── Step 1: Input ─────────────────────────────── -->
-      <div id="sd-step-1">
-        <div class="sd-input-grid">
-          <div>
-            <div class="sd-input-label">Sales Call Transcript</div>
-            <textarea class="sd-textarea" id="sd-transcript"
-              placeholder="Paste your call transcript or meeting notes here…"></textarea>
-          </div>
-          <div>
-            <div class="sd-input-label">Email Thread (optional)</div>
-            <textarea class="sd-textarea" id="sd-email"
-              placeholder="Paste any email exchange with the prospect…"></textarea>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-          <button class="btn-sd-start" id="sd-start-btn" onclick="startSdAnalysis()">
-            <span id="sd-start-icon">🎯</span>
-            <span id="sd-start-text">Start Analysis</span>
-          </button>
-          <span style="font-size:12px;color:#aaa">Takes about 5 seconds</span>
-        </div>
-      </div>
-
-      <!-- ── Step 2: Clarify ───────────────────────────── -->
-      <div id="sd-step-2" style="display:none">
-        <!-- AI summary -->
-        <div class="sd-clarify-intro">
-          <div class="sd-ai-avatar">🤖</div>
-          <div class="sd-clarify-summary" id="sd-clarify-summary"></div>
-        </div>
-        <!-- Questions -->
-        <div class="sd-questions-wrap" id="sd-questions-wrap">
-          <!-- Injected by JS -->
-        </div>
-        <div class="sd-clarify-actions">
-          <button class="btn-sd-back" onclick="backToStep1()">← Back</button>
-          <button class="btn-sd-analyze" id="sd-analyze-btn" onclick="analyzeOpportunity()">
-            <span id="sd-analyze-icon">🔍</span>
-            <span id="sd-analyze-text">Get Full Recommendations</span>
-          </button>
-          <span class="sd-skip-note">Answers are optional — skip to go straight to analysis</span>
-        </div>
-      </div>
-
-      <div class="sd-error" id="sd-error"></div>
-
-      <!-- ── Step 3: Results ───────────────────────────── -->
-      <div class="sd-results" id="sd-results">
-
-        <!-- Opportunity Summary -->
-        <div class="sd-section">
-          <div class="sd-section-head">🎯 Opportunity Summary</div>
-          <div class="sd-section-body" id="sd-summary"></div>
-        </div>
-
-        <!-- Recommended Package -->
-        <div class="sd-section">
-          <div class="sd-section-head">📦 Recommended Package</div>
-          <div class="sd-section-body">
-            <div class="sd-svc-list" id="sd-svc-list"></div>
-            <!-- Package totals breakdown -->
-            <div class="sd-pkg-totals" id="sd-pkg-totals" style="display:none">
-              <div class="sd-pkg-total-row" id="sd-monthly-row" style="display:none">
-                <span class="sd-pkg-total-label">📅 Monthly Retainer</span>
-                <span class="sd-pkg-total-amount" id="sd-monthly-range"></span>
-              </div>
-              <div class="sd-pkg-total-row" id="sd-onetime-row" style="display:none">
-                <span class="sd-pkg-total-label">🔹 One-Time Fees</span>
-                <span class="sd-pkg-total-amount" id="sd-onetime-range"></span>
-              </div>
-              <div class="sd-pkg-total-row grand">
-                <span class="sd-pkg-total-label">Total Engagement Range</span>
-                <span class="sd-pkg-total-amount" id="sd-total-range"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Strategic Rationale -->
-        <div class="sd-section">
-          <div class="sd-section-head">💡 Strategic Rationale</div>
-          <div class="sd-section-body" id="sd-rationale"></div>
-        </div>
-
-        <!-- Objections -->
-        <div class="sd-section">
-          <div class="sd-section-head">💬 Objections to Expect</div>
-          <div class="sd-section-body">
-            <div class="sd-obj-list" id="sd-objections"></div>
-          </div>
-        </div>
-
-        <!-- Competitive Angle -->
-        <div class="sd-section">
-          <div class="sd-section-head">🏆 Why We Win This Deal</div>
-          <div class="sd-section-body" id="sd-competitive"></div>
-        </div>
-
-        <!-- Follow-up Email -->
-        <div class="sd-section">
-          <div class="sd-section-head">📧 Follow-Up Email Draft</div>
-          <div class="sd-section-body">
-            <div class="sd-email-subject" id="sd-email-subject"></div>
-            <button class="btn-copy-email" onclick="copyFollowUpEmail()">📋 Copy Email</button>
-            <div class="sd-email-pre" id="sd-email-body"></div>
-          </div>
-        </div>
-
-        <!-- Next Steps -->
-        <div class="sd-section">
-          <div class="sd-section-head">✅ Next Steps (48 Hours)</div>
-          <div class="sd-section-body">
-            <ul class="sd-next-steps" id="sd-next-steps"></ul>
-          </div>
-        </div>
-
-        <!-- Action row: Apply + Save -->
-        <div class="sd-action-row">
-          <button class="btn-sd-apply" onclick="applySalesDirector()">
-            ✅ Apply to Form &amp; Build Proposal
-          </button>
-          <button class="btn-sd-save" id="sd-save-btn" onclick="saveAnalysis()">
-            💾 Save Analysis
-          </button>
-        </div>
-
-        <!-- Follow-up Chat -->
-        <div class="sd-followup-wrap">
-          <div class="sd-followup-label">Ask a follow-up question</div>
-          <div class="sd-followup">
-            <input type="text" class="sd-followup-input" id="sd-followup-input"
-              placeholder="e.g. How should I handle budget pushback? Best opening line?"
-              onkeydown="if(event.key==='Enter')sdFollowUp()"/>
-            <button class="btn-sd-followup" id="sd-followup-btn" onclick="sdFollowUp()">Ask →</button>
-          </div>
-          <div class="sd-followup-response" id="sd-followup-response"></div>
-        </div>
-
-      </div><!-- /sd-results -->
-    </div><!-- /sd-body -->
-  </div><!-- /sd-card -->
-
-  <!-- ✨ Transcript Parser -->
-  <div class="transcript-card">
-    <div class="transcript-header" onclick="toggleTranscript()">
-      <div class="transcript-header-left">
-        <div>
-          <h3>✨ Parse from Sales Call Transcript</h3>
-          <p>Let AI read your call notes and pre-fill the entire proposal form</p>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <span class="ai-badge">AI-Powered</span>
-        <span class="transcript-toggle" id="transcript-toggle">▾</span>
-      </div>
-    </div>
-    <div class="transcript-body" id="transcript-body">
-      <p class="transcript-desc">
-        Paste your <strong>sales call transcript, meeting notes, or call summary</strong> below.
-        Claude will extract the prospect's name, company, relevant services, pricing discussed,
-        and write a custom intro letter body — then pre-fill the entire form for you to review.
-      </p>
-      <textarea id="transcript-input"
-        placeholder="Paste your sales call transcript or meeting notes here…
-
-Example:
-'Spoke with Sarah Johnson at Meridian Wealth Group today. They're struggling with advisor retention and need help building a leadership pipeline. Also interested in succession planning as two senior advisors plan to retire in the next 3 years. Budget is flexible — we discussed a monthly retainer around $4,500. Follow-up meeting scheduled for April 22nd.'"
-      ></textarea>
-      <div class="transcript-actions">
-        <button class="btn-parse" id="parse-btn" onclick="parseTranscript()">
-          <span id="parse-btn-icon">✨</span>
-          <span id="parse-btn-text">Parse &amp; Pre-fill Form</span>
-        </button>
-        <span class="parse-hint">Takes about 5–10 seconds</span>
-      </div>
-
-      <!-- Error -->
-      <div class="parse-error" id="parse-error"></div>
-
-      <!-- Results preview -->
-      <div class="parse-result" id="parse-result">
-        <div class="parse-result-header">✅ Extracted from transcript</div>
-        <div class="parse-result-body">
-          <div id="parsed-summary"></div>
-          <div id="parsed-services-wrap">
-            <div class="parsed-info" style="margin-top:10px"><strong>Recommended Services:</strong></div>
-            <div class="parsed-chips" id="parsed-services"></div>
-          </div>
-          <button class="btn-apply" onclick="applyParsed()">Apply to Form →</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  </div><!-- /ai-zone -->
-
-  <!-- ── Form Zone separator ──────────────────────────── -->
-  <div class="form-zone-sep">
-    <div class="zone-label-line"></div>
-    <span class="zone-label-tag">📋 Proposal Builder</span>
-    <div class="zone-label-line"></div>
-  </div>
-
-  <!-- Saved Proposals Panel (hidden, accessible from sidebar) -->
-  <div style="display:none" id="panel-saved">
-    <div class="card">
-      <div class="card-header">
-        <span>Saved Proposals</span>
-        <span class="badge" id="saved-count-badge">0</span>
-      </div>
-      <div class="card-body" style="padding: 0;">
-        <div id="saved-loading" class="saved-loading">Loading…</div>
-        <div id="saved-content" style="display:none;">
-          <div id="saved-empty" class="saved-empty" style="display:none;">
-            <div class="empty-icon">📂</div>
-            No proposals saved yet. Generate your first one!
-          </div>
-          <table class="proposal-table" id="saved-table" style="display:none;">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Contact</th>
-                <th>Date</th>
-                <th>Created</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="saved-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Saved Analyses Panel -->
-  <div class="tab-panel" id="panel-analyses">
-    <div class="card">
-      <div class="card-header" style="background: linear-gradient(135deg, #0b4c61, #0e6882);">
-        <span>Saved Sales Director Analyses</span>
-        <span class="badge" id="analyses-count-badge">0</span>
-      </div>
-      <div class="card-body" style="padding: 0;">
-        <div id="analyses-loading" class="saved-loading">Loading…</div>
-        <div id="analyses-content" style="display:none;">
-          <div id="analyses-empty" class="saved-empty" style="display:none;">
-            <div class="empty-icon">🎯</div>
-            No analyses saved yet. Run the Sales Director and click "Save Analysis".
-          </div>
-          <table class="analysis-table" id="analyses-table" style="display:none;">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Contact</th>
-                <th>Total Range</th>
-                <th>Saved</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="analyses-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- New Proposal Panel -->
-  <div class="tab-panel active" id="panel-new">
-
-  <!-- Results -->
-  <div id="results">
-    <div class="results-header">
-      <h2>✅ Your Proposal Package Is Ready</h2>
-      <p>Three documents generated for <strong id="results-company"></strong></p>
-    </div>
-    <div class="results-body">
-      <div id="error-banner" class="error-banner"></div>
-      <div class="downloads-grid">
-        <div class="download-card" id="card-letter">
-          <div class="doc-icon">📄</div>
-          <div class="doc-title">Intro Letter</div>
-          <div class="doc-type">PDF · One Page</div>
-          <a class="btn-download" id="dl-letter" href="#" download>⬇ Download</a>
-        </div>
-        <div class="download-card" id="card-proposal-pdf">
-          <div class="doc-icon">📑</div>
-          <div class="doc-title">Proposal Deck</div>
-          <div class="doc-type">PDF · Multi-Slide</div>
-          <a class="btn-download" id="dl-proposal-pdf" href="#" download>⬇ Download</a>
-        </div>
-        <div class="download-card" id="card-proposal-pptx">
-          <div class="doc-icon">📊</div>
-          <div class="doc-title">Proposal Deck</div>
-          <div class="doc-type">PowerPoint · Editable</div>
-          <a class="btn-download" id="dl-proposal-pptx" href="#" download>⬇ Download</a>
-        </div>
-      </div>
-      <div style="text-align:center; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <button class="btn-start-over" onclick="resetForm()">← Generate Another Package</button>
-        <button type="button" id="results-save-analysis-btn" style="display:none"
-          onclick="saveAnalysis()" class="btn-sd-save">
-          💾 Save Analysis
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Form -->
-  <form id="proposal-form">
-
-    <!-- 01 Prospect Info -->
-    <div class="card">
-      <div class="card-header"><span>01 — Prospect Information</span><span class="badge">Required</span></div>
-      <div class="card-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="field-label" for="company">Company Name <span class="req">*</span></label>
-            <input type="text" id="company" name="company" placeholder="e.g. Edward Jones" required />
-          </div>
-          <div class="form-group">
-            <label class="field-label" for="contact">Contact Name <span class="opt">(optional)</span></label>
-            <input type="text" id="contact" name="contact" placeholder="e.g. Jane Smith" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="field-label" for="contact_email">Contact Email <span class="opt">(optional)</span></label>
-            <input type="text" id="contact_email" name="contact_email" placeholder="e.g. jane@edwardjones.com" />
-          </div>
-          <div class="form-group">
-            <label class="field-label" for="contact_phone">Contact Phone <span class="opt">(optional)</span></label>
-            <input type="text" id="contact_phone" name="contact_phone" placeholder="e.g. (555) 123-4567" />
-          </div>
-        </div>
-        <div class="form-row single" style="margin-bottom:0">
-          <div class="form-group">
-            <label class="field-label" for="date">Meeting / Presentation Date <span class="req">*</span></label>
-            <input type="text" id="date" name="date" placeholder="e.g. April 15, 2026" required />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 02 Services + Costs -->
-    <div class="card">
-      <div class="card-header"><span>02 — Services &amp; Proposed Investment</span><span class="badge">Select &amp; Price</span></div>
-      <div class="card-body">
-        <div class="services-list" id="services-list">
-          <!-- Populated by JS -->
-        </div>
-
-        <!-- Custom service rows (populated by JS) -->
-        <div id="custom-services-container"></div>
-
-        <!-- Total breakdown -->
-        <div class="total-breakdown" style="margin-top:14px">
-          <div class="total-breakdown-row" id="monthly-breakdown-row" style="display:none">
-            <span class="total-bd-label">📅 Monthly Retainer</span>
-            <span class="total-bd-amount" id="monthly-display">$0/mo</span>
-          </div>
-          <div class="total-breakdown-row" id="onetime-breakdown-row" style="display:none">
-            <span class="total-bd-label">🔹 One-Time Fees</span>
-            <span class="total-bd-amount" id="onetime-display">$0</span>
-          </div>
-          <div class="total-breakdown-row grand">
-            <span class="total-bd-label">Total Investment</span>
-            <div class="total-grand-wrap">
-              <button type="button" id="total-recalc-btn" class="total-recalc-btn"
-                onclick="recalcTotal()" title="Reset to calculated total">↻</button>
-              <input type="text" id="total-display" class="total-override-input"
-                placeholder="$0" oninput="onTotalManualEdit()" />
-            </div>
-          </div>
-          <div class="total-only-wrap">
-            <label>
-              <input type="checkbox" id="total-only-toggle" />
-              Hide line items — show total only in proposal
-            </label>
-          </div>
-        </div>
-
-        <!-- Hidden inputs built on submit -->
-        <div id="hidden-cost-inputs"></div>
-      </div>
-    </div>
-
-    <!-- 03 Notes -->
-    <div class="card">
-      <div class="card-header"><span>03 — Additional Notes</span><span class="badge">Optional</span></div>
-      <div class="card-body">
-        <div class="form-group" style="margin-bottom:16px">
-          <label class="field-label" for="notes">Notes for Services Slide <span class="opt">(italic paragraph below the services list)</span></label>
-          <textarea id="notes" name="notes" placeholder="e.g. This proposal reflects our recommended starting engagement. Happy to customize further."></textarea>
-        </div>
-        <div class="form-group">
-          <label class="field-label" for="body_override">Custom Intro Letter Body <span class="opt">(replaces default paragraphs)</span></label>
-          <textarea id="body_override" name="body_override" style="min-height:110px"
-            placeholder="Leave blank to use the default Xcelerate letter copy referencing the company, date, and selected services."></textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- Generate -->
-    <div class="submit-row">
-      <button type="submit" class="btn-generate" id="generate-btn">
-        Generate Full Proposal Package
-      </button>
-    </div>
-
-  </form>
-
-  </div><!-- end panel-new -->
-
-  </div><!-- /main-col -->
-
-  <!-- ═══════════════════ SIDEBAR ═══════════════════════ -->
-  <aside class="sidebar" id="sidebar">
-
-    <!-- Recent Proposals -->
-    <div class="sb-panel">
-      <div class="sb-panel-head proposals">
-        <span>📁 Saved Proposals</span>
-        <span class="sb-count" id="sb-proposals-count">0</span>
-      </div>
-      <div id="sb-proposals-list" class="sb-list">
-        <div class="sb-empty">No proposals yet</div>
-      </div>
-    </div>
-
-    <!-- Recent Analyses -->
-    <div class="sb-panel">
-      <div class="sb-panel-head analyses">
-        <span>🎯 Saved Analyses</span>
-        <span class="sb-count" id="sb-analyses-count">0</span>
-      </div>
-      <div id="sb-analyses-list" class="sb-list">
-        <div class="sb-empty">No analyses yet</div>
-      </div>
-    </div>
-
-  </aside>
-
-</main>
-
-<script>
-  // ── Form submit — registered FIRST so init crashes can't prevent it ──────────
-  document.addEventListener("DOMContentLoaded", function() {
-    const proposalForm = document.getElementById("proposal-form");
-    if (!proposalForm) return;
-    proposalForm.addEventListener("submit", async function(e) {
-      e.preventDefault();
-
-      buildCostInputs();
-
-      // Check at least one service is selected
-      const anyChecked = (typeof SERVICES !== 'undefined') && (
-        SERVICES.some((_, i) => document.getElementById(`svc-${i}`)?.checked)
-        || Object.values(_crowState).some(s => s.checked &&
-             (document.getElementById(s.nameId) || {}).value?.trim())
-      );
-      if (!anyChecked) {
-        alert("Please select at least one service.");
-        return;
-      }
-
-      const btn = document.getElementById("generate-btn");
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Generating…';
-
-      ["step-letter","step-proposal","step-pptx"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove("active","done");
-      });
-      const overlay = document.getElementById("progress-overlay");
-      if (overlay) overlay.classList.add("visible");
-      const timer = animateProgress();
-
-      try {
-        const formData = new FormData(this);
-        const resp = await fetch("/generate", { method: "POST", body: formData });
-        const data = await resp.json();
-
-        clearInterval(timer);
-        ["step-letter","step-proposal","step-pptx"].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) { el.classList.remove("active"); el.classList.add("done"); }
-        });
-        await new Promise(r => setTimeout(r, 500));
-        if (overlay) overlay.classList.remove("visible");
-
-        if (!resp.ok) {
-          alert("Error: " + (data.error || "Generation failed."));
-          btn.disabled = false;
-          btn.innerHTML = "Generate Full Proposal Package";
-          return;
-        }
-        showResults(data);
-
-      } catch(err) {
-        clearInterval(timer);
-        if (overlay) overlay.classList.remove("visible");
-        alert("Network error: " + err.message);
-        btn.disabled = false;
-        btn.innerHTML = "Generate Full Proposal Package";
-      }
-    });
-  });
-
-  // ── Service definitions ────────────────────────────────
-  const SERVICES = [
-    "Team Development and Optimization",
-    "Succession Planning and Practice Transitions",
-    "The Future of Wealth Management (keynotes / workshops)",
-    "Developing Leadership",
-    "Support Staff Development and Career Pathing",
-    "The Wealth Management Process",
-    "Content Development and White Papers",
-    "Conference and Sponsorship Strategy",
-    '"Train the Trainer" Workshops',
-    "Webinars and Podcasts",
-    "Advisor Relationship Development",
-  ];
-
-  // ── Fee types (monthly vs one-time) per service ────────
-  const _feeTypes = {};   // index → 'monthly' | 'onetime'
-  SERVICES.forEach((_, i) => { _feeTypes[i] = 'monthly'; });
-
-  function toggleFeeType(i, isCustom) {
-    if (isCustom) {
-      const s = _crowState[i];
-      if (!s) return;
-      s.feeType = (s.feeType === 'monthly') ? 'onetime' : 'monthly';
-      _updateFeeBtn(`crow-fee-${i}`, s.feeType);
-    } else {
-      _feeTypes[i] = (_feeTypes[i] === 'monthly') ? 'onetime' : 'monthly';
-      _updateFeeBtn(`fee-type-${i}`, _feeTypes[i]);
-    }
-    updateTotal();
-  }
-
-  function _updateFeeBtn(btnId, feeType) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    btn.textContent = feeType === 'monthly' ? 'Monthly' : 'One-Time';
-    btn.className   = 'fee-type-btn ' + feeType;
-  }
-
-  // ── Build service rows ─────────────────────────────────
-  const list = document.getElementById("services-list");
-  SERVICES.forEach((svc, i) => {
-    const row = document.createElement("div");
-    row.className = "service-row";
-    row.dataset.index = i;
-    row.innerHTML = `
-      <div class="service-check-wrap" onclick="toggleService(${i})">
-        <input type="checkbox" id="svc-${i}" />
-        <div class="checkmark" id="cm-${i}"></div>
-        <span class="service-name">${svc}</span>
-      </div>
-      <div class="service-cost-wrap">
-        <button type="button" class="fee-type-btn monthly" id="fee-type-${i}"
-          onclick="event.stopPropagation();toggleFeeType(${i},false)" title="Click to toggle Monthly / One-Time">Monthly</button>
-        <span class="cost-prefix">$</span>
-        <input type="text" class="service-cost-input" id="cost-${i}"
-          placeholder="0" oninput="updateTotal()"
-          onclick="event.stopPropagation()" />
-      </div>
-    `;
-    list.appendChild(row);
-  });
-
-  function toggleService(i) {
-    const cb  = document.getElementById(`svc-${i}`);
-    const row = document.querySelector(`.service-row[data-index="${i}"]`);
-    const cm  = document.getElementById(`cm-${i}`);
-    cb.checked = !cb.checked;
-    row.classList.toggle("checked", cb.checked);
-    updateTotal();
-  }
-
-  // ── Custom service rows (multi-row) ───────────────────
-  let _crowCount = 0;
-  const _crowState = {}; // id -> { checked, nameId, costId, rowId, cmId, aiAdded }
-  let _sdData           = null;   // stores last full SD analysis
-  let _sdClarifyData    = null;   // stores clarify step response (summary + questions)
-  let _totalManuallySet = false;  // true when user has typed a custom total
-
-  function _escAttr(str) {
-    return String(str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  function addCustomRow(prefillName, prefillCost, startChecked, aiAdded, feeType) {
-    prefillName   = prefillName   || '';
-    prefillCost   = prefillCost   || '';
-    startChecked  = !!startChecked;
-    aiAdded       = !!aiAdded;
-    feeType       = feeType || 'monthly';
-
-    const id      = _crowCount++;
-    const nameId  = `crow-name-${id}`;
-    const costId  = `crow-cost-${id}`;
-    const rowId   = `crow-${id}`;
-    const cmId    = `crow-cm-${id}`;
-    const feeId   = `crow-fee-${id}`;
-
-    _crowState[id] = { checked: startChecked, nameId, costId, rowId, cmId, aiAdded, feeType, feeId };
-
-    const row = document.createElement('div');
-    row.className = 'custom-service-row' + (startChecked ? ' checked' : '');
-    row.id = rowId;
-    if (aiAdded) row.dataset.aiAdded = '1';
-    row.style.marginTop = '8px';
-    row.innerHTML = `
-      <div class="service-check-wrap" onclick="toggleCrow(${id})">
-        <div class="checkmark" id="${cmId}"></div>
-        <input type="text" class="custom-service-name-input" id="${nameId}"
-          value="${_escAttr(prefillName)}"
-          placeholder="+ Add a custom service…"
-          onclick="event.stopPropagation()"
-          oninput="onCrowInput(${id})" />
-      </div>
-      <div class="service-cost-wrap">
-        <button type="button" class="fee-type-btn ${feeType}" id="${feeId}"
-          onclick="event.stopPropagation();toggleFeeType(${id},true)">${feeType === 'monthly' ? 'Monthly' : 'One-Time'}</button>
-        <span class="cost-prefix">$</span>
-        <input type="text" class="service-cost-input" id="${costId}"
-          value="${_escAttr(prefillCost)}"
-          placeholder="0" oninput="updateTotal()" />
-      </div>
-    `;
-    document.getElementById('custom-services-container').appendChild(row);
-    if (startChecked) _setCrowStyle(id, true);
-    updateTotal();
-    return id;
-  }
-
-  function toggleCrow(id) {
-    const s = _crowState[id];
-    if (!s) return;
-    s.checked = !s.checked;
-    _setCrowStyle(id, s.checked);
-    updateTotal();
-  }
-
-  function _setCrowStyle(id, checked) {
-    const s   = _crowState[id];
-    const cm  = document.getElementById(s.cmId);
-    const row = document.getElementById(s.rowId);
-    if (!cm || !row) return;
-    cm.style.background   = checked ? '#5CB85C' : '';
-    cm.style.borderColor  = checked ? '#5CB85C' : '';
-    row.style.borderColor = checked ? '#5CB85C' : '';
-    row.style.borderStyle = checked ? 'solid'   : 'dashed';
-    row.style.background  = checked ? '#f4fcf4' : '';
-    row.classList.toggle('checked', checked);
-  }
-
-  function onCrowInput(id) {
-    const s = _crowState[id];
-    if (!s) return;
-    const name = (document.getElementById(s.nameId) || {}).value?.trim() || '';
-    if (name && !s.checked) toggleCrow(id);
-    updateTotal();
-  }
-
-  // Create the initial blank custom row
-  addCustomRow();
-
-  // ── Total override state ───────────────────────────────
-
-  function onTotalManualEdit() {
-    _totalManuallySet = true;
-    const btn = document.getElementById("total-recalc-btn");
-    if (btn) btn.style.display = "inline-block";
-  }
-
-  function recalcTotal() {
-    _totalManuallySet = false;
-    const btn = document.getElementById("total-recalc-btn");
-    if (btn) btn.style.display = "none";
-    updateTotal();
-  }
-
-  // ── Running total ──────────────────────────────────────
-  function parseCost(val) {
-    const n = parseFloat(val.replace(/[^0-9.]/g, ""));
-    return isNaN(n) ? 0 : n;
-  }
-
-  function formatCurrency(n) {
-    if (n === 0) return "$0";
-    return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  }
-
-  function updateTotal() {
-    let monthly = 0, onetime = 0;
-
-    // Standard services
-    SERVICES.forEach((_, i) => {
-      const cb   = document.getElementById(`svc-${i}`);
-      const cost = document.getElementById(`cost-${i}`);
-      if (!cb || !cb.checked || !cost) return;
-      const amt = parseCost(cost.value);
-      if (_feeTypes[i] === 'onetime') onetime += amt; else monthly += amt;
-    });
-
-    // Custom service rows
-    Object.values(_crowState).forEach(s => {
-      if (!s.checked) return;
-      const costEl = document.getElementById(s.costId);
-      if (!costEl) return;
-      const amt = parseCost(costEl.value);
-      if (s.feeType === 'onetime') onetime += amt; else monthly += amt;
-    });
-
-    const total = monthly + onetime;
-
-    // Monthly row
-    const mRow = document.getElementById("monthly-breakdown-row");
-    const oRow = document.getElementById("onetime-breakdown-row");
-    if (mRow) mRow.style.display = monthly > 0 ? "flex" : "none";
-    if (oRow) oRow.style.display = onetime > 0 ? "flex" : "none";
-
-    const mEl = document.getElementById("monthly-display");
-    const oEl = document.getElementById("onetime-display");
-    if (mEl) mEl.textContent = formatCurrency(monthly) + "/mo";
-    if (oEl) oEl.textContent = formatCurrency(onetime);
-    if (!_totalManuallySet) {
-      document.getElementById("total-display").value = formatCurrency(total);
-    }
-  }
-
-  // ── Build hidden inputs before submit ─────────────────
-  function buildCostInputs() {
-    const container = document.getElementById("hidden-cost-inputs");
-    container.innerHTML = "";
-
-    const addHidden = (name, value) => {
-      const inp = document.createElement("input");
-      inp.type  = "hidden";
-      inp.name  = name;
-      inp.value = value;
-      container.appendChild(inp);
-    };
-
-    let monthly = 0, onetime = 0;
-    const costLines = [];
-
-    SERVICES.forEach((svc, i) => {
-      const cb   = document.getElementById(`svc-${i}`);
-      const cost = document.getElementById(`cost-${i}`);
-      if (cb && cb.checked) {
-        addHidden("services", svc);
-        const amt = parseCost(cost ? cost.value : "0");
-        if (amt > 0) {
-          const ft = _feeTypes[i] === 'onetime' ? 'one-time' : '/mo';
-          costLines.push(`${svc}: ${formatCurrency(amt)}${ft}`);
-          if (_feeTypes[i] === 'onetime') onetime += amt; else monthly += amt;
-        }
-      }
-    });
-
-    // Custom service rows
-    Object.values(_crowState).forEach(s => {
-      if (!s.checked) return;
-      const name = (document.getElementById(s.nameId) || {}).value?.trim() || '';
-      if (!name) return;
-      addHidden("services", name);
-      const costEl = document.getElementById(s.costId);
-      const amt = parseCost(costEl ? costEl.value : '0');
-      if (amt > 0) {
-        const ft = s.feeType === 'onetime' ? 'one-time' : '/mo';
-        costLines.push(`${name}: ${formatCurrency(amt)}${ft}`);
-        if (s.feeType === 'onetime') onetime += amt; else monthly += amt;
-      }
-    });
-
-    const calcTotal = monthly + onetime;
-
-    // Use manually-entered total if set, otherwise use calculated
-    const totalInput = document.getElementById("total-display");
-    const displayTotal = _totalManuallySet
-      ? parseCost(totalInput ? totalInput.value : "0") || calcTotal
-      : calcTotal;
-
-    const totalOnlyMode = document.getElementById("total-only-toggle")?.checked;
-
-    if (totalOnlyMode) {
-      // Discard all line items — send only the grand total
-      costLines.length = 0;
-      if (displayTotal > 0) costLines.push(`Total Investment: ${formatCurrency(displayTotal)}`);
-    } else {
-      if (costLines.length > 0) {
-        if (monthly > 0) costLines.push(`Monthly Retainer: ${formatCurrency(monthly)}/mo`);
-        if (onetime > 0) costLines.push(`One-Time Fees: ${formatCurrency(onetime)}`);
-        costLines.push(`Total Investment: ${formatCurrency(displayTotal)}`);
-      }
-    }
-
-    costLines.forEach(line => addHidden("cost_lines", line));
-  }
-
-  // ── Progress animation ─────────────────────────────────
-  function animateProgress() {
-    const steps = ["step-letter", "step-proposal", "step-pptx"];
-    let i = 0;
-    const iv = setInterval(() => {
-      if (i > 0) {
-        document.getElementById(steps[i-1]).classList.remove("active");
-        document.getElementById(steps[i-1]).classList.add("done");
-      }
-      if (i < steps.length) {
-        document.getElementById(steps[i]).classList.add("active");
-        i++;
-      } else {
-        clearInterval(iv);
-      }
-    }, 1200);
-    return iv;
-  }
-
-  // ── Show results ───────────────────────────────────────
-  function showResults(data) {
-    document.getElementById("proposal-form").style.display = "none";
-    const results = document.getElementById("results");
-    results.style.display = "block";
-    document.getElementById("results-company").textContent =
-      data.company + (data.date ? " — " + data.date : "");
-
-    // Refresh saved proposals count badge
-    fetch("/api/proposals").then(r => r.json()).then(p => {
-      document.getElementById("saved-count-badge").textContent = p.length;
-    }).catch(() => {});
-
-    const base = `/download/${data.job_id}/`;
-    function setCard(cid, dlid, fname, ok) {
-      const card = document.getElementById(cid);
-      const dl   = document.getElementById(dlid);
-      if (ok) { dl.href = base + fname; dl.download = fname; card.classList.remove("unavailable"); }
-      else     { card.classList.add("unavailable"); }
-    }
-    setCard("card-letter",        "dl-letter",        data.letter_name,        data.produced.letter_pdf);
-    setCard("card-proposal-pdf",  "dl-proposal-pdf",  data.proposal_pdf_name,  data.produced.proposal_pdf);
-    setCard("card-proposal-pptx", "dl-proposal-pptx", data.proposal_pptx_name, data.produced.proposal_pptx);
-
-    if (data.errors && data.errors.length) {
-      const b = document.getElementById("error-banner");
-      b.style.display = "block";
-      b.textContent = "Note: " + data.errors.join(" | ");
-    }
-    // Show inline Save Analysis button if SD data is available
-    const saveBtn = document.getElementById("results-save-analysis-btn");
-    if (saveBtn) saveBtn.style.display = _sdData ? "inline-flex" : "none";
-
-    loadSidebarData();
-    results.scrollIntoView({ behavior: "smooth" });
-  }
-
-  // ── Reset ──────────────────────────────────────────────
-  function resetForm() {
-    document.getElementById("results").style.display = "none";
-    document.getElementById("error-banner").style.display = "none";
-    document.getElementById("proposal-form").style.display = "block";
-    document.getElementById("generate-btn").disabled = false;
-    document.getElementById("generate-btn").innerHTML = "Generate Full Proposal Package";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  // ── Tab switching ──────────────────────────────────────
-  function switchTab(tab) {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-    if (tab === "saved") {
-      const btn = document.getElementById("saved-tab-btn");
-      if (btn) btn.classList.add("active");
-      const panel = document.getElementById("panel-saved");
-      if (panel) { panel.classList.add("active"); loadSavedProposals(); }
-    } else if (tab === "analyses") {
-      const btn = document.getElementById("analyses-tab-btn");
-      if (btn) btn.classList.add("active");
-      const panel = document.getElementById("panel-analyses");
-      if (panel) { panel.classList.add("active"); loadSavedAnalyses(); }
-    } else {
-      const btn = document.getElementById("new-tab-btn");
-      if (btn) btn.classList.add("active");
-      const panel = document.getElementById("panel-new");
-      if (panel) panel.classList.add("active");
-    }
-  }
-
-  // ── Saved Analyses ─────────────────────────────────────
-  async function loadSavedAnalyses() {
-    document.getElementById("analyses-loading").style.display = "block";
-    document.getElementById("analyses-content").style.display = "none";
-    try {
-      const resp = await fetch("/api/analyses");
-      const list = await resp.json();
-      renderSavedAnalyses(list);
-    } catch(e) {
-      document.getElementById("analyses-loading").textContent = "Could not load analyses.";
-    }
-  }
-
-  function renderSavedAnalyses(list) {
-    document.getElementById("analyses-loading").style.display = "none";
-    document.getElementById("analyses-content").style.display = "block";
-    document.getElementById("analyses-count-badge").textContent = list.length;
-    if (list.length === 0) {
-      document.getElementById("analyses-empty").style.display = "block";
-      document.getElementById("analyses-table").style.display = "none";
-      return;
-    }
-    document.getElementById("analyses-empty").style.display = "none";
-    document.getElementById("analyses-table").style.display = "table";
-    const tbody = document.getElementById("analyses-tbody");
-    tbody.innerHTML = "";
-    list.forEach(a => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td style="font-weight:600;color:#0b4c61">${esc(a.company || "—")}</td>
-        <td>${esc(a.contact || "—")}</td>
-        <td style="color:#2a6e2a;font-weight:600">${esc(a.total_range || "—")}</td>
-        <td style="color:#888;font-size:12px">${esc(a.created_at || "")}</td>
-        <td>
-          <div class="td-actions">
-            <button class="btn-sm btn-regen" onclick="loadAnalysis('${a.id}')">↺ Load</button>
-            <button class="btn-sm btn-delete" onclick="deleteAnalysis('${a.id}',this)" title="Delete">✕</button>
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  async function loadAnalysis(id) {
-    try {
-      const resp = await fetch(`/api/analyses/${id}`);
-      const json = await resp.json();
-      if (!resp.ok) { alert("Could not load analysis."); return; }
-      _sdData = json;
-      renderSalesDirectorResults(_sdData);
-      // Open SD panel and jump to step 3
-      const body = document.getElementById("sd-body");
-      const toggle = document.getElementById("sd-toggle");
-      body.classList.add("open");
-      toggle.classList.add("open");
-      _sdSetStep(3);
-      switchTab("new");
-      setTimeout(() => {
-        document.getElementById("sd-card").scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } catch(e) { alert("Error: " + e.message); }
-  }
-
-  async function deleteAnalysis(id, btn) {
-    if (!confirm("Delete this analysis?")) return;
-    await fetch(`/api/analyses/${id}`, { method: "DELETE" });
-    btn.closest("tr").remove();
-    const rem = document.querySelectorAll("#analyses-tbody tr").length;
-    document.getElementById("analyses-count-badge").textContent = rem;
-    if (rem === 0) {
-      document.getElementById("analyses-table").style.display = "none";
-      document.getElementById("analyses-empty").style.display = "block";
-    }
-  }
-
-  // ── Saved Proposals ────────────────────────────────────
-  async function loadSavedProposals() {
-    document.getElementById("saved-loading").style.display = "block";
-    document.getElementById("saved-content").style.display = "none";
-    try {
-      const resp = await fetch("/api/proposals");
-      const proposals = await resp.json();
-      renderSavedProposals(proposals);
-    } catch(e) {
-      document.getElementById("saved-loading").textContent = "Could not load proposals.";
-    }
-  }
-
-  function renderSavedProposals(proposals) {
-    document.getElementById("saved-loading").style.display = "none";
-    document.getElementById("saved-content").style.display = "block";
-    document.getElementById("saved-count-badge").textContent = proposals.length;
-
-    if (proposals.length === 0) {
-      document.getElementById("saved-empty").style.display = "block";
-      document.getElementById("saved-table").style.display = "none";
-      return;
-    }
-
-    document.getElementById("saved-empty").style.display = "none";
-    document.getElementById("saved-table").style.display = "table";
-
-    const tbody = document.getElementById("saved-tbody");
-    tbody.innerHTML = "";
-    proposals.forEach(p => {
-      const files = p.files || {};
-      const base  = `/download/${p.id}/`;
-      const prefix = p.company.replace(/[^a-zA-Z0-9 \-_]/g,"").trim().replace(/ /g,"_");
-
-      const dlBtn = (label, filename, available) => available
-        ? `<a class="btn-sm btn-dl" href="${base}${filename}" download>⬇ ${label}</a>`
-        : `<span class="btn-sm btn-dl-gray">⬇ ${label}</span>`;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="td-company">${p.company}</td>
-        <td>${p.contact || "<span style='color:#bbb'>—</span>"}</td>
-        <td>${p.date}</td>
-        <td class="td-date">${p.created_at || ""}</td>
-        <td>
-          <div class="td-actions">
-            <button class="btn-sm btn-regen" onclick="regenProposal('${p.id}', this)">↻ Regenerate</button>
-            ${dlBtn("Letter", prefix+"_Intro_Letter.pdf",  files.letter_pdf)}
-            ${dlBtn("PDF",    prefix+"_Proposal.pdf",      files.proposal_pdf)}
-            ${dlBtn("PPT",    prefix+"_Proposal.pptx",     files.proposal_pptx)}
-            <button class="btn-sm btn-delete" onclick="deleteProposal('${p.id}', this)" title="Delete">✕</button>
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  async function regenProposal(id, btn) {
-    btn.disabled = true;
-    btn.textContent = "Generating…";
-    try {
-      const resp = await fetch(`/regenerate/${id}`, { method: "POST" });
-      const data = await resp.json();
-      if (resp.ok) {
-        // Update download links in the row
-        const base   = `/download/${data.job_id}/`;
-        const prefix = data.company.replace(/[^a-zA-Z0-9 \-_]/g,"").trim().replace(/ /g,"_");
-        const row    = btn.closest("tr");
-        const actions = row.querySelector(".td-actions");
-        // Replace the download buttons with fresh links
-        actions.querySelectorAll(".btn-dl, .btn-dl-gray").forEach(el => el.remove());
-        const insertBefore = actions.querySelector(".btn-delete");
-        ["Letter","PDF","PPT"].forEach((label, i) => {
-          const filenames = [prefix+"_Intro_Letter.pdf", prefix+"_Proposal.pdf", prefix+"_Proposal.pptx"];
-          const a = document.createElement("a");
-          a.className = "btn-sm btn-dl";
-          a.href = base + filenames[i];
-          a.download = filenames[i];
-          a.textContent = "⬇ " + label;
-          actions.insertBefore(a, insertBefore);
-        });
-        btn.textContent = "✓ Done";
-        setTimeout(() => { btn.disabled = false; btn.textContent = "↻ Regenerate"; }, 2000);
-      } else {
-        btn.textContent = "✗ Failed";
-        setTimeout(() => { btn.disabled = false; btn.textContent = "↻ Regenerate"; }, 2000);
-      }
-    } catch(e) {
-      btn.disabled = false; btn.textContent = "↻ Regenerate";
-    }
-  }
-
-  async function deleteProposal(id, btn) {
-    if (!confirm("Remove this proposal from saved history?")) return;
-    await fetch(`/api/proposals/${id}`, { method: "DELETE" });
-    btn.closest("tr").remove();
-    const remaining = document.querySelectorAll("#saved-tbody tr").length;
-    document.getElementById("saved-count-badge").textContent = remaining;
-    if (remaining === 0) {
-      document.getElementById("saved-table").style.display = "none";
-      document.getElementById("saved-empty").style.display = "block";
-    }
-  }
-
-  // ── Transcript Parser ──────────────────────────────────
-  let _parsedData = null;
-
-  function toggleTranscript() {
-    const body    = document.getElementById("transcript-body");
-    const toggle  = document.getElementById("transcript-toggle");
-    const isOpen  = body.classList.contains("open");
-    body.classList.toggle("open", !isOpen);
-    toggle.classList.toggle("open", !isOpen);
-  }
-
-  // SD open by default, transcript closed by default
-  document.addEventListener("DOMContentLoaded", () => {
-    // Open the Sales Director panel
-    document.getElementById("sd-body").classList.add("open");
-    document.getElementById("sd-toggle").classList.add("open");
-    // Transcript starts closed (omit adding "open")
-    loadSidebarData();
-  });
-
-  async function parseTranscript() {
-    const transcript = document.getElementById("transcript-input").value.trim();
-    if (!transcript) {
-      showParseError("Please paste your transcript or meeting notes first.");
-      return;
-    }
-
-    const btn      = document.getElementById("parse-btn");
-    const btnIcon  = document.getElementById("parse-btn-icon");
-    const btnText  = document.getElementById("parse-btn-text");
-    btn.disabled   = true;
-    btnIcon.innerHTML = '<span class="spinner"></span>';
-    btnText.textContent = "Parsing…";
-    hideParseError();
-    document.getElementById("parse-result").classList.remove("visible");
-
-    try {
-      const resp = await fetch("/parse-transcript", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript }),
-      });
-      const json = await resp.json();
-
-      if (!resp.ok || json.error) {
-        showParseError(json.error || "Parsing failed. Please try again.");
-        return;
-      }
-
-      _parsedData = json.data;
-      showParsedPreview(_parsedData);
-
-    } catch(e) {
-      showParseError("Network error: " + e.message);
-    } finally {
-      btn.disabled  = false;
-      btnIcon.textContent = "✨";
-      btnText.textContent = "Parse & Pre-fill Form";
-    }
-  }
-
-  function showParseError(msg) {
-    const el = document.getElementById("parse-error");
-    el.textContent = "⚠ " + msg;
-    el.classList.add("visible");
-  }
-
-  function hideParseError() {
-    document.getElementById("parse-error").classList.remove("visible");
-  }
-
-  function showParsedPreview(data) {
-    const summary = document.getElementById("parsed-summary");
-    const lines = [];
-    if (data.company) lines.push(`<div class="parsed-info"><strong>Company:</strong> ${esc(data.company)}</div>`);
-    if (data.contact) lines.push(`<div class="parsed-info"><strong>Contact:</strong> ${esc(data.contact)}</div>`);
-    if (data.date)    lines.push(`<div class="parsed-info"><strong>Date:</strong> ${esc(data.date)}</div>`);
-    if (data.notes)   lines.push(`<div class="parsed-info"><strong>Notes:</strong> ${esc(data.notes)}</div>`);
-    summary.innerHTML = lines.join("");
-
-    const svcWrap = document.getElementById("parsed-services");
-    svcWrap.innerHTML = "";
-    (data.services || []).forEach(s => {
-      const chip = document.createElement("span");
-      chip.className = "parsed-chip svc";
-      chip.textContent = s;
-      svcWrap.appendChild(chip);
-    });
-    // Show custom (non-catalog) services with a distinct style
-    (data.custom_services || []).forEach(s => {
-      const name = s.name || s;
-      if (!name) return;
-      const chip = document.createElement("span");
-      chip.className = "parsed-chip";
-      chip.style.cssText = "background:#fff8e6;color:#7b3f00;border:1px solid #e8a020";
-      chip.textContent = "✦ " + name + (s.cost ? " — " + s.cost : "") + " (custom)";
-      svcWrap.appendChild(chip);
-    });
-    const hasAnySvc = (data.services && data.services.length) ||
-                      (data.custom_services && data.custom_services.length);
-    document.getElementById("parsed-services-wrap").style.display =
-      hasAnySvc ? "block" : "none";
-
-    document.getElementById("parse-result").classList.add("visible");
-  }
-
-  function esc(str) {
-    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
-
-  function applyParsed() {
-    if (!_parsedData) return;
-    const d = _parsedData;
-
-    // Fill text fields
-    if (d.company) document.getElementById("company").value = d.company;
-    if (d.contact) document.getElementById("contact").value = d.contact;
-    if (d.date)    document.getElementById("date").value    = d.date;
-    if (d.notes)   document.getElementById("notes").value   = d.notes;
-    if (d.body_override) document.getElementById("body_override").value = d.body_override;
-
-    // Check matching services and fill costs
-    const costs = d.service_costs || {};
-    SERVICES.forEach((svc, i) => {
-      const match = (d.services || []).find(s =>
-        s.toLowerCase().trim() === svc.toLowerCase().trim()
-      );
-      if (match) {
-        const cb  = document.getElementById(`svc-${i}`);
-        const row = document.querySelector(`.service-row[data-index="${i}"]`);
-        cb.checked = true;
-        row.classList.add("checked");
-
-        // Fill cost if discussed
-        const costKey = Object.keys(costs).find(k =>
-          k.toLowerCase().trim() === svc.toLowerCase().trim()
-        );
-        if (costKey) {
-          const costEl = document.getElementById(`cost-${i}`);
-          if (costEl) {
-            // Strip to just number
-            const numStr = costs[costKey].replace(/[^0-9.,]/g,"").replace(/,/g,"");
-            costEl.value = numStr;
-          }
-        }
-      }
-    });
-
-    // Remove any previously AI-added custom rows
-    document.querySelectorAll('#custom-services-container [data-ai-added]').forEach(el => {
-      const id = parseInt(el.id.replace('crow-', ''));
-      delete _crowState[id];
-      el.remove();
-    });
-
-    // Add catalog services that didn't match as custom rows (edge case)
-    const unmatched = (d.services || []).filter(svcName =>
-      !SERVICES.find(cat => cat.toLowerCase().trim() === svcName.toLowerCase().trim())
-    );
-    unmatched.forEach(svcName => {
-      const costKey = Object.keys(costs).find(k =>
-        k.toLowerCase().trim() === svcName.toLowerCase().trim()
-      );
-      const costStr = costKey
-        ? costs[costKey].replace(/[^0-9.,]/g, '').replace(/,/g, '')
-        : '';
-      addCustomRow(svcName, costStr, true, true);
-    });
-
-    // Add explicitly custom services (things AI found that aren't in catalog at all)
-    (d.custom_services || []).forEach(svc => {
-      const name = svc.name || '';
-      if (!name) return;
-      // Don't add if it already matches a catalog service
-      if (SERVICES.find(cat => cat.toLowerCase().trim() === name.toLowerCase().trim())) return;
-      const costStr = (svc.cost || '').replace(/[^0-9.,]/g, '').replace(/,/g, '');
-      addCustomRow(name, costStr, true, true);
-    });
-
-    updateTotal();
-
-    // Switch to New Proposal tab and scroll to form
-    switchTab("new");
-    setTimeout(() => {
-      document.getElementById("company").scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 100);
-
-    // Collapse the transcript panel
-    const body   = document.getElementById("transcript-body");
-    const toggle = document.getElementById("transcript-toggle");
-    body.classList.remove("open");
-    toggle.classList.remove("open");
-  }
-
-  // ── Sales Director ───────────────────────────────────────
-
-  function toggleSalesDirector() {
-    const body   = document.getElementById("sd-body");
-    const toggle = document.getElementById("sd-toggle");
-    const open   = body.classList.toggle("open");
-    toggle.classList.toggle("open", open);
-  }
-
-  function _sdSetStep(step) {
-    // Update step tabs
-    [1,2,3].forEach(n => {
-      const tab = document.getElementById(`sd-tab-${n}`);
-      tab.classList.toggle("active", n === step);
-      tab.classList.toggle("done",   n < step);
-    });
-    // Show/hide step panels
-    document.getElementById("sd-step-1").style.display = step === 1 ? "block" : "none";
-    document.getElementById("sd-step-2").style.display = step === 2 ? "block" : "none";
-    if (step === 3) {
-      document.getElementById("sd-results").classList.add("visible");
-    } else {
-      document.getElementById("sd-results").classList.remove("visible");
-    }
-    // Show "New Analysis" button only when results are visible
-    const newBtn = document.getElementById("sd-new-btn");
-    if (newBtn) newBtn.style.display = step === 3 ? "inline-block" : "none";
-  }
-
-  function resetSdAnalysis() {
-    _sdData = null;
-    // Clear inputs
-    const t = document.getElementById("sd-transcript");
-    const e = document.getElementById("sd-email");
-    if (t) t.value = "";
-    if (e) e.value = "";
-    // Clear follow-up
-    const fi = document.getElementById("sd-followup-input");
-    const fr = document.getElementById("sd-followup-response");
-    if (fi) fi.value = "";
-    if (fr) fr.textContent = "";
-    // Reset start button
-    const startBtn  = document.getElementById("sd-start-btn");
-    const startText = document.getElementById("sd-start-text");
-    const startIcon = document.getElementById("sd-start-icon");
-    if (startBtn)  { startBtn.disabled = false; }
-    if (startText) startText.textContent = "Start Analysis";
-    if (startIcon) startIcon.textContent = "🎯";
-    // Hide results-screen save button
-    const rsBtn = document.getElementById("results-save-analysis-btn");
-    if (rsBtn) rsBtn.style.display = "none";
-    // Go back to step 1
-    _sdSetStep(1);
-  }
-
-  function backToStep1() {
-    document.getElementById("sd-error").classList.remove("visible");
-    _sdSetStep(1);
-  }
-
-  // ── Step 1: read transcript → call /sd-clarify for 2 questions
-  async function startSdAnalysis() {
-    const transcript = document.getElementById("sd-transcript").value.trim();
-    const email      = document.getElementById("sd-email").value.trim();
-    const errEl      = document.getElementById("sd-error");
-    const btn        = document.getElementById("sd-start-btn");
-    const btnIcon    = document.getElementById("sd-start-icon");
-    const btnText    = document.getElementById("sd-start-text");
-
-    errEl.classList.remove("visible");
-
-    if (!transcript && !email) {
-      errEl.textContent = "Please paste a transcript or email thread first.";
-      errEl.classList.add("visible");
-      return;
-    }
-
-    btn.disabled = true;
-    btnIcon.textContent = "⏳";
-    btnText.textContent = "Reading…";
-
-    try {
-      const resp = await fetch("/sd-clarify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript, email }),
-      });
-      const json = await resp.json();
-
-      if (!resp.ok || json.error) {
-        errEl.textContent = json.error || "Could not read transcript. Please try again.";
-        errEl.classList.add("visible");
-        return;
-      }
-
-      _sdClarifyData = json.data;
-      _buildClarifyStep(json.data);
-      _sdSetStep(2);
-
-    } catch (err) {
-      errEl.textContent = "Network error: " + err.message;
-      errEl.classList.add("visible");
-    } finally {
-      btn.disabled = false;
-      btnIcon.textContent = "🎯";
-      btnText.textContent = "Start Analysis";
-    }
-  }
-
-  function _buildClarifyStep(data) {
-    document.getElementById("sd-clarify-summary").textContent =
-      data.summary || "Here's what I understood from your notes. Answer these two questions to sharpen the recommendation.";
-
-    const wrap = document.getElementById("sd-questions-wrap");
-    wrap.innerHTML = "";
-    (data.questions || []).forEach((q, i) => {
-      const div = document.createElement("div");
-      div.className = "sd-q-item";
-      div.innerHTML = `
-        <div class="sd-q-header">
-          <div class="sd-q-num">${i+1}</div>
-          <div class="sd-q-label">${esc(q)}</div>
-        </div>
-        <input type="text" class="sd-q-input" id="sd-q-${i}"
-          placeholder="Your answer (or skip)…" />
-      `;
-      wrap.appendChild(div);
-    });
-  }
-
-  // ── Step 2: collect answers → call /analyze-opportunity
-  async function analyzeOpportunity() {
-    const transcript = document.getElementById("sd-transcript").value.trim();
-    const email      = document.getElementById("sd-email").value.trim();
-    const errEl      = document.getElementById("sd-error");
-    const resEl      = document.getElementById("sd-results");
-    const btn        = document.getElementById("sd-analyze-btn");
-    const btnIcon    = document.getElementById("sd-analyze-icon");
-    const btnText    = document.getElementById("sd-analyze-text");
-
-    errEl.classList.remove("visible");
-
-    // Collect clarification answers
-    const clarifications = {};
-    if (_sdClarifyData && _sdClarifyData.questions) {
-      _sdClarifyData.questions.forEach((q, i) => {
-        const ans = (document.getElementById(`sd-q-${i}`) || {}).value?.trim() || "";
-        if (ans) clarifications[q] = ans;
-      });
-    }
-
-    btn.disabled = true;
-    btnIcon.textContent = "⏳";
-    btnText.textContent = "Analyzing…";
-
-    try {
-      const resp = await fetch("/analyze-opportunity", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript, email, clarifications }),
-      });
-      const json = await resp.json();
-
-      if (!resp.ok || json.error) {
-        errEl.textContent = json.error || "Unknown server error.";
-        errEl.classList.add("visible");
-        return;
-      }
-
-      _sdData = json.data;
-      renderSalesDirectorResults(_sdData);
-      _sdSetStep(3);
-      resEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-
-    } catch (err) {
-      errEl.textContent = "Network error: " + err.message;
-      errEl.classList.add("visible");
-    } finally {
-      btn.disabled = false;
-      btnIcon.textContent = "🔍";
-      btnText.textContent = "Get Full Recommendations";
-    }
-  }
-
-  // ── Follow-up chat ──────────────────────────────────────
-  async function sdFollowUp() {
-    const input   = document.getElementById("sd-followup-input");
-    const respEl  = document.getElementById("sd-followup-response");
-    const btn     = document.getElementById("sd-followup-btn");
-    const question = input.value.trim();
-    if (!question) return;
-
-    btn.disabled = true;
-    btn.textContent = "…";
-    respEl.classList.remove("visible");
-
-    const transcript = document.getElementById("sd-transcript").value.trim();
-    const email      = document.getElementById("sd-email").value.trim();
-
-    try {
-      const resp = await fetch("/analyze-opportunity", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript, email, followup_question: question }),
-      });
-      const json = await resp.json();
-
-      if (!resp.ok || json.error) {
-        respEl.textContent = "⚠ " + (json.error || "Could not get a response.");
-      } else {
-        respEl.textContent = json.data?.followup_answer || json.data?.opportunity_summary || "No response.";
-      }
-      respEl.classList.add("visible");
-      input.value = "";
-    } catch (err) {
-      respEl.textContent = "Network error: " + err.message;
-      respEl.classList.add("visible");
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Ask →";
-    }
-  }
-
-  function renderSalesDirectorResults(d) {
-    // Opportunity summary
-    document.getElementById("sd-summary").textContent = d.opportunity_summary || "";
-
-    // Recommended services — detect fee type from price_range string
-    const svcList = document.getElementById("sd-svc-list");
-    svcList.innerHTML = "";
-    const allServices = [...(d.recommended_services || []), ...(d.custom_services || [])];
-    let hasMonthly = false, hasOnetime = false;
-    allServices.forEach(svc => {
-      const priceStr = svc.price_range || "";
-      const isMonthly = /\/mo|month|retainer/i.test(priceStr);
-      const isOnetime = /one.time|project|flat|flat.fee/i.test(priceStr) || (!isMonthly && /^\$/.test(priceStr));
-      if (isMonthly) hasMonthly = true;
-      if (isOnetime) hasOnetime = true;
-      const typeBadge = isMonthly ? 'Monthly' : (isOnetime ? 'One-Time' : '');
-      const row = document.createElement("div");
-      row.className = "sd-svc-row";
-      row.innerHTML = `
-        <div class="sd-svc-info">
-          <div class="sd-svc-name">${esc(svc.name)}${svc.is_custom ? ' <span style="font-size:10px;color:#0e6882;font-weight:600">(custom)</span>' : ''}</div>
-          <div class="sd-svc-rationale">${esc(svc.rationale || "")}</div>
-        </div>
-        <div class="sd-svc-right">
-          <div class="sd-svc-price">${esc(priceStr)}</div>
-          ${typeBadge ? `<div class="sd-svc-type-badge">${typeBadge}</div>` : ''}
-        </div>
-      `;
-      svcList.appendChild(row);
-    });
-
-    // Package total breakdown
-    const totalsEl = document.getElementById("sd-pkg-totals");
-    const monthlyRow = document.getElementById("sd-monthly-row");
-    const onetimeRow = document.getElementById("sd-onetime-row");
-    totalsEl.style.display = "block";
-    monthlyRow.style.display = hasMonthly ? "flex" : "none";
-    onetimeRow.style.display = hasOnetime ? "flex" : "none";
-    // Parse monthly/onetime from total_range or per-service data
-    const totalStr = d.total_range || "";
-    const monthMatch = totalStr.match(/\$([\d,]+(?:\.\d+)?)\s*(?:–|-)?\s*\$?([\d,]+(?:\.\d+)?)?\s*\/mo/i);
-    const oneMatch   = totalStr.match(/\$([\d,]+(?:\.\d+)?)\s*(?:–|-)?\s*\$?([\d,]+(?:\.\d+)?)?\s*(?:one.time|project)/i);
-    if (monthMatch) document.getElementById("sd-monthly-range").textContent = monthMatch[0];
-    if (oneMatch)   document.getElementById("sd-onetime-range").textContent = oneMatch[0];
-    document.getElementById("sd-total-range").textContent = totalStr;
-
-    // Rationale
-    document.getElementById("sd-rationale").textContent = d.strategic_rationale || "";
-
-    // Objections
-    const objEl = document.getElementById("sd-objections");
-    objEl.innerHTML = "";
-    (d.objections || []).forEach(obj => {
-      const div = document.createElement("div");
-      div.className = "sd-obj-item";
-      div.innerHTML = `<div class="sd-obj-q">❓ ${esc(obj.objection)}</div>
-                       <div class="sd-obj-a">💡 ${esc(obj.rebuttal)}</div>`;
-      objEl.appendChild(div);
-    });
-
-    // Competitive angle
-    document.getElementById("sd-competitive").textContent = d.competitive_angle || "";
-
-    // Follow-up email
-    const emailData = d.follow_up_email || {};
-    document.getElementById("sd-email-subject").textContent =
-      emailData.subject ? "Subject: " + emailData.subject : "";
-    document.getElementById("sd-email-body").textContent = emailData.body || "";
-
-    // Next steps
-    const stepsEl = document.getElementById("sd-next-steps");
-    stepsEl.innerHTML = "";
-    (d.next_steps || []).forEach((step, i) => {
-      const li = document.createElement("li");
-      li.innerHTML = `<span class="sd-step-num">${i+1}</span><span>${esc(step)}</span>`;
-      stepsEl.appendChild(li);
-    });
-  }
-
-  function copyFollowUpEmail() {
-    const subj = (document.getElementById("sd-email-subject").textContent || "").replace("Subject: ", "");
-    const body = document.getElementById("sd-email-body").textContent || "";
-    const full = subj ? `Subject: ${subj}\n\n${body}` : body;
-    navigator.clipboard.writeText(full).then(() => {
-      const btn = document.querySelector(".btn-copy-email");
-      const orig = btn.textContent;
-      btn.textContent = "✅ Copied!";
-      setTimeout(() => btn.textContent = orig, 2000);
-    });
-  }
-
-  function applySalesDirector() {
-    if (!_sdData) return;
-    const d = _sdData;
-
-    // Fill form fields from SD extracted data
-    if (d.company)         document.getElementById("company").value = d.company;
-    if (d.contact)         document.getElementById("contact").value = d.contact;
-    if (d.contact_email)   document.getElementById("contact_email").value = d.contact_email;
-    if (d.contact_phone)   document.getElementById("contact_phone").value = d.contact_phone;
-    if (d.date)            document.getElementById("date").value = d.date;
-    if (d.intro_notes) {
-      const notesEl = document.getElementById("notes");
-      if (notesEl && !notesEl.value.trim()) notesEl.value = d.intro_notes;
-    }
-    if (d.body_override) {
-      const boEl = document.getElementById("body_override");
-      if (boEl && !boEl.value.trim()) boEl.value = d.body_override;
-    }
-
-    // All recommended + custom services
-    const allServices = [...(d.recommended_services || []), ...(d.custom_services || [])];
-    const svcNames = allServices.map(s => s.name);
-
-    // Check catalog checkboxes that match + set fee type
-    SERVICES.forEach((svc, i) => {
-      const match = allServices.find(s => s.name.toLowerCase().trim() === svc.toLowerCase().trim());
-      if (match) {
-        const cb  = document.getElementById(`svc-${i}`);
-        const row = document.querySelector(`.service-row[data-index="${i}"]`);
-        if (cb && !cb.checked) { cb.checked = true; row && row.classList.add("checked"); }
-        // Detect fee type from price_range
-        const priceStr = match.price_range || "";
-        const ft = /\/mo|month|retainer/i.test(priceStr) ? 'monthly' : 'onetime';
-        _feeTypes[i] = ft;
-        _updateFeeBtn(`fee-type-${i}`, ft);
-        // Fill cost
-        const priceMatch = priceStr.match(/\$([\d,]+)/);
-        if (priceMatch) {
-          const ci = document.getElementById(`cost-${i}`);
-          if (ci && !ci.value) ci.value = priceMatch[1].replace(/,/g, "");
-        }
-      }
-    });
-
-    // Remove previous AI-added rows, add unmatched as custom
-    document.querySelectorAll("[data-ai-added]").forEach(r => {
-      const id = parseInt(r.id.replace('crow-', ''));
-      delete _crowState[id]; r.remove();
-    });
-    const unmatched = allServices.filter(svc =>
-      !SERVICES.find(cat => cat.toLowerCase().trim() === svc.name.toLowerCase().trim())
-    );
-    unmatched.forEach(svc => {
-      const priceStr = svc.price_range || "";
-      const priceMatch = priceStr.match(/\$([\d,]+)/);
-      const costNum = priceMatch ? priceMatch[1].replace(/,/g, "") : "";
-      const ft = /\/mo|month|retainer/i.test(priceStr) ? 'monthly' : 'onetime';
-      addCustomRow(svc.name, costNum, true, true, ft);
-    });
-
-    updateTotal();
-    switchTab("new");
-    setTimeout(() => {
-      document.getElementById("company").scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 100);
-    // SD panel intentionally left open so "Save Analysis" button remains accessible
-  }
-
-  // ── Save Analysis ────────────────────────────────────────
-  async function saveAnalysis() {
-    if (!_sdData) return;
-    const btn      = document.getElementById("sd-save-btn");
-    const btn2     = document.getElementById("results-save-analysis-btn");
-    const setBtns  = (text, disabled) => {
-      [btn, btn2].forEach(b => { if (b) { b.textContent = text; b.disabled = disabled; } });
-    };
-    setBtns("Saving…", true);
-    try {
-      const resp = await fetch("/api/analyses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(_sdData),
-      });
-      const json = await resp.json();
-      if (resp.ok) {
-        [btn, btn2].forEach(b => { if (b) { b.textContent = "✅ Saved!"; b.classList.add("saved"); } });
-        setTimeout(() => {
-          [btn, btn2].forEach(b => {
-            if (b) { b.textContent = "💾 Save Analysis"; b.classList.remove("saved"); b.disabled = false; }
-          });
-        }, 3000);
-        // Update all badges and sidebar
-        loadSidebarData();
-        fetch("/api/analyses").then(r => r.json()).then(list => {
-          const badge = document.getElementById("analyses-count-badge");
-          if (badge) badge.textContent = list.length;
-        }).catch(() => {});
-      } else {
-        setBtns("⚠ Error", false);
-      }
-    } catch(e) {
-      setBtns("⚠ Error", false);
-    }
-  }
-
-  // ── Sidebar data loader ────────────────────────────────
-  async function loadSidebarData() {
-    try {
-      const [pResp, aResp] = await Promise.all([
-        fetch("/api/proposals"), fetch("/api/analyses")
-      ]);
-      const proposals = await pResp.json();
-      const analyses  = await aResp.json();
-      renderSidebarProposals(proposals);
-      renderSidebarAnalyses(analyses);
-    } catch(e) { /* silent fail */ }
-  }
-
-  function renderSidebarProposals(proposals) {
-    const list = document.getElementById("sb-proposals-list");
-    const countEl = document.getElementById("sb-proposals-count");
-    if (countEl) countEl.textContent = proposals.length;
-    if (!proposals.length) {
-      list.innerHTML = '<div class="sb-empty">No proposals saved yet</div>';
-      return;
-    }
-    list.innerHTML = "";
-    proposals.slice(0, 8).forEach(p => {
-      const prefix = p.company.replace(/[^a-zA-Z0-9 \-_]/g,"").trim().replace(/ /g,"_");
-      const base   = `/download/${p.id}/`;
-      const files  = p.files || {};
-      const div = document.createElement("div");
-      div.className = "sb-item";
-      div.innerHTML = `
-        <div class="sb-company">${esc(p.company)}</div>
-        <div class="sb-meta">${esc(p.contact || "")}${p.contact && p.date ? " · " : ""}${esc(p.date || "")}</div>
-        <div class="sb-actions">
-          <button class="sb-btn sb-btn-load" onclick="sbRegenProposal('${p.id}',this)">↻ Regen</button>
-          ${files.letter_pdf  ? `<a class="sb-btn sb-btn-dl" href="${base}${prefix}_Intro_Letter.pdf" download>Ltr</a>` : ""}
-          ${files.proposal_pdf ? `<a class="sb-btn sb-btn-dl" href="${base}${prefix}_Proposal.pdf" download>PDF</a>` : ""}
-          ${files.proposal_pptx ? `<a class="sb-btn sb-btn-dl" href="${base}${prefix}_Proposal.pptx" download>PPT</a>` : ""}
-          <button class="sb-btn sb-btn-del" onclick="sbDeleteProposal('${p.id}',this)" title="Delete">✕</button>
-        </div>`;
-      list.appendChild(div);
-    });
-  }
-
-  function renderSidebarAnalyses(analyses) {
-    const list = document.getElementById("sb-analyses-list");
-    const countEl = document.getElementById("sb-analyses-count");
-    if (countEl) countEl.textContent = analyses.length;
-    if (!analyses.length) {
-      list.innerHTML = '<div class="sb-empty">No analyses saved yet</div>';
-      return;
-    }
-    list.innerHTML = "";
-    analyses.slice(0, 8).forEach(a => {
-      const div = document.createElement("div");
-      div.className = "sb-item";
-      div.innerHTML = `
-        <div class="sb-company">${esc(a.company || "Unknown")}</div>
-        <div class="sb-meta">${esc(a.contact || "")}${a.contact && a.total_range ? " · " : ""}${esc(a.total_range || "")}</div>
-        <div class="sb-meta" style="margin-top:1px">${esc(a.created_at || "")}</div>
-        <div class="sb-actions">
-          <button class="sb-btn sb-btn-teal" onclick="sbLoadAnalysis('${a.id}')">↺ Load</button>
-          <button class="sb-btn sb-btn-del" onclick="sbDeleteAnalysis('${a.id}',this)" title="Delete">✕</button>
-        </div>`;
-      list.appendChild(div);
-    });
-  }
-
-  async function sbRegenProposal(id, btn) {
-    btn.disabled = true; btn.textContent = "…";
-    try {
-      const resp = await fetch(`/regenerate/${id}`, { method: "POST" });
-      if (resp.ok) { btn.textContent = "✓"; setTimeout(() => { btn.disabled=false; btn.textContent="↻ Regen"; }, 2000); loadSidebarData(); }
-      else { btn.textContent="✗"; btn.disabled=false; }
-    } catch(e) { btn.textContent="✗"; btn.disabled=false; }
-  }
-
-  async function sbDeleteProposal(id, btn) {
-    if (!confirm("Delete this proposal?")) return;
-    await fetch(`/api/proposals/${id}`, { method: "DELETE" });
-    btn.closest(".sb-item").remove();
-    loadSidebarData();
-  }
-
-  async function sbLoadAnalysis(id) {
-    try {
-      const resp = await fetch(`/api/analyses/${id}`);
-      const json = await resp.json();
-      if (!resp.ok) { alert("Could not load analysis."); return; }
-      _sdData = json;
-      renderSalesDirectorResults(_sdData);
-      const body = document.getElementById("sd-body");
-      const toggle = document.getElementById("sd-toggle");
-      body.classList.add("open"); toggle.classList.add("open");
-      _sdSetStep(3);
-      document.getElementById("sd-card").scrollIntoView({ behavior: "smooth", block: "start" });
-    } catch(e) { alert("Error: " + e.message); }
-  }
-
-  async function sbDeleteAnalysis(id, btn) {
-    if (!confirm("Delete this analysis?")) return;
-    await fetch(`/api/analyses/${id}`, { method: "DELETE" });
-    btn.closest(".sb-item").remove();
-    loadSidebarData();
-  }
-</script>
-</body>
-</html>
+#!/usr/bin/env python3
+"""
+Xcelerate Growth Partners - Proposal Deck Generator
+
+Produces TWO files for every proposal:
+  1. A PDF  (same filename, .pdf extension)
+  2. A PPTX (same filename, .pptx extension)
+
+Usage:
+    python generate_proposal.py \
+        --company   "Thornburg Investments" \
+        --contact   "Sarah Chen" \
+        --date      "September 15, 2025" \
+        --base-pdf  "/path/to/base_proposal_template.pdf" \
+        --services  "Team Development and Optimization|Succession Planning|Keynote Speeches" \
+        --costs     "Program Fee: $25,000|Travel & Expenses: At cost" \
+        --notes     "Optional custom paragraph for the services slide." \
+        --output    "/path/to/output/Thornburg_Proposal.pdf"
+
+Services and costs use | as a separator between line items.
+The .pptx file is saved automatically next to the .pdf output.
+"""
+
+import argparse
+import os
+import io
+
+# ── reportlab (PDF) ───────────────────────────────────────────────────────────
+from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor, white
+from reportlab.lib.utils import ImageReader
+from reportlab.platypus import Paragraph
+from reportlab.lib.styles import ParagraphStyle
+from pypdf import PdfReader, PdfWriter
+
+# ── python-pptx (PPTX) ───────────────────────────────────────────────────────
+from pptx import Presentation
+from pptx.util import Inches, Pt, Emu
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.util import Inches, Pt
+
+
+# ── Shared brand constants ────────────────────────────────────────────────────
+# ReportLab colours
+RL_NAVY      = HexColor("#1D3461")
+RL_GREEN     = HexColor("#5CB85C")
+RL_GREEN_DK  = HexColor("#3A7A3A")
+RL_WHITE     = white
+RL_BODY      = HexColor("#2C2C2C")
+RL_LGRAY     = HexColor("#F5F5F5")
+RL_MGRAY     = HexColor("#CCCCCC")
+
+# python-pptx colours
+PT_NAVY      = RGBColor(0x1D, 0x34, 0x61)
+PT_GREEN     = RGBColor(0x5C, 0xB8, 0x5C)
+PT_WHITE     = RGBColor(0xFF, 0xFF, 0xFF)
+PT_BODY      = RGBColor(0x2C, 0x2C, 0x2C)
+PT_LGRAY     = RGBColor(0xF5, 0xF5, 0xF5)
+PT_MGRAY     = RGBColor(0xCC, 0xCC, 0xCC)
+
+# PDF page size — matches the base Edward Jones proposal PDF exactly
+PDF_W, PDF_H = 720.0, 405.0
+
+# PPTX slide size — standard 16:9 widescreen (13.33" x 7.5")
+PPTX_W = Inches(13.33)
+PPTX_H = Inches(7.5)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Helpers
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _logo_path(script_dir: str) -> str:
+    return os.environ.get(
+        "XCELERATE_LOGO",
+        os.path.join(script_dir, "..", "assets", "xcelerate_logo.png")
+    )
+
+
+def _pptx_output_path(pdf_output: str) -> str:
+    """Derive the .pptx path from the .pdf output path."""
+    base = os.path.splitext(pdf_output)[0]
+    return base + ".pptx"
+
+
+# ── Boilerplate slide content (mirrors the Edward Jones proposal template) ────
+STANDARD_SLIDES = [
+    {
+        "title": "Who We Are",
+        "bullets": [
+            "We are a team with extensive knowledge in Wealth Management. Our expertise is broad and diverse, with a unique understanding of clients, advisors and investment products.",
+            "We are keenly focused on growth and business development. Each engagement is custom, and we partner with clients to drive specific desired outcomes.",
+            "Our capabilities are unique and differentiated. We merge the talents of our core team with a roster of strategic alliances to ensure best-in-class support and project execution.",
+            "Our process and strategy is to excel at leading edge thinking, converting fresh new ideas into measurable results and positive transformation.",
+        ],
+    },
+    {
+        "title": "Our Competitive Advantage",
+        "bullets": [
+            "Team Development and Optimization",
+            "Succession Planning and Practice Transitions",
+            "The Future of Wealth Management",
+            "Developing Leadership",
+            "Support Staff Development and Career Pathing",
+            "The Wealth Management Process",
+            "  – Client Management",
+            "  – Financial Planning",
+            "  – The Investment Process",
+            "  – Exceeding Client Expectations",
+        ],
+    },
+    {
+        "title": "Why Xcelerate?",
+        "subtitle": "Asset Manager Opportunities",
+        "bullets": [
+            "Over 150 years of significant Wealth Management experience.",
+            "Team's track record of success and industry credibility.",
+            "Access to cutting edge and relevant content.",
+            "Firsthand knowledge of Financial Advisor and client preferences.",
+            "Access to talented presenters and thought-provoking content development specialists.",
+            "Compelling conversations about The Future of Wealth Management.",
+            "Creative strategies to improve engagement and outcomes.",
+        ],
+    },
+    {
+        "title": "Specific Partnership Ideas",
+        "bullets": [
+            "Working with Wealth Management firms on strategy and growth around specific themes such as retirement planning, succession planning or acting on key business initiatives.",
+            "Content development and value-added white papers.",
+            "Interactive and innovative idea development.",
+            "Cutting edge Practice Management training by talented industry professionals.",
+            "Keynote speeches.",
+            "Conference and sponsorship strategy to enhance relationships and outcomes.",
+            "Action plan to align annual spend and year-long marketing planning.",
+            "Advisor relationship development.",
+            '"Train the trainer" workshops to improve wholesaler presentations.',
+            "Access to best practice thinking, curated articles and creative training initiatives.",
+            "Production of webinars, podcasts, and access to sought-after programs.",
+        ],
+    },
+    {
+        "title": "Our Team of Experts",
+        "team": [
+            ("Jim Tracy", "Co-Founder & CEO",
+             "As a 40-year veteran of the wealth management industry, Jim is a recognized leader. He has achieved considerable success in growing and building innovative solutions that benefit advisors and their clients."),
+            ("Mary Deatherage", "Co-Founder & President",
+             "Mary is a respected industry leader, who previously led a multi-billion dollar team at Morgan Stanley. Her strategic vision and expertise are invaluable assets to the firm."),
+            ("Tara Forrest", "Head of Business Management",
+             "Tara brings a wealth of expertise in developing and implementing effective business strategies. Her background in operations and risk management add structure and additional capabilities to the group."),
+        ],
+    },
+]
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  PDF GENERATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _pdf_footer(c, page_num):
+    c.setFillColor(RL_NAVY)
+    c.setFont("Helvetica-Bold", 9)
+    c.drawString(40, 18, "Xcelerate Growth Partners")
+    c.setFillColor(RL_GREEN)
+    c.rect(PDF_W - 50, 8, 36, 24, fill=1, stroke=0)
+    c.setFillColor(RL_WHITE)
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(PDF_W - 32, 16, str(page_num))
+
+
+def _pdf_cover(c, company, contact, date, logo_path):
+    mid = PDF_W / 2
+    c.setFillColor(RL_NAVY)
+    c.rect(0, 0, PDF_W, PDF_H, fill=1, stroke=0)
+
+    # ── Logo (top band) ───────────────────────────────────────────────────────
+    if logo_path and os.path.exists(logo_path):
+        c.drawImage(ImageReader(logo_path),
+                    mid - 100, PDF_H - 125, 200, 85,
+                    mask='auto', preserveAspectRatio=True, anchor='c')
+
+    # ── Green accent bar below logo ───────────────────────────────────────────
+    c.setFillColor(RL_GREEN)
+    c.rect(0, PDF_H - 135, PDF_W, 6, fill=1, stroke=0)
+
+    # ── Contact / Company name (well below logo) ──────────────────────────────
+    c.setFillColor(RL_WHITE)
+    if contact:
+        c.setFont("Helvetica-Bold", 34)
+        c.drawCentredString(mid, 225, contact)
+        c.setFont("Helvetica-Bold", 28)
+        c.drawCentredString(mid, 188, company)
+    else:
+        c.setFont("Helvetica-Bold", 34)
+        c.drawCentredString(mid, 210, company)
+
+    # ── Delivery Launch Date label + date ─────────────────────────────────────
+    c.setFillColor(RL_WHITE)
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(mid, 158, "Delivery Launch Date:")
+    c.setFillColor(RL_GREEN)
+    c.setFont("Helvetica-Bold", 20)
+    c.drawCentredString(mid, 140, date)
+
+    # ── Presented By — centred ────────────────────────────────────────────────
+    c.setFillColor(RL_WHITE)
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(mid, 100, "Presented By:")
+    c.setFont("Helvetica-Bold", 9)
+    c.drawCentredString(mid, 84, "Jim Tracy, Co-Founder & CEO")
+    c.drawCentredString(mid, 68, "Mary Deatherage, Co-Founder & President")
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(mid, 52, "Xcelerate Growth Partners")
+
+    # ── Bottom green bar ──────────────────────────────────────────────────────
+    c.setFillColor(RL_GREEN)
+    c.rect(0, 0, PDF_W, 8, fill=1, stroke=0)
+    c.showPage()
+
+
+def _pdf_services(c, company, services, notes, page_num):
+    c.setFillColor(RL_WHITE)
+    c.rect(0, 0, PDF_W, PDF_H, fill=1, stroke=0)
+    c.setFillColor(RL_NAVY)
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(36, PDF_H - 44, "Recommended Services")
+    c.setFillColor(RL_BODY)
+    c.setFont("Helvetica", 10)
+    c.drawString(36, PDF_H - 60, f"Tailored engagement plan for {company}")
+    c.setFillColor(RL_GREEN)
+    c.rect(36, PDF_H - 68, PDF_W - 72, 2, fill=1, stroke=0)
+    bullet_style = ParagraphStyle('b', fontName='Helvetica-Bold', fontSize=10,
+                                  leading=14, textColor=RL_NAVY, leftIndent=12)
+    mid = PDF_W / 2
+    col_w = mid - 60
+    y_l = y_r = PDF_H - 84
+    for i, svc in enumerate(services):
+        p = Paragraph(f"• {svc}", bullet_style)
+        pw, ph = p.wrap(col_w, PDF_H)
+        if i < (len(services) + 1) // 2:
+            p.drawOn(c, 36, y_l - ph);  y_l -= ph + 6
+        else:
+            p.drawOn(c, mid + 10, y_r - ph);  y_r -= ph + 6
+    if notes:
+        ns = ParagraphStyle('n', fontName='Helvetica-Oblique', fontSize=9,
+                            leading=13, textColor=RL_BODY)
+        p = Paragraph(notes, ns)
+        pw, ph = p.wrap(PDF_W - 72, PDF_H)
+        p.drawOn(c, 36, min(y_l, y_r) - 10 - ph)
+    _pdf_footer(c, page_num)
+    c.showPage()
+
+
+def _pdf_investment(c, company, costs, page_num):
+    c.setFillColor(RL_WHITE)
+    c.rect(0, 0, PDF_W, PDF_H, fill=1, stroke=0)
+    c.setFillColor(RL_NAVY)
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(36, PDF_H - 44, "Proposed Investment")
+    c.setFillColor(RL_BODY)
+    c.setFont("Helvetica", 10)
+    c.drawString(36, PDF_H - 60, f"Fee structure for {company}")
+    c.setFillColor(RL_GREEN)
+    c.rect(36, PDF_H - 68, PDF_W - 72, 2, fill=1, stroke=0)
+    row_h, row_y = 30, PDF_H - 84
+    # Separate out summary/total lines from line items
+    summary_keys = ("total investment", "monthly retainer", "one-time fees")
+    item_costs   = [l for l in costs if not any(l.lower().startswith(k) for k in summary_keys)]
+    summary_lines = [l for l in costs if any(l.lower().startswith(k) for k in summary_keys)]
+    total_lines   = [l for l in costs if l.lower().startswith("total")]
+    subtotal_lines= [l for l in summary_lines if not l.lower().startswith("total")]
+
+    for i, line in enumerate(item_costs):
+        label, amount = (line.split(":", 1) if ":" in line else (line, ""))
+        if i % 2 == 0:
+            c.setFillColor(RL_LGRAY)
+            c.rect(36, row_y - row_h + 8, PDF_W - 72, row_h, fill=1, stroke=0)
+        c.setFillColor(RL_NAVY);  c.setFont("Helvetica-Bold", 11)
+        c.drawString(48, row_y - 6, label.strip())
+        c.setFillColor(RL_GREEN_DK); c.setFont("Helvetica-Bold", 11)
+        c.drawRightString(PDF_W - 48, row_y - 6, amount.strip())
+        row_y -= row_h
+    # Subtotal rows (Monthly Retainer / One-Time) with slight indent
+    if subtotal_lines:
+        row_y -= 4
+        for line in subtotal_lines:
+            label, amount = (line.split(":", 1) if ":" in line else (line, ""))
+            c.setFillColor(RL_LGRAY)
+            c.rect(36, row_y - row_h + 10, PDF_W - 72, row_h - 4, fill=1, stroke=0)
+            c.setFillColor(RL_NAVY);  c.setFont("Helvetica-BoldOblique", 10)
+            c.drawString(52, row_y - 5, label.strip())
+            c.setFillColor(RL_GREEN_DK); c.setFont("Helvetica-Bold", 10)
+            c.drawRightString(PDF_W - 48, row_y - 5, amount.strip())
+            row_y -= (row_h - 4)
+    # Total row — navy background, larger text
+    if total_lines:
+        label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
+        row_y -= 6
+        c.setFillColor(RL_NAVY)
+        c.rect(36, row_y - row_h + 8, PDF_W - 72, row_h + 4, fill=1, stroke=0)
+        c.setFillColor(RL_WHITE); c.setFont("Helvetica-Bold", 13)
+        c.drawString(48, row_y - 5, label.strip())
+        c.setFillColor(RL_GREEN); c.setFont("Helvetica-Bold", 13)
+        c.drawRightString(PDF_W - 48, row_y - 5, amount.strip())
+    c.setFillColor(RL_MGRAY);  c.setFont("Helvetica-Oblique", 8)
+    c.drawString(36, 48, "All fees are subject to final scope confirmation. "
+                 "Travel expenses billed at cost.")
+    _pdf_footer(c, page_num)
+    c.showPage()
+
+
+def build_proposal_pdf(company, contact, date, base_pdf_path,
+                       services, costs, notes, output_path, logo_path):
+    writer = PdfWriter()
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=(PDF_W, PDF_H))
+    _pdf_cover(c, company, contact, date, logo_path)
+    c.save();  buf.seek(0)
+    writer.add_page(PdfReader(buf).pages[0])
+
+    base_count = 0
+    if base_pdf_path and os.path.exists(base_pdf_path):
+        base_reader = PdfReader(base_pdf_path)
+        for page in base_reader.pages[1:]:
+            writer.add_page(page)
+        base_count = len(base_reader.pages) - 1
+    else:
+        print("Warning: base PDF not found — skipping template pages")
+
+    if services:
+        buf2 = io.BytesIO()
+        c2 = canvas.Canvas(buf2, pagesize=(PDF_W, PDF_H))
+        _pdf_services(c2, company, services, notes, base_count + 2)
+        c2.save();  buf2.seek(0)
+        writer.add_page(PdfReader(buf2).pages[0])
+
+    if costs:
+        buf3 = io.BytesIO()
+        c3 = canvas.Canvas(buf3, pagesize=(PDF_W, PDF_H))
+        _pdf_investment(c3, company, costs, base_count + 3)
+        c3.save();  buf3.seek(0)
+        writer.add_page(PdfReader(buf3).pages[0])
+
+    with open(output_path, "wb") as f:
+        writer.write(f)
+    print(f"PDF  saved → {output_path}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  PPTX GENERATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── Content-slide layout constants ───────────────────────────────────────────
+_HDR_H   = Inches(0.88)   # navy header band height
+_GRN_H   = Inches(0.06)   # green accent bar below header
+_CTT_Y   = _HDR_H + _GRN_H   # where content area starts (Inches ~0.94)
+
+
+def _pptx_blank_slide(prs):
+    """Add a completely blank slide (no placeholders)."""
+    blank_layout = prs.slide_layouts[6]   # index 6 = Blank
+    return prs.slides.add_slide(blank_layout)
+
+
+def _pptx_bg(slide, color: RGBColor):
+    """Fill slide background with a solid colour."""
+    fill = slide.background.fill
+    fill.solid()
+    fill.fore_color.rgb = color
+
+
+def _pptx_rect(slide, left, top, width, height, fill_color: RGBColor,
+               line_color=None):
+    from pptx.util import Emu
+    shape = slide.shapes.add_shape(
+        1,  # MSO_SHAPE_TYPE.RECTANGLE
+        left, top, width, height)
+    shape.fill.solid()
+    shape.fill.fore_color.rgb = fill_color
+    if line_color:
+        shape.line.color.rgb = line_color
+    else:
+        shape.line.fill.background()
+    return shape
+
+
+def _pptx_textbox(slide, left, top, width, height, text, font_size,
+                  bold=False, color: RGBColor = None, align=PP_ALIGN.LEFT,
+                  italic=False, wrap=True):
+    txb = slide.shapes.add_textbox(left, top, width, height)
+    tf = txb.text_frame
+    tf.word_wrap = wrap
+    p = tf.paragraphs[0]
+    p.alignment = align
+    run = p.add_run()
+    run.text = text
+    run.font.size = Pt(font_size)
+    run.font.bold = bold
+    run.font.italic = italic
+    if color:
+        run.font.color.rgb = color
+    return txb
+
+
+def _pptx_footer(slide, page_num):
+    W, H = PPTX_W, PPTX_H
+    # "Xcelerate Growth Partners" in GREEN (matches PDF template style)
+    _pptx_textbox(slide, W - Inches(5.2), H - Inches(0.58),
+                  Inches(4.5), Inches(0.50),
+                  "Xcelerate Growth Partners", 18,
+                  bold=True, color=PT_GREEN, align=PP_ALIGN.RIGHT)
+    # Green page-number box
+    _pptx_rect(slide,
+               W - Inches(0.72), H - Inches(0.58),
+               Inches(0.58), Inches(0.50), PT_GREEN)
+    pn_box = _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.58),
+                           Inches(0.58), Inches(0.50),
+                           str(page_num), 18,
+                           bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    pn_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+
+def _pptx_slide_header(slide, title, logo_path, subtitle=None):
+    """
+    Draws the branded navy header on every content slide:
+      - Full-width navy band
+      - Title in white on the left
+      - Logo on the right
+      - Thin green accent bar underneath
+      - Optional subtitle in dark text just below the green bar
+    """
+    W = PPTX_W
+    _pptx_rect(slide, 0, 0, W, _HDR_H, PT_NAVY)
+
+    # Title text (white, left-aligned inside header)
+    _pptx_textbox(slide, Inches(0.4), Inches(0.14),
+                  W - Inches(2.6), Inches(0.62),
+                  title, 22, bold=True, color=PT_WHITE)
+
+    # Logo top-right of header
+    if logo_path and os.path.exists(logo_path):
+        slide.shapes.add_picture(
+            logo_path,
+            W - Inches(2.25), Inches(0.09),
+            Inches(2.0), Inches(0.7))
+
+    # Green accent bar below header
+    _pptx_rect(slide, 0, _HDR_H, W, _GRN_H, PT_GREEN)
+
+    # Optional subtitle just below the green bar
+    if subtitle:
+        _pptx_textbox(slide, Inches(0.4), _CTT_Y + Inches(0.06),
+                      W - Inches(1), Inches(0.3),
+                      subtitle, 11, color=PT_BODY)
+
+
+def _pptx_cover(prs, company, contact, date, logo_path):
+    slide = _pptx_blank_slide(prs)
+    W, H = PPTX_W, PPTX_H
+    _pptx_bg(slide, PT_NAVY)
+
+    # ── Logo (top, centred — preserve aspect ratio, never stretch) ───────────
+    if logo_path and os.path.exists(logo_path):
+        # Only specify width; python-pptx auto-calculates height to preserve ratio
+        logo_w = Inches(2.2)
+        pic = slide.shapes.add_picture(logo_path,
+                                       W / 2 - logo_w / 2, Inches(0.20),
+                                       width=logo_w)
+
+    # ── Green accent bar below logo ───────────────────────────────────────────
+    _pptx_rect(slide, 0, Inches(1.72), W, Inches(0.07), PT_GREEN)
+
+    # ── Contact / Company name ────────────────────────────────────────────────
+    if contact:
+        _pptx_textbox(slide, Inches(0.75), Inches(1.92),
+                      W - Inches(1.5), Inches(0.85),
+                      contact, 48,
+                      bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+        _pptx_textbox(slide, Inches(0.75), Inches(2.85),
+                      W - Inches(1.5), Inches(0.75),
+                      company, 40,
+                      bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    else:
+        _pptx_textbox(slide, Inches(0.75), Inches(2.2),
+                      W - Inches(1.5), Inches(0.85),
+                      company, 48,
+                      bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+
+    # ── Delivery Launch Date label + date ─────────────────────────────────────
+    date_label_y = Inches(3.78) if contact else Inches(3.35)
+    _pptx_textbox(slide, Inches(0.75), date_label_y,
+                  W - Inches(1.5), Inches(0.40),
+                  "Delivery Launch Date:", 14,
+                  bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(0.75), date_label_y + Inches(0.42),
+                  W - Inches(1.5), Inches(0.65),
+                  date, 30,
+                  bold=True, color=PT_GREEN, align=PP_ALIGN.CENTER)
+
+    # ── Presented By — centred ────────────────────────────────────────────────
+    by_top = H - Inches(1.90)
+    _pptx_textbox(slide, Inches(0.75), by_top,
+                  W - Inches(1.5), Inches(0.38),
+                  "Presented By:", 14,
+                  bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(0.75), by_top + Inches(0.40),
+                  W - Inches(1.5), Inches(0.38),
+                  "Jim Tracy, Co-Founder & CEO", 16,
+                  bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(0.75), by_top + Inches(0.80),
+                  W - Inches(1.5), Inches(0.38),
+                  "Mary Deatherage, Co-Founder & President", 16,
+                  bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+    _pptx_textbox(slide, Inches(0.75), by_top + Inches(1.20),
+                  W - Inches(1.5), Inches(0.38),
+                  "Xcelerate Growth Partners", 14,
+                  bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
+
+    # ── Bottom green bar ──────────────────────────────────────────────────────
+    _pptx_rect(slide, 0, H - Inches(0.15), W, Inches(0.15), PT_GREEN)
+
+
+def _pptx_content_slide(prs, title, bullets, subtitle=None,
+                        page_num=None, two_col=False, logo_path=None):
+    slide = _pptx_blank_slide(prs)
+    W, H = PPTX_W, PPTX_H
+    _pptx_bg(slide, PT_WHITE)
+
+    # ── Large navy title (matches PDF template) ───────────────────────────────
+    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
+                  W - Inches(0.9), Inches(0.92),
+                  title, 32, bold=True, color=PT_NAVY)
+
+    # Optional subtitle just below title
+    title_bottom = Inches(1.18)
+    if subtitle:
+        _pptx_textbox(slide, Inches(0.45), Inches(1.18),
+                      W - Inches(0.9), Inches(0.36),
+                      subtitle, 14, color=PT_BODY)
+        title_bottom = Inches(1.56)
+
+    # Thin green divider
+    _pptx_rect(slide, Inches(0.45), title_bottom,
+               W - Inches(0.9), Inches(0.04), PT_GREEN)
+
+    y_start = title_bottom + Inches(0.16)
+
+    # ── Bullets ───────────────────────────────────────────────────────────────
+    # Fewer bullets → bigger font; many bullets → two-col with smaller font
+    bullet_font = 13 if two_col else 17
+    line_h      = Inches(0.48) if two_col else Inches(0.62)
+
+    if two_col:
+        half  = len(bullets) // 2 + len(bullets) % 2
+        col_w = (W - Inches(1.1)) / 2
+        for col_idx, col_bullets in enumerate([bullets[:half], bullets[half:]]):
+            x = Inches(0.45) + col_idx * (col_w + Inches(0.2))
+            y = y_start
+            for b in col_bullets:
+                indent = b.startswith("  –")
+                _pptx_textbox(slide,
+                              x + (Inches(0.3) if indent else 0),
+                              y,
+                              col_w - (Inches(0.3) if indent else 0),
+                              line_h,
+                              ("  – " if indent else "• ") + b.lstrip(),
+                              bullet_font - (2 if indent else 0),
+                              bold=not indent,
+                              color=PT_BODY if indent else PT_NAVY)
+                y += line_h
+    else:
+        y = y_start
+        for b in bullets:
+            indent = b.startswith("  –")
+            _pptx_textbox(slide,
+                          Inches(0.45) + (Inches(0.4) if indent else 0),
+                          y,
+                          W - Inches(0.9 if not indent else 1.3),
+                          line_h,
+                          ("  – " if indent else "• ") + b.lstrip(),
+                          bullet_font - (3 if indent else 0),
+                          bold=not indent,
+                          color=PT_BODY if indent else PT_NAVY)
+            y += line_h
+
+    if page_num:
+        _pptx_footer(slide, page_num)
+
+
+def _pptx_team_slide(prs, team_members, page_num, logo_path=None):
+    slide = _pptx_blank_slide(prs)
+    W, H = PPTX_W, PPTX_H
+    _pptx_bg(slide, PT_WHITE)
+
+    # Large navy title
+    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
+                  W - Inches(0.9), Inches(0.92),
+                  "Our Team of Experts", 32, bold=True, color=PT_NAVY)
+    # Thin green divider
+    _pptx_rect(slide, Inches(0.45), Inches(1.18),
+               W - Inches(0.9), Inches(0.04), PT_GREEN)
+
+    content_h = H - Inches(1.30) - Inches(0.58)
+    row_h = content_h / len(team_members)
+
+    for i, (name, role, bio) in enumerate(team_members):
+        y = Inches(1.30) + i * row_h
+
+        # Alternating light row stripe
+        if i % 2 == 0:
+            _pptx_rect(slide, Inches(0.35), y + Inches(0.04),
+                       W - Inches(0.7), row_h - Inches(0.06), PT_LGRAY)
+
+        # Name
+        _pptx_textbox(slide, Inches(0.5), y + Inches(0.08),
+                      Inches(4.0), Inches(0.46),
+                      name, 17, bold=True, color=PT_NAVY)
+        # Role (green)
+        _pptx_textbox(slide, Inches(0.5), y + Inches(0.52),
+                      Inches(4.0), Inches(0.34),
+                      role, 13, bold=False, color=PT_GREEN)
+        # Bio
+        _pptx_textbox(slide, Inches(4.8), y + Inches(0.08),
+                      W - Inches(5.3), row_h - Inches(0.16),
+                      bio, 13, color=PT_BODY, wrap=True)
+
+    _pptx_footer(slide, page_num)
+
+
+def _pptx_services_slide(prs, company, services, notes, page_num, logo_path=None):
+    slide = _pptx_blank_slide(prs)
+    W, H = PPTX_W, PPTX_H
+    _pptx_bg(slide, PT_WHITE)
+
+    # Title — consistent 32pt (matches other content slides)
+    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
+                  W - Inches(0.9), Inches(0.85),
+                  "Recommended Services", 32, bold=True, color=PT_NAVY)
+    # Subtitle — 13pt
+    _pptx_textbox(slide, Inches(0.45), Inches(1.10),
+                  W - Inches(0.9), Inches(0.34),
+                  f"Tailored engagement plan for {company}", 13, color=PT_BODY)
+    # Green divider
+    _pptx_rect(slide, Inches(0.45), Inches(1.48),
+               W - Inches(0.9), Inches(0.04), PT_GREEN)
+
+    content_top  = Inches(1.90)   # extra breathing room below the green divider
+    footer_h     = Inches(0.65)   # space reserved for footer
+    note_h       = Inches(0.55) if notes else Inches(0)
+    note_gap     = Inches(0.10) if notes else Inches(0)
+    content_bottom = H - footer_h - note_h - note_gap
+
+    half        = (len(services) + 1) // 2
+    col_w       = (W - Inches(1.4)) / 2
+    # Scale line height so bullets never overflow the available space
+    available_h = content_bottom - content_top
+    line_h      = min(Inches(0.65), available_h / max(half, 1))
+    line_h      = max(line_h, Inches(0.38))   # floor to keep text readable
+    bullet_font = 20 if line_h >= Inches(0.54) else (17 if line_h >= Inches(0.44) else 14)
+
+    for col_idx, col_svcs in enumerate([services[:half], services[half:]]):
+        x = Inches(0.45) + col_idx * (col_w + Inches(0.5))
+        y = content_top
+        for svc in col_svcs:
+            _pptx_textbox(slide, x, y, col_w, line_h,
+                          f"• {svc}", bullet_font, bold=True, color=PT_NAVY)
+            y += line_h
+
+    if notes:
+        note_y = H - footer_h - note_h
+        _pptx_textbox(slide, Inches(0.45), note_y,
+                      W - Inches(0.9), note_h,
+                      notes, 14, italic=True, color=PT_BODY, wrap=True)
+
+    _pptx_footer(slide, page_num)
+
+
+def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
+    slide = _pptx_blank_slide(prs)
+    W, H = PPTX_W, PPTX_H
+    _pptx_bg(slide, PT_WHITE)
+
+    # Title — consistent 32pt (matches other content slides)
+    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
+                  W - Inches(0.9), Inches(0.85),
+                  "Proposed Investment", 32, bold=True, color=PT_NAVY)
+    # Subtitle — 13pt
+    _pptx_textbox(slide, Inches(0.45), Inches(1.10),
+                  W - Inches(0.9), Inches(0.34),
+                  f"Fee structure for {company}", 13, color=PT_BODY)
+    # Green divider
+    _pptx_rect(slide, Inches(0.45), Inches(1.48),
+               W - Inches(0.9), Inches(0.04), PT_GREEN)
+
+    summary_keys  = ("total investment", "monthly retainer", "one-time fees")
+    item_costs    = [l for l in costs if not any(l.lower().startswith(k) for k in summary_keys)]
+    summary_lines = [l for l in costs if any(l.lower().startswith(k) for k in summary_keys)]
+    total_lines   = [l for l in costs if l.lower().startswith("total")]
+    subtotals     = [l for l in summary_lines if not l.lower().startswith("total")]
+
+    # ── Split items into Monthly vs One-Time groups ───────────────────────────
+    monthly_items = [l for l in item_costs if '/mo' in l]
+    onetime_items = [l for l in item_costs if '/mo' not in l and 'one-time' in l.lower()]
+    other_items   = [l for l in item_costs if '/mo' not in l and 'one-time' not in l.lower()]
+    # If no explicit type detected, treat all as a single flat list
+    show_groups   = bool(monthly_items and onetime_items)
+    # Groups to render in order
+    groups = []
+    if show_groups:
+        if monthly_items:
+            groups.append(("Monthly Services", PT_NAVY,              monthly_items))
+        if onetime_items:
+            groups.append(("One-Time Services", RGBColor(0x0E, 0x68, 0x82), onetime_items))
+        if other_items:
+            groups.append(("Additional Services", PT_NAVY,            other_items))
+    else:
+        groups.append((None, None, item_costs))   # no headers
+
+    # ── Dynamic row sizing — fit everything in available space ────────────────
+    content_top    = Inches(1.62)
+    disclaimer_h   = Inches(0.40)
+    footer_h       = Inches(0.65)
+    content_bottom = H - footer_h - disclaimer_h - Inches(0.08)
+    available_h    = content_bottom - content_top
+
+    n_section_hdrs = sum(1 for lbl, _, _ in groups if lbl)
+    hdr_h_factor   = 0.45   # section headers are 45% of a normal row
+    gap_sub        = Inches(0.06) if subtotals   else Inches(0)
+    gap_total      = Inches(0.10) if total_lines else Inches(0)
+    gap_groups     = Inches(0.06) * max(0, n_section_hdrs - 1)  # gap between groups
+
+    n_units = (len(item_costs)
+               + n_section_hdrs * hdr_h_factor
+               + len(subtotals) * 0.8
+               + (1.3 if total_lines else 0))
+    if n_units > 0:
+        base_row_h = (available_h - gap_sub - gap_total - gap_groups) / n_units
+        base_row_h = min(base_row_h, Inches(0.72))
+        base_row_h = max(base_row_h, Inches(0.36))
+    else:
+        base_row_h = Inches(0.65)
+
+    section_hdr_h = base_row_h * hdr_h_factor
+    sub_row_h     = base_row_h * 0.8
+    total_row_h   = base_row_h * 1.3
+    font_item     = max(12, min(24, round(base_row_h  / Inches(0.72) * 24)))
+    font_hdr      = max(10, min(16, round(section_hdr_h / Inches(0.32) * 14)))
+    font_sub      = max(11, min(20, round(sub_row_h   / Inches(0.54) * 20)))
+    font_total    = max(14, min(26, round(total_row_h  / Inches(0.82) * 26)))
+
+    y = content_top
+
+    def _render_item_row(line, stripe_idx, row_h, fnt):
+        nonlocal y
+        label, raw_amount = (line.split(":", 1) if ":" in line else (line, ""))
+        # Strip type suffix for clean display; keep /mo for monthly clarity
+        display_amount = raw_amount.strip()
+        display_amount = display_amount.replace(' one-time', '').replace('one-time', '')
+        # Alternating stripe within group
+        if stripe_idx % 2 == 0:
+            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), row_h, PT_LGRAY)
+        padding = min(Inches(0.12), row_h * 0.18)
+        _pptx_textbox(slide, Inches(0.65), y + padding,
+                      Inches(7.5), row_h - padding,
+                      label.strip(), fnt, bold=True, color=PT_NAVY)
+        _pptx_textbox(slide, W - Inches(4.2), y + padding,
+                      Inches(3.7), row_h - padding,
+                      display_amount, fnt, bold=True,
+                      color=RGBColor(0x3A, 0x7A, 0x3A), align=PP_ALIGN.RIGHT)
+        y += row_h
+
+    first_group = True
+    for group_label, hdr_color, group_items in groups:
+        if not group_items:
+            continue
+        if not first_group:
+            y += Inches(0.06)   # small gap between groups
+        first_group = False
+        # Section header row
+        if group_label:
+            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), section_hdr_h, hdr_color)
+            padding = min(Inches(0.06), section_hdr_h * 0.2)
+            hdr_box = _pptx_textbox(slide, Inches(0.65), y + padding,
+                                    W - Inches(1.3), section_hdr_h,
+                                    group_label.upper(), font_hdr,
+                                    bold=True, color=PT_WHITE)
+            hdr_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+            y += section_hdr_h
+        # Item rows
+        for stripe_i, line in enumerate(group_items):
+            _render_item_row(line, stripe_i, base_row_h, font_item)
+
+    # ── Subtotal rows (Monthly Retainer / One-Time Fees) ─────────────────────
+    if subtotals:
+        y += gap_sub
+        for line in subtotals:
+            label, amount = (line.split(":", 1) if ":" in line else (line, ""))
+            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), sub_row_h, RGBColor(0xE8, 0xF0, 0xF8))
+            padding = min(Inches(0.08), sub_row_h * 0.15)
+            sub_lbl = _pptx_textbox(slide, Inches(0.65), y + padding,
+                                    Inches(7.5), sub_row_h,
+                                    label.strip(), font_sub, bold=True, italic=True, color=PT_NAVY)
+            sub_lbl.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+            sub_amt = _pptx_textbox(slide, W - Inches(4.2), y + padding,
+                                    Inches(3.7), sub_row_h,
+                                    "  " + amount.strip(), font_sub, bold=True,
+                                    color=RGBColor(0x0E, 0x68, 0x82), align=PP_ALIGN.RIGHT)
+            sub_amt.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+            y += sub_row_h
+
+    # ── Total row ─────────────────────────────────────────────────────────────
+    if total_lines:
+        label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
+        y += gap_total
+        _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), total_row_h, PT_NAVY)
+        padding = min(Inches(0.14), total_row_h * 0.18)
+        tot_lbl = _pptx_textbox(slide, Inches(0.65), y + padding,
+                                Inches(7.5), total_row_h,
+                                label.strip(), font_total, bold=True, color=PT_WHITE)
+        tot_lbl.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+        tot_amt = _pptx_textbox(slide, W - Inches(4.2), y + padding,
+                                Inches(3.7), total_row_h,
+                                "  " + amount.strip(), font_total, bold=True,
+                                color=PT_GREEN, align=PP_ALIGN.RIGHT)
+        tot_amt.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+    # Disclaimer — anchored just above the footer, never overlaps content
+    _pptx_textbox(slide, Inches(0.4), H - footer_h - disclaimer_h,
+                  W - Inches(0.8), disclaimer_h,
+                  "All fees are subject to final scope confirmation. "
+                  "Travel expenses billed at cost.",
+                  12, italic=True, color=PT_MGRAY)
+
+    _pptx_footer(slide, page_num)
+
+
+def _pptx_image_slide(prs, bg_image_path):
+    """Create a slide using a full-bleed background image (matches PDF template exactly)."""
+    slide = _pptx_blank_slide(prs)
+    if bg_image_path and os.path.exists(bg_image_path):
+        slide.shapes.add_picture(bg_image_path, 0, 0, PPTX_W, PPTX_H)
+    return slide
+
+
+def build_proposal_pptx(company, contact, date,
+                        services, costs, notes,
+                        output_path, logo_path):
+    prs = Presentation()
+    prs.slide_width  = PPTX_W
+    prs.slide_height = PPTX_H
+
+    # Resolve assets directory (same folder as the logo)
+    if logo_path and os.path.exists(logo_path):
+        assets_dir = os.path.dirname(logo_path)
+    else:
+        assets_dir = os.path.join(os.path.dirname(__file__), '..', 'assets')
+
+    # 1. Cover slide (dynamic — company/contact/date change per proposal)
+    _pptx_cover(prs, company, contact, date, logo_path)
+
+    # 2. Standard content slides — use pre-rendered PNG backgrounds from the
+    #    PDF template so the PPTX looks pixel-perfect identical to the PDF.
+    #    Template pages 2–8 map to slide_bg_2.png … slide_bg_8.png.
+    for page_num in range(2, 9):
+        bg_path = os.path.join(assets_dir, f'slide_bg_{page_num}.png')
+        if os.path.exists(bg_path):
+            _pptx_image_slide(prs, bg_path)
+        else:
+            # Fallback: text-based slide if background images are missing
+            slide_idx = page_num - 2          # 0-based into STANDARD_SLIDES
+            if slide_idx < len(STANDARD_SLIDES):
+                slide_def = STANDARD_SLIDES[slide_idx]
+                if "team" in slide_def:
+                    _pptx_team_slide(prs, slide_def["team"], page_num,
+                                     logo_path=logo_path)
+                else:
+                    two_col = len(slide_def.get("bullets", [])) > 6
+                    _pptx_content_slide(
+                        prs,
+                        title    = slide_def["title"],
+                        bullets  = slide_def.get("bullets", []),
+                        subtitle = slide_def.get("subtitle"),
+                        page_num = page_num,
+                        two_col  = two_col,
+                        logo_path= logo_path,
+                    )
+
+    # 3. Custom services slide (always dynamic — different per proposal)
+    page = 9
+    if services:
+        _pptx_services_slide(prs, company, services, notes, page,
+                             logo_path=logo_path)
+        page += 1
+
+    # 4. Investment slide (always dynamic)
+    if costs:
+        _pptx_investment_slide(prs, company, costs, page, logo_path=logo_path)
+
+    prs.save(output_path)
+    print(f"PPTX saved → {output_path}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  MAIN
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate Xcelerate proposal — outputs both PDF and PPTX")
+    parser.add_argument("--company",  default="[COMPANY NAME]")
+    parser.add_argument("--contact",  default="")
+    parser.add_argument("--date",     default="[DATE]")
+    parser.add_argument("--base-pdf", default="",
+                        help="Path to the base proposal template PDF")
+    parser.add_argument("--services", default="",
+                        help="Pipe-separated services: 'Service A|Service B'")
+    parser.add_argument("--costs",    default="",
+                        help="Pipe-separated cost lines: 'Label: $amount|...'")
+    parser.add_argument("--notes",    default="",
+                        help="Optional custom paragraph for the services slide")
+    parser.add_argument("--output",   default="Xcelerate_Proposal.pdf",
+                        help="Output PDF path (.pptx is saved alongside automatically)")
+    args = parser.parse_args()
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    logo       = _logo_path(script_dir)
+
+    services = [s.strip() for s in args.services.split("|") if s.strip()] if args.services else []
+    costs    = [c.strip() for c in args.costs.split("|")    if c.strip()] if args.costs    else []
+
+    # ── PDF ──────────────────────────────────────────────────────────────────
+    build_proposal_pdf(
+        company       = args.company,
+        contact       = args.contact,
+        date          = args.date,
+        base_pdf_path = args.base_pdf,
+        services      = services,
+        costs         = costs,
+        notes         = args.notes,
+        output_path   = args.output,
+        logo_path     = logo,
+    )
+
+    # ── PPTX ─────────────────────────────────────────────────────────────────
+    pptx_out = _pptx_output_path(args.output)
+    build_proposal_pptx(
+        company     = args.company,
+        contact     = args.contact,
+        date        = args.date,
+        services    = services,
+        costs       = costs,
+        notes       = args.notes,
+        output_path = pptx_out,
+        logo_path   = logo,
+    )
+
+
+if __name__ == "__main__":
+    main()
