@@ -757,9 +757,7 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
         # Strip type suffix for clean display; keep /mo for monthly clarity
         display_amount = raw_amount.strip()
         display_amount = display_amount.replace(' one-time', '').replace('one-time', '')
-        # Alternating stripe within group
-        if stripe_idx % 2 == 0:
-            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), row_h, PT_LGRAY)
+        # No alternating stripe — clean white background for line items
         padding = min(Inches(0.12), row_h * 0.18)
         _pptx_textbox(slide, Inches(0.65), y + padding,
                       Inches(7.5), row_h - padding,
