@@ -1353,8 +1353,9 @@ Example:
   // ── Custom service rows (multi-row) ───────────────────
   let _crowCount = 0;
   const _crowState = {}; // id -> { checked, nameId, costId, rowId, cmId, aiAdded }
-  let _sdData        = null;   // stores last full SD analysis
-  let _sdClarifyData = null;   // stores clarify step response (summary + questions)
+  let _sdData           = null;   // stores last full SD analysis
+  let _sdClarifyData    = null;   // stores clarify step response (summary + questions)
+  let _totalManuallySet = false;  // true when user has typed a custom total
 
   function _escAttr(str) {
     return String(str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1438,7 +1439,6 @@ Example:
   addCustomRow();
 
   // ── Total override state ───────────────────────────────
-  let _totalManuallySet = false;
 
   function onTotalManualEdit() {
     _totalManuallySet = true;
