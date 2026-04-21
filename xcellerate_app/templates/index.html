@@ -1278,6 +1278,69 @@ Example:
 </main>
 
 <script>
+  // ── Form submit — registered FIRST so init crashes can't prevent it ──────────
+  document.addEventListener("DOMContentLoaded", function() {
+    const proposalForm = document.getElementById("proposal-form");
+    if (!proposalForm) return;
+    proposalForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      buildCostInputs();
+
+      // Check at least one service is selected
+      const anyChecked = (typeof SERVICES !== 'undefined') && (
+        SERVICES.some((_, i) => document.getElementById(`svc-${i}`)?.checked)
+        || Object.values(_crowState).some(s => s.checked &&
+             (document.getElementById(s.nameId) || {}).value?.trim())
+      );
+      if (!anyChecked) {
+        alert("Please select at least one service.");
+        return;
+      }
+
+      const btn = document.getElementById("generate-btn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Generating…';
+
+      ["step-letter","step-proposal","step-pptx"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("active","done");
+      });
+      const overlay = document.getElementById("progress-overlay");
+      if (overlay) overlay.classList.add("visible");
+      const timer = animateProgress();
+
+      try {
+        const formData = new FormData(this);
+        const resp = await fetch("/generate", { method: "POST", body: formData });
+        const data = await resp.json();
+
+        clearInterval(timer);
+        ["step-letter","step-proposal","step-pptx"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.classList.remove("active"); el.classList.add("done"); }
+        });
+        await new Promise(r => setTimeout(r, 500));
+        if (overlay) overlay.classList.remove("visible");
+
+        if (!resp.ok) {
+          alert("Error: " + (data.error || "Generation failed."));
+          btn.disabled = false;
+          btn.innerHTML = "Generate Full Proposal Package";
+          return;
+        }
+        showResults(data);
+
+      } catch(err) {
+        clearInterval(timer);
+        if (overlay) overlay.classList.remove("visible");
+        alert("Network error: " + err.message);
+        btn.disabled = false;
+        btn.innerHTML = "Generate Full Proposal Package";
+      }
+    });
+  });
+
   // ── Service definitions ────────────────────────────────
   const SERVICES = [
     "Team Development and Optimization",
@@ -1590,62 +1653,6 @@ Example:
     }, 1200);
     return iv;
   }
-
-  // ── Form submit ────────────────────────────────────────
-  document.getElementById("proposal-form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-
-    buildCostInputs();
-
-    // Check at least one service is selected
-    const anyChecked = SERVICES.some((_, i) => document.getElementById(`svc-${i}`)?.checked)
-      || Object.values(_crowState).some(s => s.checked &&
-           (document.getElementById(s.nameId) || {}).value?.trim());
-    if (!anyChecked) {
-      alert("Please select at least one service.");
-      return;
-    }
-
-    const btn = document.getElementById("generate-btn");
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Generating…';
-
-    ["step-letter","step-proposal","step-pptx"].forEach(id => {
-      const el = document.getElementById(id);
-      el.classList.remove("active","done");
-    });
-    document.getElementById("progress-overlay").classList.add("visible");
-    const timer = animateProgress();
-
-    try {
-      const formData = new FormData(this);
-      const resp = await fetch("/generate", { method: "POST", body: formData });
-      const data = await resp.json();
-
-      clearInterval(timer);
-      ["step-letter","step-proposal","step-pptx"].forEach(id => {
-        document.getElementById(id).classList.remove("active");
-        document.getElementById(id).classList.add("done");
-      });
-      await new Promise(r => setTimeout(r, 500));
-      document.getElementById("progress-overlay").classList.remove("visible");
-
-      if (!resp.ok) {
-        alert("Error: " + (data.error || "Generation failed."));
-        btn.disabled = false;
-        btn.innerHTML = "Generate Full Proposal Package";
-        return;
-      }
-      showResults(data);
-
-    } catch(err) {
-      clearInterval(timer);
-      document.getElementById("progress-overlay").classList.remove("visible");
-      alert("Network error: " + err.message);
-      btn.disabled = false;
-      btn.innerHTML = "Generate Full Proposal Package";
-    }
-  });
 
   // ── Show results ───────────────────────────────────────
   function showResults(data) {
