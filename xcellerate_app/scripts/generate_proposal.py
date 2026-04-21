@@ -632,36 +632,45 @@ def _pptx_services_slide(prs, company, services, notes, page_num, logo_path=None
     W, H = PPTX_W, PPTX_H
     _pptx_bg(slide, PT_WHITE)
 
-    # Title — 48pt navy
-    _pptx_textbox(slide, Inches(0.45), Inches(0.12),
-                  W - Inches(0.9), Inches(1.0),
-                  "Recommended Services", 48, bold=True, color=PT_NAVY)
-    # Subtitle — 36pt
-    _pptx_textbox(slide, Inches(0.45), Inches(1.18),
-                  W - Inches(0.9), Inches(0.55),
-                  f"Tailored engagement plan for {company}", 36, color=PT_BODY)
+    # Title — consistent 32pt (matches other content slides)
+    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
+                  W - Inches(0.9), Inches(0.85),
+                  "Recommended Services", 32, bold=True, color=PT_NAVY)
+    # Subtitle — 13pt
+    _pptx_textbox(slide, Inches(0.45), Inches(1.10),
+                  W - Inches(0.9), Inches(0.34),
+                  f"Tailored engagement plan for {company}", 13, color=PT_BODY)
     # Green divider
-    _pptx_rect(slide, Inches(0.45), Inches(1.78),
-               W - Inches(0.9), Inches(0.05), PT_GREEN)
+    _pptx_rect(slide, Inches(0.45), Inches(1.48),
+               W - Inches(0.9), Inches(0.04), PT_GREEN)
 
-    half    = (len(services) + 1) // 2
-    col_w   = (W - Inches(1.4)) / 2
-    line_h  = Inches(0.70)   # tall enough for 24pt wrapped text
-    y_start = Inches(1.92)
+    content_top  = Inches(1.60)
+    footer_h     = Inches(0.65)   # space reserved for footer
+    note_h       = Inches(0.55) if notes else Inches(0)
+    note_gap     = Inches(0.10) if notes else Inches(0)
+    content_bottom = H - footer_h - note_h - note_gap
+
+    half        = (len(services) + 1) // 2
+    col_w       = (W - Inches(1.4)) / 2
+    # Scale line height so bullets never overflow the available space
+    available_h = content_bottom - content_top
+    line_h      = min(Inches(0.65), available_h / max(half, 1))
+    line_h      = max(line_h, Inches(0.38))   # floor to keep text readable
+    bullet_font = 20 if line_h >= Inches(0.54) else (17 if line_h >= Inches(0.44) else 14)
 
     for col_idx, col_svcs in enumerate([services[:half], services[half:]]):
         x = Inches(0.45) + col_idx * (col_w + Inches(0.5))
-        y = y_start
+        y = content_top
         for svc in col_svcs:
             _pptx_textbox(slide, x, y, col_w, line_h,
-                          f"• {svc}", 24, bold=True, color=PT_NAVY)
+                          f"• {svc}", bullet_font, bold=True, color=PT_NAVY)
             y += line_h
 
     if notes:
-        note_y = y_start + half * line_h + Inches(0.15)
+        note_y = H - footer_h - note_h
         _pptx_textbox(slide, Inches(0.45), note_y,
-                      W - Inches(0.9), Inches(0.80),
-                      notes, 18, italic=True, color=PT_BODY, wrap=True)
+                      W - Inches(0.9), note_h,
+                      notes, 14, italic=True, color=PT_BODY, wrap=True)
 
     _pptx_footer(slide, page_num)
 
@@ -671,20 +680,17 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
     W, H = PPTX_W, PPTX_H
     _pptx_bg(slide, PT_WHITE)
 
-    # Title — 48pt navy
-    _pptx_textbox(slide, Inches(0.45), Inches(0.12),
-                  W - Inches(0.9), Inches(1.0),
-                  "Proposed Investment", 48, bold=True, color=PT_NAVY)
-    # Subtitle — 36pt
-    _pptx_textbox(slide, Inches(0.45), Inches(1.18),
-                  W - Inches(0.9), Inches(0.55),
-                  f"Fee structure for {company}", 36, color=PT_BODY)
+    # Title — consistent 32pt (matches other content slides)
+    _pptx_textbox(slide, Inches(0.45), Inches(0.22),
+                  W - Inches(0.9), Inches(0.85),
+                  "Proposed Investment", 32, bold=True, color=PT_NAVY)
+    # Subtitle — 13pt
+    _pptx_textbox(slide, Inches(0.45), Inches(1.10),
+                  W - Inches(0.9), Inches(0.34),
+                  f"Fee structure for {company}", 13, color=PT_BODY)
     # Green divider
-    _pptx_rect(slide, Inches(0.45), Inches(1.78),
-               W - Inches(0.9), Inches(0.05), PT_GREEN)
-
-    row_h = Inches(0.72)   # tall enough for 24pt text
-    y = Inches(1.92)
+    _pptx_rect(slide, Inches(0.45), Inches(1.48),
+               W - Inches(0.9), Inches(0.04), PT_GREEN)
 
     summary_keys  = ("total investment", "monthly retainer", "one-time fees")
     item_costs    = [l for l in costs if not any(l.lower().startswith(k) for k in summary_keys)]
@@ -692,56 +698,87 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
     total_lines   = [l for l in costs if l.lower().startswith("total")]
     subtotals     = [l for l in summary_lines if not l.lower().startswith("total")]
 
+    # ── Dynamic row sizing — fit all rows in available space ─────────────────
+    content_top    = Inches(1.60)
+    disclaimer_h   = Inches(0.40)
+    footer_h       = Inches(0.65)
+    content_bottom = H - footer_h - disclaimer_h - Inches(0.08)
+    available_h    = content_bottom - content_top
+
+    gap_sub   = Inches(0.06) if subtotals   else Inches(0)
+    gap_total = Inches(0.10) if total_lines else Inches(0)
+    # Weight: total row = 1.3×, subtotal rows = 0.8×, item rows = 1×
+    n_units = (len(item_costs)
+               + len(subtotals) * 0.8
+               + (1.3 if total_lines else 0))
+    if n_units > 0:
+        base_row_h = (available_h - gap_sub - gap_total) / n_units
+        base_row_h = min(base_row_h, Inches(0.72))   # cap: don't stretch too tall
+        base_row_h = max(base_row_h, Inches(0.38))   # floor: keep text readable
+    else:
+        base_row_h = Inches(0.65)
+
+    sub_row_h   = base_row_h * 0.8
+    total_row_h = base_row_h * 1.3
+    # Scale fonts proportionally to row height
+    font_item  = max(12, min(24, round(base_row_h  / Inches(0.72)  * 24)))
+    font_sub   = max(11, min(20, round(sub_row_h   / Inches(0.54)  * 20)))
+    font_total = max(14, min(26, round(total_row_h / Inches(0.82)  * 26)))
+
+    y = content_top
+
     for i, line in enumerate(item_costs):
         label, amount = (line.split(":", 1) if ":" in line else (line, ""))
         if i % 2 == 0:
-            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), row_h, PT_LGRAY)
-        _pptx_textbox(slide, Inches(0.65), y + Inches(0.14),
-                      Inches(7.5), row_h - Inches(0.14),
-                      label.strip(), 24, bold=True, color=PT_NAVY)
-        _pptx_textbox(slide, W - Inches(4.2), y + Inches(0.14),
-                      Inches(3.7), row_h - Inches(0.14),
-                      amount.strip(), 24, bold=True,
+            _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), base_row_h, PT_LGRAY)
+        padding = min(Inches(0.12), base_row_h * 0.18)
+        _pptx_textbox(slide, Inches(0.65), y + padding,
+                      Inches(7.5), base_row_h - padding,
+                      label.strip(), font_item, bold=True, color=PT_NAVY)
+        _pptx_textbox(slide, W - Inches(4.2), y + padding,
+                      Inches(3.7), base_row_h - padding,
+                      amount.strip(), font_item, bold=True,
                       color=RGBColor(0x3A, 0x7A, 0x3A),
                       align=PP_ALIGN.RIGHT)
-        y += row_h
+        y += base_row_h
 
     # Subtotal rows (Monthly Retainer / One-Time Fees)
     if subtotals:
-        y += Inches(0.06)
-        sub_row_h = row_h * 0.75
+        y += gap_sub
         for line in subtotals:
             label, amount = (line.split(":", 1) if ":" in line else (line, ""))
             _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), sub_row_h, RGBColor(0xE8, 0xF0, 0xF8))
-            _pptx_textbox(slide, Inches(0.65), y + Inches(0.08),
+            padding = min(Inches(0.08), sub_row_h * 0.15)
+            _pptx_textbox(slide, Inches(0.65), y + padding,
                           Inches(7.5), sub_row_h,
-                          label.strip(), 20, bold=True, italic=True, color=PT_NAVY)
-            _pptx_textbox(slide, W - Inches(4.2), y + Inches(0.08),
+                          label.strip(), font_sub, bold=True, italic=True, color=PT_NAVY)
+            _pptx_textbox(slide, W - Inches(4.2), y + padding,
                           Inches(3.7), sub_row_h,
-                          amount.strip(), 20, bold=True,
+                          amount.strip(), font_sub, bold=True,
                           color=RGBColor(0x0E, 0x68, 0x82),
                           align=PP_ALIGN.RIGHT)
             y += sub_row_h
 
-    # Total row — navy background, green amount, slightly larger text
+    # Total row — navy background, green amount
     if total_lines:
         label, amount = (total_lines[0].split(":", 1) if ":" in total_lines[0] else (total_lines[0], ""))
-        y += Inches(0.10)
-        total_row_h = row_h + Inches(0.10)
+        y += gap_total
         _pptx_rect(slide, Inches(0.4), y, W - Inches(0.8), total_row_h, PT_NAVY)
-        _pptx_textbox(slide, Inches(0.65), y + Inches(0.14),
+        padding = min(Inches(0.14), total_row_h * 0.18)
+        _pptx_textbox(slide, Inches(0.65), y + padding,
                       Inches(7.5), total_row_h,
-                      label.strip(), 26, bold=True, color=PT_WHITE)
-        _pptx_textbox(slide, W - Inches(4.2), y + Inches(0.14),
+                      label.strip(), font_total, bold=True, color=PT_WHITE)
+        _pptx_textbox(slide, W - Inches(4.2), y + padding,
                       Inches(3.7), total_row_h,
-                      amount.strip(), 26, bold=True,
+                      amount.strip(), font_total, bold=True,
                       color=PT_GREEN, align=PP_ALIGN.RIGHT)
 
-    _pptx_textbox(slide, Inches(0.4), H - Inches(0.82),
-                  W - Inches(0.8), Inches(0.34),
+    # Disclaimer — anchored just above the footer, never overlaps content
+    _pptx_textbox(slide, Inches(0.4), H - footer_h - disclaimer_h,
+                  W - Inches(0.8), disclaimer_h,
                   "All fees are subject to final scope confirmation. "
                   "Travel expenses billed at cost.",
-                  14, italic=True, color=PT_MGRAY)
+                  12, italic=True, color=PT_MGRAY)
 
     _pptx_footer(slide, page_num)
 
