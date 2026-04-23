@@ -1208,8 +1208,14 @@ Example:
           </div>
           <div class="total-only-wrap">
             <label>
-              <input type="checkbox" id="total-only-toggle" />
+              <input type="checkbox" id="total-only-toggle" onchange="onCostToggleChange()" />
               Hide line items — show total only in proposal
+            </label>
+          </div>
+          <div class="total-only-wrap" style="margin-top:6px">
+            <label>
+              <input type="checkbox" id="no-costs-toggle" onchange="onCostToggleChange()" />
+              <strong>Exclude all pricing</strong> — omit investment slide from proposal
             </label>
           </div>
         </div>
@@ -1618,9 +1624,13 @@ Example:
       ? parseCost(totalInput ? totalInput.value : "0") || calcTotal
       : calcTotal;
 
+    const noCostsMode   = document.getElementById("no-costs-toggle")?.checked;
     const totalOnlyMode = document.getElementById("total-only-toggle")?.checked;
 
-    if (totalOnlyMode) {
+    if (noCostsMode) {
+      // Omit investment slide entirely — send no cost lines
+      costLines.length = 0;
+    } else if (totalOnlyMode) {
       // Discard all line items — send only the grand total
       costLines.length = 0;
       if (displayTotal > 0) costLines.push(`Total Investment: ${formatCurrency(displayTotal)}`);
@@ -1633,6 +1643,33 @@ Example:
     }
 
     costLines.forEach(line => addHidden("cost_lines", line));
+  }
+
+  // ── Cost toggle UI — grey out pricing when "exclude all" is active ──────────
+  function onCostToggleChange() {
+    const noCosts   = document.getElementById("no-costs-toggle")?.checked;
+    const totalOnly = document.getElementById("total-only-toggle");
+    const costArea  = document.getElementById("services-list");
+    const customArea= document.getElementById("custom-services-container");
+    const breakdown = document.querySelector(".total-breakdown");
+
+    // Grey out the whole pricing area when no-costs is on
+    [costArea, customArea].forEach(el => {
+      if (!el) return;
+      el.style.opacity       = noCosts ? "0.35" : "";
+      el.style.pointerEvents = noCosts ? "none"  : "";
+    });
+    // Dim breakdown rows (but not the toggle row itself)
+    if (breakdown) {
+      breakdown.querySelectorAll(".total-breakdown-row, .total-grand-wrap").forEach(el => {
+        el.style.opacity = noCosts ? "0.35" : "";
+      });
+    }
+    // Disable total-only toggle when no-costs is on (they're mutually exclusive)
+    if (totalOnly) {
+      totalOnly.disabled = noCosts;
+      if (noCosts) totalOnly.checked = false;
+    }
   }
 
   // ── Progress animation ─────────────────────────────────
