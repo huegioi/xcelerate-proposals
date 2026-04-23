@@ -15,6 +15,13 @@ try:
 except ImportError:
     _ANTHROPIC_AVAILABLE = False
 
+try:
+    import gspread
+    from google.oauth2.service_account import Credentials as _GCredentials
+    _GSPREAD_AVAILABLE = True
+except ImportError:
+    _GSPREAD_AVAILABLE = False
+
 # ── Services catalog (must match index.html) ──────────────────────────────────
 SERVICES_CATALOG = [
     "Team Development and Optimization",
@@ -47,6 +54,80 @@ ANALYSES_FILE   = DATA_DIR / "analyses.json"
 
 DEFAULT_LOGO      = ASSETS_DIR / "xcelerate_logo.png"
 DEFAULT_BASE_PDF  = ASSETS_DIR / "base_proposal_template.pdf"
+
+# ── Google Sheets config ──────────────────────────────────────────────────────
+GOOGLE_SHEET_ID   = os.environ.get("GOOGLE_SHEET_ID", "")
+GOOGLE_CREDS_JSON = os.environ.get("GOOGLE_CREDENTIALS_JSON", "")
+LEADS_SHEET_NAME  = "Leads"
+LEADS_HEADERS     = [
+    "Date Generated", "Company", "Contact", "Proposal Date",
+    "Services", "Pricing Mode", "Total Investment", "Notes",
+]
+_GSPREAD_SCOPES   = ["https://www.googleapis.com/auth/spreadsheets"]
+
+
+def _get_leads_ws():
+    """Return the gspread Worksheet for leads, or None if not configured."""
+    if not _GSPREAD_AVAILABLE or not GOOGLE_SHEET_ID or not GOOGLE_CREDS_JSON:
+        return None
+    try:
+        creds_dict = json.loads(GOOGLE_CREDS_JSON)
+        creds      = _GCredentials.from_service_account_info(creds_dict, scopes=_GSPREAD_SCOPES)
+        gc         = gspread.authorize(creds)
+        sh         = gc.open_by_key(GOOGLE_SHEET_ID)
+        try:
+            ws = sh.worksheet(LEADS_SHEET_NAME)
+        except gspread.exceptions.WorksheetNotFound:
+            ws = sh.add_worksheet(LEADS_SHEET_NAME, rows=1000, cols=len(LEADS_HEADERS))
+            ws.append_row(LEADS_HEADERS)
+        # Ensure header row is correct (idempotent)
+        existing_headers = ws.row_values(1)
+        if existing_headers != LEADS_HEADERS:
+            ws.insert_row(LEADS_HEADERS, 1)
+        return ws
+    except Exception as e:
+        print(f"[Sheets] Connection error: {e}")
+        return None
+
+
+def _sheet_url(ws=None):
+    base = f"https://docs.google.com/spreadsheets/d/{GOOGLE_SHEET_ID}/edit"
+    if ws:
+        try:
+            return base + f"#gid={ws.id}"
+        except Exception:
+            pass
+    return base
+
+
+def log_lead_to_sheet(company, contact, date, services, cost_lines, notes):
+    """Append a new lead row to the Leads sheet. Silent on failure."""
+    ws = _get_leads_ws()
+    if not ws:
+        return
+    try:
+        if not cost_lines:
+            pricing_mode, total = "No Pricing", ""
+        elif len(cost_lines) == 1 and cost_lines[0].lower().startswith("total"):
+            pricing_mode = "Total Only"
+            total = cost_lines[0].split(":", 1)[-1].strip() if ":" in cost_lines[0] else cost_lines[0]
+        else:
+            pricing_mode = "Full Breakdown"
+            total_line   = next((l for l in cost_lines if l.lower().startswith("total")), "")
+            total        = total_line.split(":", 1)[-1].strip() if ":" in total_line else ""
+
+        ws.append_row([
+            datetime.now().strftime("%Y-%m-%d %H:%M"),
+            company,
+            contact or "",
+            date,
+            ", ".join(services) if services else "",
+            pricing_mode,
+            total,
+            notes or "",
+        ])
+    except Exception as e:
+        print(f"[Sheets] log_lead error: {e}")
 
 
 def extract_json(raw: str) -> dict:
@@ -197,8 +278,68 @@ def save_analysis():
 def delete_analysis(analysis_id):
     analyses = load_analyses()
     analyses = [a for a in analyses if a.get("id") != analysis_id]
+
     save_analyses(analyses)
     return jsonify({"ok": True})
+
+
+# ── Leads (Google Sheets) API ─────────────────────────────────────────────────
+
+@app.route("/api/leads")
+def api_leads():
+    ws = _get_leads_ws()
+    if ws is None:
+        configured = bool(GOOGLE_SHEET_ID and GOOGLE_CREDS_JSON and _GSPREAD_AVAILABLE)
+        return jsonify({
+            "configured": False,
+            "missing_deps": not _GSPREAD_AVAILABLE,
+            "sheet_url": _sheet_url() if GOOGLE_SHEET_ID else "",
+            "leads": [],
+        })
+    try:
+        rows = ws.get_all_records(expected_headers=LEADS_HEADERS)
+        leads = [{"_row": i + 2, **row} for i, row in enumerate(rows)]
+        return jsonify({
+            "configured": True,
+            "sheet_url": _sheet_url(ws),
+            "leads": leads,
+        })
+    except Exception as e:
+        return jsonify({"error": str(e), "configured": True, "leads": []}), 500
+
+
+@app.route("/api/leads/<int:row_num>", methods=["PUT"])
+def update_lead(row_num):
+    ws = _get_leads_ws()
+    if not ws:
+        return jsonify({"error": "Google Sheets not configured"}), 503
+    try:
+        data        = request.get_json(force=True, silent=True) or {}
+        headers     = ws.row_values(1)
+        row_values  = ws.row_values(row_num)
+        # Pad to header length
+        while len(row_values) < len(headers):
+            row_values.append("")
+        for col_idx, header in enumerate(headers):
+            if header in data:
+                row_values[col_idx] = data[header]
+        end_col = chr(ord("A") + len(headers) - 1)
+        ws.update(f"A{row_num}:{end_col}{row_num}", [row_values])
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/leads/<int:row_num>", methods=["DELETE"])
+def delete_lead(row_num):
+    ws = _get_leads_ws()
+    if not ws:
+        return jsonify({"error": "Google Sheets not configured"}), 503
+    try:
+        ws.delete_rows(row_num)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/generate", methods=["POST"])
@@ -275,6 +416,9 @@ def generate():
         "created_at":    datetime.now().strftime("%B %d, %Y at %I:%M %p"),
         "produced":      produced,
     })
+
+    # Sync lead to Google Sheet (non-blocking — failures are logged, not raised)
+    log_lead_to_sheet(company, contact, date, services, cost_lines, notes)
 
     return jsonify({
         "job_id":             job_id,
