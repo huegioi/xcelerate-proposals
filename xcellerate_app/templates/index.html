@@ -1200,6 +1200,8 @@ Example:
                   <th>Date</th>
                   <th>Company</th>
                   <th>Contact</th>
+                  <th>Email</th>
+                  <th>Phone</th>
                   <th>Proposal Date</th>
                   <th>Pricing</th>
                   <th>Total</th>
@@ -1402,9 +1404,9 @@ Example:
 
     <!-- Leads -->
     <div class="sb-panel">
-      <div class="sb-panel-head" style="background: linear-gradient(135deg, #2d6a2d, #3a7a3a);"
-           onclick="switchTab('leads')" role="button" tabindex="0" style="cursor:pointer;">
-        <span>👤 Leads</span>
+      <div class="sb-panel-head" style="background: linear-gradient(135deg, #2d6a2d, #3a7a3a); color:#fff; cursor:pointer;"
+           onclick="switchTab('leads')" role="button" tabindex="0">
+        <span style="color:#fff;">👤 Leads</span>
         <span class="sb-count" id="sb-leads-count">—</span>
       </div>
       <div class="sb-list" style="padding:10px 12px;">
@@ -1960,7 +1962,7 @@ Example:
     tbody.innerHTML = "";
 
     // Editable columns (skip "Date Generated" — auto)
-    const editableCols = ["Company", "Contact", "Proposal Date", "Pricing Mode", "Total Investment", "Notes"];
+    const editableCols = ["Company", "Contact", "Email", "Phone", "Proposal Date", "Pricing Mode", "Total Investment", "Notes"];
 
     leads.forEach(lead => {
       const row = document.createElement("tr");
