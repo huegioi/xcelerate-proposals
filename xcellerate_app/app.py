@@ -60,7 +60,7 @@ GOOGLE_SHEET_ID   = os.environ.get("GOOGLE_SHEET_ID", "")
 GOOGLE_CREDS_JSON = os.environ.get("GOOGLE_CREDENTIALS_JSON", "")
 LEADS_SHEET_NAME  = "Leads"
 LEADS_HEADERS     = [
-    "Date Generated", "Company", "Contact", "Proposal Date",
+    "Date Generated", "Company", "Contact", "Email", "Phone", "Proposal Date",
     "Services", "Pricing Mode", "Total Investment", "Notes",
 ]
 _GSPREAD_SCOPES   = ["https://www.googleapis.com/auth/spreadsheets"]
@@ -100,7 +100,7 @@ def _sheet_url(ws=None):
     return base
 
 
-def log_lead_to_sheet(company, contact, date, services, cost_lines, notes):
+def log_lead_to_sheet(company, contact, email, phone, date, services, cost_lines, notes):
     """Append a new lead row to the Leads sheet. Silent on failure."""
     ws = _get_leads_ws()
     if not ws:
@@ -120,6 +120,8 @@ def log_lead_to_sheet(company, contact, date, services, cost_lines, notes):
             datetime.now().strftime("%Y-%m-%d %H:%M"),
             company,
             contact or "",
+            email or "",
+            phone or "",
             date,
             ", ".join(services) if services else "",
             pricing_mode,
@@ -344,13 +346,15 @@ def delete_lead(row_num):
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    company       = request.form.get("company", "").strip()
-    contact       = request.form.get("contact", "").strip()
-    date          = request.form.get("date", "").strip()
-    services      = request.form.getlist("services")
-    cost_lines    = [c.strip() for c in request.form.getlist("cost_lines") if c.strip()]
-    notes         = request.form.get("notes", "").strip()
-    body_override = request.form.get("body_override", "").strip()
+    company         = request.form.get("company", "").strip()
+    contact         = request.form.get("contact", "").strip()
+    contact_email   = request.form.get("contact_email", "").strip()
+    contact_phone   = request.form.get("contact_phone", "").strip()
+    date            = request.form.get("date", "").strip()
+    services        = request.form.getlist("services")
+    cost_lines      = [c.strip() for c in request.form.getlist("cost_lines") if c.strip()]
+    notes           = request.form.get("notes", "").strip()
+    body_override   = request.form.get("body_override", "").strip()
 
     if not company or not date:
         return jsonify({"error": "Company name and date are required."}), 400
@@ -418,7 +422,7 @@ def generate():
     })
 
     # Sync lead to Google Sheet (non-blocking — failures are logged, not raised)
-    log_lead_to_sheet(company, contact, date, services, cost_lines, notes)
+    log_lead_to_sheet(company, contact, contact_email, contact_phone, date, services, cost_lines, notes)
 
     return jsonify({
         "job_id":             job_id,
