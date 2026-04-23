@@ -757,6 +757,42 @@
     .analysis-table tr:last-child td { border-bottom: none; }
     .analysis-table tr:hover td { background: #f6fbfd; }
 
+    /* ── Leads table ── */
+    .leads-table { width: 100%; border-collapse: collapse; min-width: 780px; }
+    .leads-table th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      color: #2d6a2d; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 8px 10px; border-bottom: 2px solid #c8e6c8; background: #f2fbf2;
+    }
+    .leads-table td {
+      padding: 6px 8px; font-size: 13px; border-bottom: 1px solid #eef5ee;
+      vertical-align: middle;
+    }
+    .leads-table tr:last-child td { border-bottom: none; }
+    .leads-table tr:hover td { background: #f6fbf6; }
+    .leads-table .lead-cell-input {
+      width: 100%; border: none; background: transparent; font-size: 13px;
+      color: #2c2c2c; font-family: inherit; padding: 2px 4px; border-radius: 4px;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .leads-table .lead-cell-input:focus {
+      outline: none; background: #fff;
+      box-shadow: 0 0 0 2px rgba(45,106,45,0.25);
+    }
+    .btn-lead-save {
+      font-size: 11px; padding: 4px 10px; border-radius: 5px; border: none;
+      background: #2d6a2d; color: #fff; cursor: pointer; font-weight: 700;
+      transition: opacity 0.15s;
+    }
+    .btn-lead-save:hover { opacity: 0.82; }
+    .btn-lead-save.saved { background: #5CB85C; }
+    .btn-lead-delete {
+      font-size: 11px; padding: 4px 8px; border-radius: 5px; border: none;
+      background: transparent; color: #c0392b; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-lead-delete:hover { background: #fdf0ee; }
+
     @media (max-width: 700px) { .sd-input-grid { grid-template-columns: 1fr; } }
 
     @media (max-width: 1060px) {
@@ -1115,6 +1151,70 @@ Example:
     </div>
   </div>
 
+  <!-- Leads Panel -->
+  <div class="tab-panel" id="panel-leads">
+    <div class="card">
+      <div class="card-header" style="background: linear-gradient(135deg, #2d6a2d, #3a7a3a);">
+        <span>Leads &amp; Contacts</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="badge" id="leads-count-badge">0</span>
+          <a id="sheets-link" href="#" target="_blank" rel="noopener"
+             style="display:none; background:rgba(255,255,255,0.18); color:#fff; font-size:12px;
+                    font-weight:700; padding:4px 12px; border-radius:20px; text-decoration:none;
+                    border:1px solid rgba(255,255,255,0.35);">
+            📊 Open Google Sheet ↗
+          </a>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <!-- Setup instructions (shown when not configured) -->
+        <div id="leads-setup" style="display:none; padding:28px 24px;">
+          <h3 style="color:#1D3461; margin:0 0 10px;">Connect Google Sheets</h3>
+          <p style="color:#4a5a7a; font-size:14px; margin:0 0 18px; line-height:1.6;">
+            To sync leads automatically, set two environment variables in your Railway project:
+          </p>
+          <div style="background:#f5f7fc; border-radius:8px; padding:16px 18px; font-size:13px; line-height:2; color:#2c2c2c; font-family:monospace; margin-bottom:18px;">
+            <strong>GOOGLE_SHEET_ID</strong> = your-spreadsheet-id<br>
+            <strong>GOOGLE_CREDENTIALS_JSON</strong> = {"type":"service_account",...}
+          </div>
+          <ol style="color:#4a5a7a; font-size:13px; line-height:2; padding-left:20px; margin:0 0 18px;">
+            <li>Go to <a href="https://console.cloud.google.com" target="_blank" style="color:#1D3461;">Google Cloud Console</a> → create a project → enable the <strong>Google Sheets API</strong></li>
+            <li>Create a <strong>Service Account</strong> → download JSON credentials</li>
+            <li>Create a Google Sheet → share it with the service account email (Editor access)</li>
+            <li>Copy the Sheet ID from the URL: <code>docs.google.com/spreadsheets/d/<strong>SHEET_ID</strong>/edit</code></li>
+            <li>Paste the full JSON credentials string into <strong>GOOGLE_CREDENTIALS_JSON</strong> in Railway</li>
+          </ol>
+          <p style="color:#8a96b0; font-size:12px; margin:0;">Once configured and redeployed, every new proposal will automatically sync here.</p>
+        </div>
+        <!-- Leads table -->
+        <div id="leads-loading" class="saved-loading" style="display:none;">Loading leads from Google Sheets…</div>
+        <div id="leads-content" style="display:none;">
+          <div id="leads-empty" class="saved-empty" style="display:none;">
+            <div class="empty-icon">👤</div>
+            No leads yet — they'll appear here after you generate your first proposal.
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="leads-table" id="leads-table" style="display:none;">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Company</th>
+                  <th>Contact</th>
+                  <th>Proposal Date</th>
+                  <th>Pricing</th>
+                  <th>Total</th>
+                  <th>Notes</th>
+                  <th style="width:80px;">Save</th>
+                </tr>
+              </thead>
+              <tbody id="leads-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- New Proposal Panel -->
   <div class="tab-panel active" id="panel-new">
 
@@ -1297,6 +1397,31 @@ Example:
       </div>
       <div id="sb-analyses-list" class="sb-list">
         <div class="sb-empty">No analyses yet</div>
+      </div>
+    </div>
+
+    <!-- Leads -->
+    <div class="sb-panel">
+      <div class="sb-panel-head" style="background: linear-gradient(135deg, #2d6a2d, #3a7a3a);"
+           onclick="switchTab('leads')" role="button" tabindex="0" style="cursor:pointer;">
+        <span>👤 Leads</span>
+        <span class="sb-count" id="sb-leads-count">—</span>
+      </div>
+      <div class="sb-list" style="padding:10px 12px;">
+        <button id="leads-tab-btn" type="button" class="tab-btn"
+          onclick="switchTab('leads')"
+          style="width:100%; font-size:12px; padding:7px 10px; border-radius:6px; margin-bottom:6px;">
+          📊 View All Leads
+        </button>
+        <div id="sb-sheets-link-wrap" style="display:none; text-align:center;">
+          <a id="sb-sheets-link" href="#" target="_blank" rel="noopener"
+            style="font-size:11px; color:#2d6a2d; font-weight:700; text-decoration:none;">
+            Open Google Sheet ↗
+          </a>
+        </div>
+        <div id="sb-leads-status" style="font-size:11px; color:#8a96b0; text-align:center; padding:4px 0;">
+          Configure Google Sheets to sync leads
+        </div>
       </div>
     </div>
 
@@ -1776,12 +1901,139 @@ Example:
       if (btn) btn.classList.add("active");
       const panel = document.getElementById("panel-analyses");
       if (panel) { panel.classList.add("active"); loadSavedAnalyses(); }
+    } else if (tab === "leads") {
+      const btn = document.getElementById("leads-tab-btn");
+      if (btn) btn.classList.add("active");
+      const panel = document.getElementById("panel-leads");
+      if (panel) { panel.classList.add("active"); loadLeads(); }
     } else {
       const btn = document.getElementById("new-tab-btn");
       if (btn) btn.classList.add("active");
       const panel = document.getElementById("panel-new");
       if (panel) panel.classList.add("active");
     }
+  }
+
+  // ── Leads (Google Sheets) ──────────────────────────────
+  async function loadLeads() {
+    document.getElementById("leads-setup").style.display   = "none";
+    document.getElementById("leads-loading").style.display = "block";
+    document.getElementById("leads-content").style.display = "none";
+    try {
+      const resp = await fetch("/api/leads");
+      const data = await resp.json();
+      if (!data.configured) {
+        document.getElementById("leads-loading").style.display = "none";
+        document.getElementById("leads-setup").style.display   = "block";
+        return;
+      }
+      const link = document.getElementById("sheets-link");
+      if (link && data.sheet_url) {
+        link.href = data.sheet_url;
+        link.style.display = "inline-block";
+      }
+      renderLeads(data.leads || []);
+    } catch(e) {
+      document.getElementById("leads-loading").textContent = "Could not load leads.";
+    }
+  }
+
+  function renderLeads(leads) {
+    document.getElementById("leads-loading").style.display = "none";
+    document.getElementById("leads-content").style.display = "block";
+
+    const badge = document.getElementById("leads-count-badge");
+    if (badge) badge.textContent = leads.length;
+
+    const empty = document.getElementById("leads-empty");
+    const table = document.getElementById("leads-table");
+
+    if (!leads.length) {
+      empty.style.display = "flex";
+      table.style.display = "none";
+      return;
+    }
+    empty.style.display = "none";
+    table.style.display = "table";
+
+    const tbody = document.getElementById("leads-tbody");
+    tbody.innerHTML = "";
+
+    // Editable columns (skip "Date Generated" — auto)
+    const editableCols = ["Company", "Contact", "Proposal Date", "Pricing Mode", "Total Investment", "Notes"];
+
+    leads.forEach(lead => {
+      const row = document.createElement("tr");
+      row.dataset.row = lead._row;
+
+      // Date Generated (read-only)
+      const dateTd = document.createElement("td");
+      dateTd.textContent = lead["Date Generated"] || "";
+      dateTd.style.color = "#8a96b0";
+      dateTd.style.fontSize = "12px";
+      row.appendChild(dateTd);
+
+      // Editable cells
+      editableCols.forEach(col => {
+        const td = document.createElement("td");
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.className = "lead-cell-input";
+        inp.value = lead[col] || "";
+        inp.dataset.col = col;
+        inp.addEventListener("input", () => {
+          const saveBtn = row.querySelector(".btn-lead-save");
+          if (saveBtn) { saveBtn.textContent = "Save"; saveBtn.classList.remove("saved"); }
+        });
+        td.appendChild(inp);
+        row.appendChild(td);
+      });
+
+      // Actions cell
+      const actionTd = document.createElement("td");
+      actionTd.style.whiteSpace = "nowrap";
+
+      const saveBtn = document.createElement("button");
+      saveBtn.type = "button";
+      saveBtn.className = "btn-lead-save";
+      saveBtn.textContent = "Save";
+      saveBtn.onclick = async () => {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "…";
+        const payload = {};
+        row.querySelectorAll(".lead-cell-input").forEach(inp => {
+          payload[inp.dataset.col] = inp.value;
+        });
+        try {
+          await fetch(`/api/leads/${lead._row}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload),
+          });
+          saveBtn.textContent = "✓ Saved";
+          saveBtn.classList.add("saved");
+        } catch(e) {
+          saveBtn.textContent = "Error";
+        }
+        saveBtn.disabled = false;
+      };
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "btn-lead-delete";
+      delBtn.textContent = "✕";
+      delBtn.title = "Remove this lead";
+      delBtn.onclick = async () => {
+        if (!confirm(`Remove lead for "${lead.Company}"?`)) return;
+        await fetch(`/api/leads/${lead._row}`, { method: "DELETE" });
+        loadLeads();
+      };
+
+      actionTd.appendChild(saveBtn);
+      actionTd.appendChild(delBtn);
+      row.appendChild(actionTd);
+      tbody.appendChild(row);
+    });
   }
 
   // ── Saved Analyses ─────────────────────────────────────
@@ -2581,14 +2833,36 @@ Example:
   // ── Sidebar data loader ────────────────────────────────
   async function loadSidebarData() {
     try {
-      const [pResp, aResp] = await Promise.all([
-        fetch("/api/proposals"), fetch("/api/analyses")
+      const [pResp, aResp, lResp] = await Promise.all([
+        fetch("/api/proposals"), fetch("/api/analyses"), fetch("/api/leads")
       ]);
       const proposals = await pResp.json();
       const analyses  = await aResp.json();
+      const leadsData = await lResp.json();
       renderSidebarProposals(proposals);
       renderSidebarAnalyses(analyses);
+      renderSidebarLeads(leadsData);
     } catch(e) { /* silent fail */ }
+  }
+
+  function renderSidebarLeads(data) {
+    const countEl  = document.getElementById("sb-leads-count");
+    const statusEl = document.getElementById("sb-leads-status");
+    const linkWrap = document.getElementById("sb-sheets-link-wrap");
+    const linkEl   = document.getElementById("sb-sheets-link");
+
+    if (!data.configured) {
+      if (countEl)  countEl.textContent = "—";
+      if (statusEl) statusEl.textContent = "Configure Google Sheets to sync leads";
+      return;
+    }
+    const n = (data.leads || []).length;
+    if (countEl)  countEl.textContent = n;
+    if (statusEl) statusEl.textContent = `${n} lead${n !== 1 ? "s" : ""} synced`;
+    if (data.sheet_url && linkEl) {
+      linkEl.href = data.sheet_url;
+      if (linkWrap) linkWrap.style.display = "block";
+    }
   }
 
   function renderSidebarProposals(proposals) {
