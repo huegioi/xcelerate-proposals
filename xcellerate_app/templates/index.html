@@ -318,6 +318,27 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* ── Main nav bar ── */
+    .main-nav-bar {
+      display: flex; gap: 6px; padding: 10px 0 14px;
+      position: sticky; top: 0; z-index: 50;
+      background: linear-gradient(to bottom, #f0f3fa 80%, transparent);
+    }
+    .main-nav-btn {
+      flex: 1; padding: 10px 8px; font-size: 13px; font-weight: 700;
+      color: #5a6a8a; background: #fff; border: 1.5px solid #dde3f0;
+      border-radius: 9px; cursor: pointer; transition: all 0.15s;
+      font-family: inherit; text-align: center; line-height: 1.2;
+    }
+    .main-nav-btn:hover:not(.active) { background: #f0f3f9; color: #1D3461; border-color: #b8c4de; }
+    .main-nav-btn.active {
+      background: linear-gradient(135deg, #1D3461, #243d73);
+      color: #fff; border-color: transparent;
+      box-shadow: 0 2px 10px rgba(29,52,97,0.28);
+    }
+    .main-nav-btn.active.leads-btn { background: linear-gradient(135deg, #2d6a2d, #3a7a3a); }
+    .main-nav-btn .nav-label { display: block; font-size: 11px; font-weight: 400; opacity: 0.75; margin-top: 1px; }
+
     /* ── Transcript Parser ──────────────────────────────── */
     .transcript-header {
       background: linear-gradient(135deg, #1D3461 0%, #264a87 100%);
@@ -1089,8 +1110,31 @@ Example:
     <div class="zone-label-line"></div>
   </div>
 
-  <!-- Saved Proposals Panel (hidden, accessible from sidebar) -->
-  <div style="display:none" id="panel-saved">
+  <!-- ── Main navigation bar ──────────────────────────── -->
+  <nav class="main-nav-bar" aria-label="Section navigation">
+    <button type="button" id="new-tab-btn" class="main-nav-btn active"
+            onclick="switchTab('new')">
+      📋 Proposal Builder
+    </button>
+    <button type="button" id="saved-tab-btn" class="main-nav-btn"
+            onclick="switchTab('saved')">
+      📁 Saved
+      <span class="nav-label">Proposals</span>
+    </button>
+    <button type="button" id="analyses-tab-btn" class="main-nav-btn"
+            onclick="switchTab('analyses')">
+      🎯 Analyses
+      <span class="nav-label">Sales Director</span>
+    </button>
+    <button type="button" id="leads-tab-btn" class="main-nav-btn leads-btn"
+            onclick="switchTab('leads')">
+      👤 Leads
+      <span class="nav-label">& Contacts</span>
+    </button>
+  </nav>
+
+  <!-- Saved Proposals Panel -->
+  <div class="tab-panel" id="panel-saved">
     <div class="card">
       <div class="card-header">
         <span>Saved Proposals</span>
@@ -1410,7 +1454,7 @@ Example:
         <span class="sb-count" id="sb-leads-count">—</span>
       </div>
       <div class="sb-list" style="padding:10px 12px;">
-        <button id="leads-tab-btn" type="button" class="tab-btn"
+        <button type="button" class="tab-btn"
           onclick="switchTab('leads')"
           style="width:100%; font-size:12px; padding:7px 10px; border-radius:6px; margin-bottom:6px;">
           📊 View All Leads
@@ -1891,29 +1935,24 @@ Example:
 
   // ── Tab switching ──────────────────────────────────────
   function switchTab(tab) {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    // Clear active state from all nav buttons and panels
+    document.querySelectorAll(".main-nav-btn, .tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-    if (tab === "saved") {
-      const btn = document.getElementById("saved-tab-btn");
-      if (btn) btn.classList.add("active");
-      const panel = document.getElementById("panel-saved");
-      if (panel) { panel.classList.add("active"); loadSavedProposals(); }
-    } else if (tab === "analyses") {
-      const btn = document.getElementById("analyses-tab-btn");
-      if (btn) btn.classList.add("active");
-      const panel = document.getElementById("panel-analyses");
-      if (panel) { panel.classList.add("active"); loadSavedAnalyses(); }
-    } else if (tab === "leads") {
-      const btn = document.getElementById("leads-tab-btn");
-      if (btn) btn.classList.add("active");
-      const panel = document.getElementById("panel-leads");
-      if (panel) { panel.classList.add("active"); loadLeads(); }
-    } else {
-      const btn = document.getElementById("new-tab-btn");
-      if (btn) btn.classList.add("active");
-      const panel = document.getElementById("panel-new");
-      if (panel) panel.classList.add("active");
-    }
+
+    const btnId   = { new: "new-tab-btn", saved: "saved-tab-btn", analyses: "analyses-tab-btn", leads: "leads-tab-btn" }[tab] || "new-tab-btn";
+    const panelId = { new: "panel-new",   saved: "panel-saved",   analyses: "panel-analyses",   leads: "panel-leads"   }[tab] || "panel-new";
+
+    const btn   = document.getElementById(btnId);
+    const panel = document.getElementById(panelId);
+    if (btn)   btn.classList.add("active");
+    if (panel) panel.classList.add("active");
+
+    if (tab === "saved")    loadSavedProposals();
+    if (tab === "analyses") loadSavedAnalyses();
+    if (tab === "leads")    loadLeads();
+
+    // Scroll to top of content so nav bar is visible
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // ── Leads (Google Sheets) ──────────────────────────────
