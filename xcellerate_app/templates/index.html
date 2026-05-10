@@ -1231,12 +1231,6 @@ Example:
 
   <!-- Saved Analyses Panel -->
   <div class="tab-panel" id="panel-analyses">
-    <div style="padding: 0 0 14px; display:flex; align-items:center; justify-content:space-between;">
-      <button type="button" class="btn-new-analysis" onclick="startNewAnalysis()">
-        ＋ New Analysis
-      </button>
-      <span style="font-size:12px; color:#8a96b0;">Run the Sales Director to get deal coaching &amp; package recommendations</span>
-    </div>
     <div class="card">
       <div class="card-header" style="background: linear-gradient(135deg, #0b4c61, #0e6882);">
         <span>Saved Sales Director Analyses</span>
@@ -1497,6 +1491,12 @@ Example:
 
   <!-- ═══════════════════ SIDEBAR ═══════════════════════ -->
   <aside class="sidebar" id="sidebar">
+
+    <!-- New Analysis button -->
+    <button type="button" class="btn-new-analysis" onclick="startNewAnalysis()"
+            style="width:100%; justify-content:center;">
+      ＋ New Analysis
+    </button>
 
     <!-- Recent Proposals -->
     <div class="sb-panel">
