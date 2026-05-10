@@ -318,11 +318,29 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Main nav bar ── */
+    /* ── Top-level section nav ── */
+    .top-nav-bar {
+      display: flex; gap: 0; padding: 10px 0 0; border-bottom: 2px solid #dde3f0;
+      margin-bottom: 0; position: sticky; top: 0; z-index: 51;
+      background: linear-gradient(to bottom, #edf0f7 70%, #edf0f7);
+    }
+    .top-nav-btn {
+      padding: 10px 22px 11px; font-size: 14px; font-weight: 800;
+      color: #7a8aaa; background: transparent; border: none;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+      cursor: pointer; transition: all 0.15s;
+      font-family: inherit; text-align: center; line-height: 1.2;
+    }
+    .top-nav-btn:hover:not(.active) { color: #1D3461; border-bottom-color: rgba(29,52,97,0.25); }
+    .top-nav-btn.active { color: #1D3461; border-bottom-color: #1D3461; }
+    .top-nav-btn.leads-section-btn.active { color: #2d6a2d; border-bottom-color: #2d6a2d; }
+    .top-nav-btn .nav-label { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; margin-top: 1px; }
+
+    /* ── Main nav bar (sub-nav within Sales & Proposals) ── */
     .main-nav-bar {
-      display: flex; gap: 6px; padding: 10px 0 14px;
-      position: sticky; top: 0; z-index: 50;
-      background: linear-gradient(to bottom, #f0f3fa 80%, transparent);
+      display: flex; gap: 6px; padding: 12px 0 14px;
+      position: sticky; top: 44px; z-index: 50;
+      background: linear-gradient(to bottom, #edf0f7 80%, transparent);
     }
     .main-nav-btn {
       flex: 1; padding: 10px 8px; font-size: 13px; font-weight: 700;
@@ -336,8 +354,18 @@
       color: #fff; border-color: transparent;
       box-shadow: 0 2px 10px rgba(29,52,97,0.28);
     }
-    .main-nav-btn.active.leads-btn { background: linear-gradient(135deg, #2d6a2d, #3a7a3a); }
     .main-nav-btn .nav-label { display: block; font-size: 11px; font-weight: 400; opacity: 0.75; margin-top: 1px; }
+
+    /* ── New Analysis button in Analyses panel ── */
+    .btn-new-analysis {
+      background: linear-gradient(135deg, #0e6882, #1299bc); color: #fff;
+      border: none; border-radius: 9px; padding: 10px 22px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+      box-shadow: 0 2px 8px rgba(14,104,130,0.3);
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-new-analysis:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(14,104,130,0.38); }
 
     /* ── Transcript Parser ──────────────────────────────── */
     .transcript-header {
@@ -355,7 +383,7 @@
       letter-spacing: 0.5px; white-space: nowrap;
     }
     .transcript-toggle {
-      color: rgba(255,255,255,0.7); font-size: 18px; transition: transform 0.2s;
+      color: rgba(255,255,255,0.7); font-size: 26px; transition: transform 0.3s; cursor: pointer; line-height: 1;
     }
     .transcript-toggle.open { transform: rotate(180deg); }
     .transcript-body {
@@ -449,7 +477,7 @@
       padding: 4px 12px; font-size: 11px; font-weight: 700;
       letter-spacing: 0.5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.24);
     }
-    .sd-toggle { color: rgba(255,255,255,0.65); font-size: 18px; transition: transform 0.2s; }
+    .sd-toggle { color: rgba(255,255,255,0.65); font-size: 26px; transition: transform 0.3s; cursor: pointer; line-height: 1; }
     .sd-toggle.open { transform: rotate(180deg); }
     .sd-body { padding: 22px; display: none; }
     .sd-body.open { display: block; }
@@ -1110,8 +1138,21 @@ Example:
     <div class="zone-label-line"></div>
   </div>
 
-  <!-- ── Main navigation bar ──────────────────────────── -->
-  <nav class="main-nav-bar" aria-label="Section navigation">
+  <!-- ── Top-level section navigation ─────────────────── -->
+  <nav class="top-nav-bar" aria-label="Main navigation">
+    <button type="button" id="section-sales-btn" class="top-nav-btn active"
+            onclick="switchSection('sales')">
+      📋 Sales &amp; Proposals
+    </button>
+    <button type="button" id="section-leads-btn" class="top-nav-btn leads-section-btn"
+            onclick="switchSection('leads')">
+      👤 Leads
+      <span class="nav-label">&amp; Contacts</span>
+    </button>
+  </nav>
+
+  <!-- ── Sub-nav (Sales & Proposals) ──────────────────── -->
+  <nav class="main-nav-bar" id="sub-nav-sales" aria-label="Section navigation">
     <button type="button" id="new-tab-btn" class="main-nav-btn active"
             onclick="switchTab('new')">
       📋 Proposal Builder
@@ -1125,11 +1166,6 @@ Example:
             onclick="switchTab('analyses')">
       🎯 Analyses
       <span class="nav-label">Sales Director</span>
-    </button>
-    <button type="button" id="leads-tab-btn" class="main-nav-btn leads-btn"
-            onclick="switchTab('leads')">
-      👤 Leads
-      <span class="nav-label">& Contacts</span>
     </button>
   </nav>
 
@@ -1166,6 +1202,12 @@ Example:
 
   <!-- Saved Analyses Panel -->
   <div class="tab-panel" id="panel-analyses">
+    <div style="padding: 0 0 14px; display:flex; align-items:center; justify-content:space-between;">
+      <button type="button" class="btn-new-analysis" onclick="startNewAnalysis()">
+        ＋ New Analysis
+      </button>
+      <span style="font-size:12px; color:#8a96b0;">Run the Sales Director to get deal coaching &amp; package recommendations</span>
+    </div>
     <div class="card">
       <div class="card-header" style="background: linear-gradient(135deg, #0b4c61, #0e6882);">
         <span>Saved Sales Director Analyses</span>
@@ -1443,31 +1485,6 @@ Example:
       </div>
       <div id="sb-analyses-list" class="sb-list">
         <div class="sb-empty">No analyses yet</div>
-      </div>
-    </div>
-
-    <!-- Leads -->
-    <div class="sb-panel">
-      <div class="sb-panel-head" style="background: linear-gradient(135deg, #2d6a2d, #3a7a3a); color:#fff; cursor:pointer;"
-           onclick="switchTab('leads')" role="button" tabindex="0">
-        <span style="color:#fff;">👤 Leads</span>
-        <span class="sb-count" id="sb-leads-count">—</span>
-      </div>
-      <div class="sb-list" style="padding:10px 12px;">
-        <button type="button" class="tab-btn"
-          onclick="switchTab('leads')"
-          style="width:100%; font-size:12px; padding:7px 10px; border-radius:6px; margin-bottom:6px;">
-          📊 View All Leads
-        </button>
-        <div id="sb-sheets-link-wrap" style="display:none; text-align:center;">
-          <a id="sb-sheets-link" href="#" target="_blank" rel="noopener"
-            style="font-size:11px; color:#2d6a2d; font-weight:700; text-decoration:none;">
-            Open Google Sheet ↗
-          </a>
-        </div>
-        <div id="sb-leads-status" style="font-size:11px; color:#8a96b0; text-align:center; padding:4px 0;">
-          Configure Google Sheets to sync leads
-        </div>
       </div>
     </div>
 
@@ -1933,14 +1950,57 @@ Example:
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // ── Section switching (top-level: sales | leads) ───────
+  function switchSection(section) {
+    document.querySelectorAll(".top-nav-btn").forEach(b => b.classList.remove("active"));
+    const subNav = document.getElementById("sub-nav-sales");
+
+    if (section === "leads") {
+      document.getElementById("section-leads-btn").classList.add("active");
+      if (subNav) subNav.style.display = "none";
+      document.querySelectorAll(".main-nav-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      document.getElementById("panel-leads").classList.add("active");
+      loadLeads();
+    } else {
+      document.getElementById("section-sales-btn").classList.add("active");
+      if (subNav) subNav.style.display = "";
+      // Restore the active sub-tab (default to 'new' if none active)
+      const activeBtn = document.querySelector(".main-nav-btn.active");
+      if (!activeBtn) {
+        switchTab("new");
+      } else {
+        // Ensure corresponding panel is visible
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        const tabMap = { "new-tab-btn": "panel-new", "saved-tab-btn": "panel-saved", "analyses-tab-btn": "panel-analyses" };
+        const panelId = tabMap[activeBtn.id] || "panel-new";
+        const panel = document.getElementById(panelId);
+        if (panel) panel.classList.add("active");
+        document.getElementById("panel-leads").classList.remove("active");
+      }
+    }
+  }
+
   // ── Tab switching ──────────────────────────────────────
   function switchTab(tab) {
+    if (tab === "leads") {
+      switchSection("leads");
+      return;
+    }
+
+    // Ensure we're in the Sales section
+    document.querySelectorAll(".top-nav-btn").forEach(b => b.classList.remove("active"));
+    const sectionBtn = document.getElementById("section-sales-btn");
+    if (sectionBtn) sectionBtn.classList.add("active");
+    const subNav = document.getElementById("sub-nav-sales");
+    if (subNav) subNav.style.display = "";
+
     // Clear active state from all nav buttons and panels
     document.querySelectorAll(".main-nav-btn, .tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
 
-    const btnId   = { new: "new-tab-btn", saved: "saved-tab-btn", analyses: "analyses-tab-btn", leads: "leads-tab-btn" }[tab] || "new-tab-btn";
-    const panelId = { new: "panel-new",   saved: "panel-saved",   analyses: "panel-analyses",   leads: "panel-leads"   }[tab] || "panel-new";
+    const btnId   = { new: "new-tab-btn", saved: "saved-tab-btn", analyses: "analyses-tab-btn" }[tab] || "new-tab-btn";
+    const panelId = { new: "panel-new",   saved: "panel-saved",   analyses: "panel-analyses" }[tab] || "panel-new";
 
     const btn   = document.getElementById(btnId);
     const panel = document.getElementById(panelId);
@@ -1949,7 +2009,23 @@ Example:
 
     if (tab === "saved")    loadSavedProposals();
     if (tab === "analyses") loadSavedAnalyses();
-    if (tab === "leads")    loadLeads();
+  }
+
+  // ── New Analysis (from Analyses panel) ─────────────────
+  function startNewAnalysis() {
+    resetSdAnalysis();
+    switchTab("new");
+    setTimeout(() => {
+      const sdCard = document.getElementById("sd-card");
+      if (sdCard) sdCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Open SD panel if closed
+      const body   = document.getElementById("sd-body");
+      const toggle = document.getElementById("sd-toggle");
+      if (body && !body.classList.contains("open")) {
+        body.classList.add("open");
+        if (toggle) toggle.classList.add("open");
+      }
+    }, 100);
   }
 
   // ── Leads (Google Sheets) ──────────────────────────────
