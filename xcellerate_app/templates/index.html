@@ -20,13 +20,47 @@
     }
     .header-inner {
       max-width: 1200px; margin: 0 auto;
-      padding: 18px 28px 16px;
+      padding: 14px 28px 14px;
       display: flex; align-items: center; gap: 18px;
     }
-    .header-logo { height: 52px; filter: brightness(0) invert(1); }
+    .header-logo { height: 46px; filter: brightness(0) invert(1); }
     .header-text h1 { color: #fff; font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
     .header-text p { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 3px; }
     .green-bar { height: 5px; background: linear-gradient(90deg, #5CB85C, #4daa4d); }
+
+    /* ── Top-level nav (inside header) ──────────────────── */
+    .top-nav-bar {
+      margin-left: auto; display: flex; gap: 6px; align-items: center;
+    }
+    .top-nav-btn {
+      padding: 8px 18px; font-size: 13px; font-weight: 700;
+      color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15); border-radius: 8px;
+      cursor: pointer; transition: all 0.18s; font-family: inherit;
+    }
+    .top-nav-btn:hover:not(.active) {
+      color: #fff; background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.3);
+    }
+    .top-nav-btn.active {
+      color: #fff; background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.45);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .top-nav-btn.leads-section-btn.active {
+      background: rgba(92,184,92,0.28); border-color: rgba(92,184,92,0.55);
+    }
+
+    /* ── Sub-nav strip (below green bar, full-width, sticky) */
+    .sub-nav-strip {
+      background: #fff;
+      border-bottom: 1px solid #dde3f0;
+      box-shadow: 0 2px 10px rgba(29,52,97,0.07);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .sub-nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 10px 20px; display: flex; gap: 8px;
+    }
 
     /* ── Main two-column layout ─────────────────────────── */
     main {
@@ -318,43 +352,23 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Top-level section nav ── */
-    .top-nav-bar {
-      display: flex; gap: 0; padding: 10px 0 0; border-bottom: 2px solid #dde3f0;
-      margin-bottom: 0; position: sticky; top: 0; z-index: 51;
-      background: linear-gradient(to bottom, #edf0f7 70%, #edf0f7);
-    }
-    .top-nav-btn {
-      padding: 10px 22px 11px; font-size: 14px; font-weight: 800;
-      color: #7a8aaa; background: transparent; border: none;
-      border-bottom: 3px solid transparent; margin-bottom: -2px;
-      cursor: pointer; transition: all 0.15s;
-      font-family: inherit; text-align: center; line-height: 1.2;
-    }
-    .top-nav-btn:hover:not(.active) { color: #1D3461; border-bottom-color: rgba(29,52,97,0.25); }
-    .top-nav-btn.active { color: #1D3461; border-bottom-color: #1D3461; }
-    .top-nav-btn.leads-section-btn.active { color: #2d6a2d; border-bottom-color: #2d6a2d; }
-    .top-nav-btn .nav-label { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; margin-top: 1px; }
-
-    /* ── Main nav bar (sub-nav within Sales & Proposals) ── */
+    /* ── Sub-tab buttons (inside sub-nav strip) ─────────── */
     .main-nav-bar {
-      display: flex; gap: 6px; padding: 12px 0 14px;
-      position: sticky; top: 44px; z-index: 50;
-      background: linear-gradient(to bottom, #edf0f7 80%, transparent);
+      display: flex; gap: 8px; width: 100%;
     }
     .main-nav-btn {
-      flex: 1; padding: 10px 8px; font-size: 13px; font-weight: 700;
-      color: #5a6a8a; background: #fff; border: 1.5px solid #dde3f0;
-      border-radius: 9px; cursor: pointer; transition: all 0.15s;
-      font-family: inherit; text-align: center; line-height: 1.2;
+      padding: 8px 20px; font-size: 13px; font-weight: 700;
+      color: #5a6a8a; background: #f0f3f9; border: 1.5px solid #dde3f0;
+      border-radius: 8px; cursor: pointer; transition: all 0.15s;
+      font-family: inherit; text-align: center; line-height: 1.2; white-space: nowrap;
     }
-    .main-nav-btn:hover:not(.active) { background: #f0f3f9; color: #1D3461; border-color: #b8c4de; }
+    .main-nav-btn:hover:not(.active) { background: #e4e9f5; color: #1D3461; border-color: #b8c4de; }
     .main-nav-btn.active {
       background: linear-gradient(135deg, #1D3461, #243d73);
       color: #fff; border-color: transparent;
       box-shadow: 0 2px 10px rgba(29,52,97,0.28);
     }
-    .main-nav-btn .nav-label { display: block; font-size: 11px; font-weight: 400; opacity: 0.75; margin-top: 1px; }
+    .main-nav-btn .nav-label { display: inline; font-size: 13px; font-weight: 700; opacity: 1; margin-left: 3px; }
 
     /* ── New Analysis button in Analyses panel ── */
     .btn-new-analysis {
@@ -869,9 +883,40 @@
       <h1>Xcelerate Growth Partners</h1>
       <p>Proposal Package Generator — Intro Letter · Proposal PDF · PowerPoint</p>
     </div>
+    <!-- ── Top-level section navigation (in header) ──── -->
+    <nav class="top-nav-bar" aria-label="Main navigation">
+      <button type="button" id="section-sales-btn" class="top-nav-btn active"
+              onclick="switchSection('sales')">
+        📋 Sales &amp; Proposals
+      </button>
+      <button type="button" id="section-leads-btn" class="top-nav-btn leads-section-btn"
+              onclick="switchSection('leads')">
+        👤 Leads
+      </button>
+    </nav>
   </div>
 </header>
 <div class="green-bar"></div>
+
+<!-- ── Sub-nav strip (Proposal Builder | Saved | Analyses) -->
+<div class="sub-nav-strip" id="sub-nav-strip">
+  <div class="sub-nav-inner">
+    <nav class="main-nav-bar" id="sub-nav-sales" aria-label="Section navigation">
+      <button type="button" id="new-tab-btn" class="main-nav-btn active"
+              onclick="switchTab('new')">
+        📋 Proposal Builder
+      </button>
+      <button type="button" id="saved-tab-btn" class="main-nav-btn"
+              onclick="switchTab('saved')">
+        📁 Saved Proposals
+      </button>
+      <button type="button" id="analyses-tab-btn" class="main-nav-btn"
+              onclick="switchTab('analyses')">
+        🎯 Analyses
+      </button>
+    </nav>
+  </div>
+</div>
 
 <!-- Progress Overlay -->
 <div id="progress-overlay">
@@ -1131,43 +1176,6 @@ Example:
 
   </div><!-- /ai-zone -->
 
-  <!-- ── Form Zone separator ──────────────────────────── -->
-  <div class="form-zone-sep">
-    <div class="zone-label-line"></div>
-    <span class="zone-label-tag">📋 Proposal Builder</span>
-    <div class="zone-label-line"></div>
-  </div>
-
-  <!-- ── Top-level section navigation ─────────────────── -->
-  <nav class="top-nav-bar" aria-label="Main navigation">
-    <button type="button" id="section-sales-btn" class="top-nav-btn active"
-            onclick="switchSection('sales')">
-      📋 Sales &amp; Proposals
-    </button>
-    <button type="button" id="section-leads-btn" class="top-nav-btn leads-section-btn"
-            onclick="switchSection('leads')">
-      👤 Leads
-      <span class="nav-label">&amp; Contacts</span>
-    </button>
-  </nav>
-
-  <!-- ── Sub-nav (Sales & Proposals) ──────────────────── -->
-  <nav class="main-nav-bar" id="sub-nav-sales" aria-label="Section navigation">
-    <button type="button" id="new-tab-btn" class="main-nav-btn active"
-            onclick="switchTab('new')">
-      📋 Proposal Builder
-    </button>
-    <button type="button" id="saved-tab-btn" class="main-nav-btn"
-            onclick="switchTab('saved')">
-      📁 Saved
-      <span class="nav-label">Proposals</span>
-    </button>
-    <button type="button" id="analyses-tab-btn" class="main-nav-btn"
-            onclick="switchTab('analyses')">
-      🎯 Analyses
-      <span class="nav-label">Sales Director</span>
-    </button>
-  </nav>
 
   <!-- Saved Proposals Panel -->
   <div class="tab-panel" id="panel-saved">
@@ -1953,24 +1961,23 @@ Example:
   // ── Section switching (top-level: sales | leads) ───────
   function switchSection(section) {
     document.querySelectorAll(".top-nav-btn").forEach(b => b.classList.remove("active"));
-    const subNav = document.getElementById("sub-nav-sales");
+    const strip = document.getElementById("sub-nav-strip");
 
     if (section === "leads") {
       document.getElementById("section-leads-btn").classList.add("active");
-      if (subNav) subNav.style.display = "none";
+      if (strip) strip.style.display = "none";
       document.querySelectorAll(".main-nav-btn").forEach(b => b.classList.remove("active"));
       document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
       document.getElementById("panel-leads").classList.add("active");
       loadLeads();
     } else {
       document.getElementById("section-sales-btn").classList.add("active");
-      if (subNav) subNav.style.display = "";
+      if (strip) strip.style.display = "";
       // Restore the active sub-tab (default to 'new' if none active)
       const activeBtn = document.querySelector(".main-nav-btn.active");
       if (!activeBtn) {
         switchTab("new");
       } else {
-        // Ensure corresponding panel is visible
         document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
         const tabMap = { "new-tab-btn": "panel-new", "saved-tab-btn": "panel-saved", "analyses-tab-btn": "panel-analyses" };
         const panelId = tabMap[activeBtn.id] || "panel-new";
@@ -1992,8 +1999,8 @@ Example:
     document.querySelectorAll(".top-nav-btn").forEach(b => b.classList.remove("active"));
     const sectionBtn = document.getElementById("section-sales-btn");
     if (sectionBtn) sectionBtn.classList.add("active");
-    const subNav = document.getElementById("sub-nav-sales");
-    if (subNav) subNav.style.display = "";
+    const strip = document.getElementById("sub-nav-strip");
+    if (strip) strip.style.display = "";
 
     // Clear active state from all nav buttons and panels
     document.querySelectorAll(".main-nav-btn, .tab-btn").forEach(b => b.classList.remove("active"));
