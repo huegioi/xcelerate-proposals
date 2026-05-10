@@ -20,13 +20,54 @@
     }
     .header-inner {
       max-width: 1200px; margin: 0 auto;
-      padding: 18px 28px 16px;
+      padding: 14px 28px 14px;
       display: flex; align-items: center; gap: 18px;
     }
-    .header-logo { height: 52px; filter: brightness(0) invert(1); }
+    .header-logo { height: 46px; filter: brightness(0) invert(1); }
     .header-text h1 { color: #fff; font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
     .header-text p { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 3px; }
     .green-bar { height: 5px; background: linear-gradient(90deg, #5CB85C, #4daa4d); }
+
+    /* ── Primary section nav strip (Sales & Proposals | Leads) */
+    .sub-nav-strip {
+      background: #fff;
+      border-bottom: 1px solid #dde3f0;
+      box-shadow: 0 2px 10px rgba(29,52,97,0.07);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .sub-nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 10px 20px; display: flex; gap: 8px;
+    }
+    .main-nav-btn.leads-nav-btn.active {
+      background: linear-gradient(135deg, #2d6a2d, #3a7a3a);
+    }
+
+    /* ── Proposal Builder section (inside Sales & Proposals) */
+    .proposal-section-sep {
+      display: flex; align-items: center; gap: 10px; margin: 22px 0 14px;
+    }
+    .proposal-section-sep-line { flex: 1; height: 1px; background: rgba(29,52,97,0.15); }
+    .proposal-section-sep-tag {
+      background: #1D3461; color: #fff; border-radius: 20px;
+      padding: 4px 14px; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap;
+    }
+    .proposal-sub-nav {
+      display: flex; gap: 6px; margin-bottom: 16px;
+    }
+    .proposal-sub-btn {
+      padding: 8px 18px; font-size: 13px; font-weight: 700;
+      color: #5a6a8a; background: #fff; border: 1.5px solid #dde3f0;
+      border-radius: 8px; cursor: pointer; transition: all 0.15s;
+      font-family: inherit; white-space: nowrap;
+    }
+    .proposal-sub-btn:hover:not(.active) { background: #f0f3f9; color: #1D3461; border-color: #b8c4de; }
+    .proposal-sub-btn.active {
+      background: linear-gradient(135deg, #1D3461, #243d73);
+      color: #fff; border-color: transparent;
+      box-shadow: 0 2px 10px rgba(29,52,97,0.28);
+    }
 
     /* ── Main two-column layout ─────────────────────────── */
     main {
@@ -318,26 +359,34 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Main nav bar ── */
+    /* ── Sub-tab buttons (inside sub-nav strip) ─────────── */
     .main-nav-bar {
-      display: flex; gap: 6px; padding: 10px 0 14px;
-      position: sticky; top: 0; z-index: 50;
-      background: linear-gradient(to bottom, #f0f3fa 80%, transparent);
+      display: flex; gap: 8px; width: 100%;
     }
     .main-nav-btn {
-      flex: 1; padding: 10px 8px; font-size: 13px; font-weight: 700;
-      color: #5a6a8a; background: #fff; border: 1.5px solid #dde3f0;
-      border-radius: 9px; cursor: pointer; transition: all 0.15s;
-      font-family: inherit; text-align: center; line-height: 1.2;
+      padding: 8px 20px; font-size: 13px; font-weight: 700;
+      color: #5a6a8a; background: #f0f3f9; border: 1.5px solid #dde3f0;
+      border-radius: 8px; cursor: pointer; transition: all 0.15s;
+      font-family: inherit; text-align: center; line-height: 1.2; white-space: nowrap;
     }
-    .main-nav-btn:hover:not(.active) { background: #f0f3f9; color: #1D3461; border-color: #b8c4de; }
+    .main-nav-btn:hover:not(.active) { background: #e4e9f5; color: #1D3461; border-color: #b8c4de; }
     .main-nav-btn.active {
       background: linear-gradient(135deg, #1D3461, #243d73);
       color: #fff; border-color: transparent;
       box-shadow: 0 2px 10px rgba(29,52,97,0.28);
     }
-    .main-nav-btn.active.leads-btn { background: linear-gradient(135deg, #2d6a2d, #3a7a3a); }
-    .main-nav-btn .nav-label { display: block; font-size: 11px; font-weight: 400; opacity: 0.75; margin-top: 1px; }
+    .main-nav-btn .nav-label { display: inline; font-size: 13px; font-weight: 700; opacity: 1; margin-left: 3px; }
+
+    /* ── New Analysis button in Analyses panel ── */
+    .btn-new-analysis {
+      background: linear-gradient(135deg, #0e6882, #1299bc); color: #fff;
+      border: none; border-radius: 9px; padding: 10px 22px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+      box-shadow: 0 2px 8px rgba(14,104,130,0.3);
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-new-analysis:hover { background: linear-gradient(135deg, #0b5570, #0e82a0); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(14,104,130,0.38); }
 
     /* ── Transcript Parser ──────────────────────────────── */
     .transcript-header {
@@ -355,7 +404,7 @@
       letter-spacing: 0.5px; white-space: nowrap;
     }
     .transcript-toggle {
-      color: rgba(255,255,255,0.7); font-size: 18px; transition: transform 0.2s;
+      color: rgba(255,255,255,0.7); font-size: 26px; transition: transform 0.3s; cursor: pointer; line-height: 1;
     }
     .transcript-toggle.open { transform: rotate(180deg); }
     .transcript-body {
@@ -449,7 +498,7 @@
       padding: 4px 12px; font-size: 11px; font-weight: 700;
       letter-spacing: 0.5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.24);
     }
-    .sd-toggle { color: rgba(255,255,255,0.65); font-size: 18px; transition: transform 0.2s; }
+    .sd-toggle { color: rgba(255,255,255,0.65); font-size: 26px; transition: transform 0.3s; cursor: pointer; line-height: 1; }
     .sd-toggle.open { transform: rotate(180deg); }
     .sd-body { padding: 22px; display: none; }
     .sd-body.open { display: block; }
@@ -841,9 +890,24 @@
       <h1>Xcelerate Growth Partners</h1>
       <p>Proposal Package Generator — Intro Letter · Proposal PDF · PowerPoint</p>
     </div>
+    <!-- ── Top-level section navigation (in header) ──── -->
   </div>
 </header>
 <div class="green-bar"></div>
+
+<!-- ── Primary section nav strip (Sales & Proposals | Leads) -->
+<div class="sub-nav-strip" id="sub-nav-strip">
+  <div class="sub-nav-inner">
+    <button type="button" id="section-sales-btn" class="main-nav-btn active"
+            onclick="switchSection('sales')">
+      📋 Sales &amp; Proposals
+    </button>
+    <button type="button" id="section-leads-btn" class="main-nav-btn leads-nav-btn"
+            onclick="switchSection('leads')">
+      👤 Leads &amp; Contacts
+    </button>
+  </div>
+</div>
 
 <!-- Progress Overlay -->
 <div id="progress-overlay">
@@ -864,7 +928,11 @@
   <!-- ═══════════════════ MAIN COLUMN ═══════════════════ -->
   <div class="main-col">
 
+  <!-- Sales & Proposals section (AI + Proposal Builder) -->
+  <div id="sales-section">
+
   <!-- ── AI Zone ──────────────────────────────────────── -->
+  <div id="ai-section-wrap">
   <div class="zone-wrap ai-zone">
     <div class="zone-label">
       <div class="zone-label-line"></div>
@@ -1102,36 +1170,33 @@ Example:
   </div>
 
   </div><!-- /ai-zone -->
+  </div><!-- /ai-section-wrap -->
 
-  <!-- ── Form Zone separator ──────────────────────────── -->
-  <div class="form-zone-sep">
-    <div class="zone-label-line"></div>
-    <span class="zone-label-tag">📋 Proposal Builder</span>
-    <div class="zone-label-line"></div>
-  </div>
+  <!-- ── Proposal Builder Section ──────────────────────── -->
+  <div id="proposal-builder-section">
 
-  <!-- ── Main navigation bar ──────────────────────────── -->
-  <nav class="main-nav-bar" aria-label="Section navigation">
-    <button type="button" id="new-tab-btn" class="main-nav-btn active"
-            onclick="switchTab('new')">
-      📋 Proposal Builder
-    </button>
-    <button type="button" id="saved-tab-btn" class="main-nav-btn"
-            onclick="switchTab('saved')">
-      📁 Saved
-      <span class="nav-label">Proposals</span>
-    </button>
-    <button type="button" id="analyses-tab-btn" class="main-nav-btn"
-            onclick="switchTab('analyses')">
-      🎯 Analyses
-      <span class="nav-label">Sales Director</span>
-    </button>
-    <button type="button" id="leads-tab-btn" class="main-nav-btn leads-btn"
-            onclick="switchTab('leads')">
-      👤 Leads
-      <span class="nav-label">& Contacts</span>
-    </button>
-  </nav>
+    <!-- Section divider -->
+    <div class="proposal-section-sep">
+      <div class="proposal-section-sep-line"></div>
+      <span class="proposal-section-sep-tag">📋 Proposal Builder</span>
+      <div class="proposal-section-sep-line"></div>
+    </div>
+
+    <!-- Sub-tabs: Proposal Builder | Saved Proposals | Saved Analyses -->
+    <nav class="proposal-sub-nav" aria-label="Proposal Builder navigation">
+      <button type="button" id="new-tab-btn" class="proposal-sub-btn active"
+              onclick="switchTab('new')">
+        📋 New Proposal
+      </button>
+      <button type="button" id="saved-tab-btn" class="proposal-sub-btn"
+              onclick="switchTab('saved')">
+        📁 Saved Proposals
+      </button>
+      <button type="button" id="analyses-tab-btn" class="proposal-sub-btn"
+              onclick="switchTab('analyses')">
+        🎯 Saved Analyses
+      </button>
+    </nav>
 
   <!-- Saved Proposals Panel -->
   <div class="tab-panel" id="panel-saved">
@@ -1195,7 +1260,10 @@ Example:
     </div>
   </div>
 
-  <!-- Leads Panel -->
+  </div><!-- /proposal-builder-section -->
+  </div><!-- /sales-section -->
+
+  <!-- Leads Panel (shown only when Leads tab active) -->
   <div class="tab-panel" id="panel-leads">
     <div class="card">
       <div class="card-header" style="background: linear-gradient(135deg, #2d6a2d, #3a7a3a);">
@@ -1424,6 +1492,12 @@ Example:
   <!-- ═══════════════════ SIDEBAR ═══════════════════════ -->
   <aside class="sidebar" id="sidebar">
 
+    <!-- New Analysis button -->
+    <button type="button" class="btn-new-analysis" onclick="startNewAnalysis()"
+            style="width:100%; justify-content:center;">
+      ＋ New Analysis
+    </button>
+
     <!-- Recent Proposals -->
     <div class="sb-panel">
       <div class="sb-panel-head proposals">
@@ -1443,31 +1517,6 @@ Example:
       </div>
       <div id="sb-analyses-list" class="sb-list">
         <div class="sb-empty">No analyses yet</div>
-      </div>
-    </div>
-
-    <!-- Leads -->
-    <div class="sb-panel">
-      <div class="sb-panel-head" style="background: linear-gradient(135deg, #2d6a2d, #3a7a3a); color:#fff; cursor:pointer;"
-           onclick="switchTab('leads')" role="button" tabindex="0">
-        <span style="color:#fff;">👤 Leads</span>
-        <span class="sb-count" id="sb-leads-count">—</span>
-      </div>
-      <div class="sb-list" style="padding:10px 12px;">
-        <button type="button" class="tab-btn"
-          onclick="switchTab('leads')"
-          style="width:100%; font-size:12px; padding:7px 10px; border-radius:6px; margin-bottom:6px;">
-          📊 View All Leads
-        </button>
-        <div id="sb-sheets-link-wrap" style="display:none; text-align:center;">
-          <a id="sb-sheets-link" href="#" target="_blank" rel="noopener"
-            style="font-size:11px; color:#2d6a2d; font-weight:700; text-decoration:none;">
-            Open Google Sheet ↗
-          </a>
-        </div>
-        <div id="sb-leads-status" style="font-size:11px; color:#8a96b0; text-align:center; padding:4px 0;">
-          Configure Google Sheets to sync leads
-        </div>
       </div>
     </div>
 
@@ -1933,23 +1982,88 @@ Example:
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  // ── Tab switching ──────────────────────────────────────
+  // ── Track current sub-tab ─────────────────────────────
+  let _currentSubTab = "new";
+
+  // ── Section switching (Sales & Proposals | Leads) ──────
+  function switchSection(section) {
+    // Update primary nav buttons
+    ["section-sales-btn","section-leads-btn"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("active");
+    });
+
+    const aiWrap    = document.getElementById("ai-section-wrap");
+    const propSec   = document.getElementById("proposal-builder-section");
+    const leadsPanel = document.getElementById("panel-leads");
+
+    if (section === "leads") {
+      const btn = document.getElementById("section-leads-btn");
+      if (btn) btn.classList.add("active");
+      // Hide Sales content
+      if (aiWrap)  aiWrap.style.display  = "none";
+      if (propSec) propSec.style.display = "none";
+      // Show Leads
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      if (leadsPanel) leadsPanel.classList.add("active");
+      loadLeads();
+    } else {
+      const btn = document.getElementById("section-sales-btn");
+      if (btn) btn.classList.add("active");
+      // Show Sales content
+      if (aiWrap)  aiWrap.style.display  = "";
+      if (propSec) propSec.style.display = "";
+      // Hide Leads, restore sub-tab
+      if (leadsPanel) leadsPanel.classList.remove("active");
+      switchTab(_currentSubTab || "new");
+    }
+  }
+
+  // ── Sub-tab switching (within Sales & Proposals) ───────
   function switchTab(tab) {
-    // Clear active state from all nav buttons and panels
-    document.querySelectorAll(".main-nav-btn, .tab-btn").forEach(b => b.classList.remove("active"));
+    if (tab === "leads") { switchSection("leads"); return; }
+
+    _currentSubTab = tab;
+
+    // Mark Sales section active
+    document.getElementById("section-sales-btn")?.classList.add("active");
+    document.getElementById("section-leads-btn")?.classList.remove("active");
+
+    // Ensure Sales content is visible
+    const aiWrap  = document.getElementById("ai-section-wrap");
+    const propSec = document.getElementById("proposal-builder-section");
+    if (aiWrap)  aiWrap.style.display  = "";
+    if (propSec) propSec.style.display = "";
+
+    // Clear sub-tab buttons and panels
+    document.querySelectorAll(".proposal-sub-btn, .tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
 
-    const btnId   = { new: "new-tab-btn", saved: "saved-tab-btn", analyses: "analyses-tab-btn", leads: "leads-tab-btn" }[tab] || "new-tab-btn";
-    const panelId = { new: "panel-new",   saved: "panel-saved",   analyses: "panel-analyses",   leads: "panel-leads"   }[tab] || "panel-new";
+    const btnId   = { new: "new-tab-btn", saved: "saved-tab-btn", analyses: "analyses-tab-btn" }[tab] || "new-tab-btn";
+    const panelId = { new: "panel-new",   saved: "panel-saved",   analyses: "panel-analyses"  }[tab] || "panel-new";
 
-    const btn   = document.getElementById(btnId);
-    const panel = document.getElementById(panelId);
-    if (btn)   btn.classList.add("active");
-    if (panel) panel.classList.add("active");
+    document.getElementById(btnId)?.classList.add("active");
+    document.getElementById(panelId)?.classList.add("active");
 
     if (tab === "saved")    loadSavedProposals();
     if (tab === "analyses") loadSavedAnalyses();
-    if (tab === "leads")    loadLeads();
+  }
+
+  // ── New Analysis (from Analyses panel) ─────────────────
+  function startNewAnalysis() {
+    resetSdAnalysis();
+    switchSection("sales");
+    switchTab("new");
+    setTimeout(() => {
+      const sdCard = document.getElementById("sd-card");
+      if (sdCard) sdCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      const body   = document.getElementById("sd-body");
+      const toggle = document.getElementById("sd-toggle");
+      if (body && !body.classList.contains("open")) {
+        body.classList.add("open");
+        if (toggle) toggle.classList.add("open");
+      }
+    }, 100);
   }
 
   // ── Leads (Google Sheets) ──────────────────────────────
@@ -2266,12 +2380,14 @@ Example:
     toggle.classList.toggle("open", !isOpen);
   }
 
-  // SD open by default, transcript closed by default
+  // Initialise on load
   document.addEventListener("DOMContentLoaded", () => {
-    // Open the Sales Director panel
+    // Start in Sales & Proposals section, Proposal Builder sub-tab
+    switchSection("sales");
+    // Open the Sales Director panel by default
     document.getElementById("sd-body").classList.add("open");
     document.getElementById("sd-toggle").classList.add("open");
-    // Transcript starts closed (omit adding "open")
+    // Transcript starts closed
     loadSidebarData();
   });
 
