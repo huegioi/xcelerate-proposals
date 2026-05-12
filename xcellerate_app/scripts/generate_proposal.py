@@ -891,10 +891,22 @@ def _pptx_image_slide(prs, bg_image_path, page_num=None, cover_strip=False):
     """Create a slide using a full-bleed background image.
     page_num    → overlays a footer when provided.
     cover_strip → True for all image slides: paints a navy band over baked-in
-                  footer elements before drawing the fresh BLUE number box."""
+                  footer elements before drawing the fresh BLUE number box.
+
+    Z-order note: after adding the picture we immediately move it to the
+    bottom of the spTree so every shape added afterwards (navy band, text,
+    blue number box) is guaranteed to render ON TOP of the background image
+    in all PowerPoint / PDF viewers.
+    """
     slide = _pptx_blank_slide(prs)
     if bg_image_path and os.path.exists(bg_image_path):
-        slide.shapes.add_picture(bg_image_path, 0, 0, PPTX_W, PPTX_H)
+        pic = slide.shapes.add_picture(bg_image_path, 0, 0, PPTX_W, PPTX_H)
+        # Move the picture element to position 2 in the spTree
+        # (right after the two required nvGrpSpPr/grpSpPr elements),
+        # putting it at the very bottom of the visual z-stack.
+        sp_tree = slide.shapes._spTree
+        sp_tree.remove(pic._element)
+        sp_tree.insert(2, pic._element)
     if page_num is not None:
         _pptx_footer(slide, page_num, cover_strip=cover_strip)
     return slide
