@@ -142,8 +142,6 @@ STANDARD_SLIDES = [
     {
         "title": "Our Team of Experts",
         "team": [
-            ("Jim Tracy", "Co-Founder & CEO",
-             "As a 40-year veteran of the wealth management industry, Jim is a recognized leader. He has achieved considerable success in growing and building innovative solutions that benefit advisors and their clients."),
             ("Mary Deatherage", "Co-Founder & President",
              "Mary is a respected industry leader, who previously led a multi-billion dollar team at Morgan Stanley. Her strategic vision and expertise are invaluable assets to the firm."),
             ("Tara Forrest", "Head of Business Management",
@@ -207,10 +205,9 @@ def _pdf_cover(c, company, contact, date, logo_path):
     c.setFont("Helvetica", 9)
     c.drawCentredString(mid, 100, "Presented By:")
     c.setFont("Helvetica-Bold", 9)
-    c.drawCentredString(mid, 84, "Jim Tracy, Co-Founder & CEO")
-    c.drawCentredString(mid, 68, "Mary Deatherage, Co-Founder & President")
+    c.drawCentredString(mid, 84, "Mary Deatherage, Co-Founder & President")
     c.setFont("Helvetica", 9)
-    c.drawCentredString(mid, 52, "Xcelerate Growth Partners")
+    c.drawCentredString(mid, 68, "Xcelerate Growth Partners")
 
     # ── Bottom green bar ──────────────────────────────────────────────────────
     c.setFillColor(RL_GREEN)
@@ -506,13 +503,9 @@ def _pptx_cover(prs, company, contact, date, logo_path):
                   bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
     _pptx_textbox(slide, Inches(0.75), by_top + Inches(0.40),
                   W - Inches(1.5), Inches(0.38),
-                  "Jim Tracy, Co-Founder & CEO", 16,
-                  bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    _pptx_textbox(slide, Inches(0.75), by_top + Inches(0.80),
-                  W - Inches(1.5), Inches(0.38),
                   "Mary Deatherage, Co-Founder & President", 16,
                   bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    _pptx_textbox(slide, Inches(0.75), by_top + Inches(1.20),
+    _pptx_textbox(slide, Inches(0.75), by_top + Inches(0.80),
                   W - Inches(1.5), Inches(0.38),
                   "Xcelerate Growth Partners", 14,
                   bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
@@ -860,7 +853,7 @@ def build_proposal_pptx(company, contact, date,
     # 2. Standard content slides — use pre-rendered PNG backgrounds from the
     #    PDF template so the PPTX looks pixel-perfect identical to the PDF.
     #    Template pages 2–8 map to slide_bg_2.png … slide_bg_8.png.
-    for page_num in range(2, 10):
+    for page_num in range(2, 9):
         bg_path = os.path.join(assets_dir, f'slide_bg_{page_num}.png')
         if os.path.exists(bg_path):
             _pptx_image_slide(prs, bg_path)
