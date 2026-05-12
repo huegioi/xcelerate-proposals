@@ -192,13 +192,14 @@ def _pdf_cover(c, company, contact, date, logo_path):
         c.setFont("Helvetica-Bold", 34)
         c.drawCentredString(mid, 210, company)
 
-    # ── Delivery Launch Date label + date ─────────────────────────────────────
-    c.setFillColor(RL_WHITE)
-    c.setFont("Helvetica", 9)
-    c.drawCentredString(mid, 158, "Delivery Launch Date:")
-    c.setFillColor(RL_GREEN)
-    c.setFont("Helvetica-Bold", 20)
-    c.drawCentredString(mid, 140, date)
+    # ── Delivery Launch Date label + date (only if provided) ──────────────────
+    if date and date.strip():
+        c.setFillColor(RL_WHITE)
+        c.setFont("Helvetica", 9)
+        c.drawCentredString(mid, 158, "Delivery Launch Date:")
+        c.setFillColor(RL_GREEN)
+        c.setFont("Helvetica-Bold", 20)
+        c.drawCentredString(mid, 140, date)
 
     # ── Presented By — centred ────────────────────────────────────────────────
     c.setFillColor(RL_WHITE)
@@ -484,16 +485,17 @@ def _pptx_cover(prs, company, contact, date, logo_path):
                       company, 48,
                       bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
 
-    # ── Delivery Launch Date label + date ─────────────────────────────────────
-    date_label_y = Inches(3.78) if contact else Inches(3.35)
-    _pptx_textbox(slide, Inches(0.75), date_label_y,
-                  W - Inches(1.5), Inches(0.40),
-                  "Delivery Launch Date:", 14,
-                  bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    _pptx_textbox(slide, Inches(0.75), date_label_y + Inches(0.42),
-                  W - Inches(1.5), Inches(0.65),
-                  date, 30,
-                  bold=True, color=PT_GREEN, align=PP_ALIGN.CENTER)
+    # ── Delivery Launch Date label + date (only if provided) ──────────────────
+    if date and date.strip():
+        date_label_y = Inches(3.78) if contact else Inches(3.35)
+        _pptx_textbox(slide, Inches(0.75), date_label_y,
+                      W - Inches(1.5), Inches(0.40),
+                      "Delivery Launch Date:", 14,
+                      bold=False, color=PT_WHITE, align=PP_ALIGN.CENTER)
+        _pptx_textbox(slide, Inches(0.75), date_label_y + Inches(0.42),
+                      W - Inches(1.5), Inches(0.65),
+                      date, 30,
+                      bold=True, color=PT_GREEN, align=PP_ALIGN.CENTER)
 
     # ── Presented By — centred ────────────────────────────────────────────────
     by_top = H - Inches(1.90)
