@@ -758,7 +758,7 @@ JSON schema:
   "competitive_angle": "2-3 sentences on what makes Xcelerate uniquely positioned to win this vs. any alternative",
   "follow_up_email": {{
     "subject": "Email subject line",
-    "body": "Full email body — ready to send. Reference the call. End with a clear ask. Sign off as Jim Tracy."
+    "body": "Full email body — ready to send. Reference the call. End with a clear ask. Sign off as Mary Deatherage, Founder and President."
   }},
   "next_steps": ["Action 1", "Action 2", "Action 3"],
   "intro_notes": "1-2 sentences for the intro letter — the angle or hook that will resonate most with this prospect",
