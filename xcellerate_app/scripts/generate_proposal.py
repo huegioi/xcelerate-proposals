@@ -320,7 +320,18 @@ def build_proposal_pdf(company, contact, date, base_pdf_path,
     base_count = 0
     if base_pdf_path and os.path.exists(base_pdf_path):
         base_reader = PdfReader(base_pdf_path)
-        for page in base_reader.pages[1:]:
+        for i, page in enumerate(base_reader.pages[1:]):
+            actual_page_num = i + 2  # page 2, 3, 4 …
+            # Pages 6-9 come from the new upload and have no footer baked in —
+            # overlay one dynamically using reportlab.
+            if actual_page_num >= 6:
+                overlay_buf = io.BytesIO()
+                oc = canvas.Canvas(overlay_buf, pagesize=(PDF_W, PDF_H))
+                _pdf_footer(oc, actual_page_num)
+                oc.save()
+                overlay_buf.seek(0)
+                overlay_page = PdfReader(overlay_buf).pages[0]
+                page.merge_page(overlay_page)
             writer.add_page(page)
         base_count = len(base_reader.pages) - 1
     else:
@@ -828,11 +839,14 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
     _pptx_footer(slide, page_num)
 
 
-def _pptx_image_slide(prs, bg_image_path):
-    """Create a slide using a full-bleed background image (matches PDF template exactly)."""
+def _pptx_image_slide(prs, bg_image_path, page_num=None):
+    """Create a slide using a full-bleed background image. If page_num is given,
+    overlays a footer (for slides whose PNG doesn't have one baked in)."""
     slide = _pptx_blank_slide(prs)
     if bg_image_path and os.path.exists(bg_image_path):
         slide.shapes.add_picture(bg_image_path, 0, 0, PPTX_W, PPTX_H)
+    if page_num is not None:
+        _pptx_footer(slide, page_num)
     return slide
 
 
@@ -854,11 +868,13 @@ def build_proposal_pptx(company, contact, date,
 
     # 2. Standard content slides — use pre-rendered PNG backgrounds from the
     #    PDF template so the PPTX looks pixel-perfect identical to the PDF.
-    #    Template pages 2–8 map to slide_bg_2.png … slide_bg_8.png.
+    #    Slides 2-5 have footers baked into the PNG; slides 6-9 do not, so
+    #    we pass page_num for those to overlay the footer dynamically.
     for page_num in range(2, 10):
         bg_path = os.path.join(assets_dir, f'slide_bg_{page_num}.png')
         if os.path.exists(bg_path):
-            _pptx_image_slide(prs, bg_path)
+            overlay_num = page_num if page_num >= 6 else None
+            _pptx_image_slide(prs, bg_path, page_num=overlay_num)
         else:
             # Fallback: text-based slide if background images are missing
             slide_idx = page_num - 2          # 0-based into STANDARD_SLIDES
