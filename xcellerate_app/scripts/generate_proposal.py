@@ -167,9 +167,10 @@ def _pdf_footer(c, page_num, cover_strip=False):
                         slides; draws navy text on left + blue number box.
     """
     if cover_strip:
-        # Erase entire footer strip from the baked-in PNG background
+        # Erase entire footer strip from the baked-in PNG background.
+        # 50 pts tall to cover the full footer on all slide styles.
         c.setFillColor(RL_NAVY)
-        c.rect(0, 0, PDF_W, 36, fill=1, stroke=0)
+        c.rect(0, 0, PDF_W, 50, fill=1, stroke=0)
         # "Xcelerate Growth Partners" in white on the left
         c.setFillColor(RL_WHITE)
         c.setFont("Helvetica-Bold", 9)
@@ -445,19 +446,20 @@ def _pptx_footer(slide, page_num, cover_strip=False):
     """
     W, H = PPTX_W, PPTX_H
     if cover_strip:
-        # Erase entire footer strip from the baked-in PNG background
-        _pptx_rect(slide, 0, H - Inches(0.50), W, Inches(0.50), PT_NAVY)
+        # Erase entire footer strip from the baked-in PNG background.
+        # 0.70" is tall enough to cover the footer elements on all slide styles.
+        _pptx_rect(slide, 0, H - Inches(0.70), W, Inches(0.70), PT_NAVY)
         # "Xcelerate Growth Partners" in white on the left
-        _pptx_textbox(slide, Inches(0.4), H - Inches(0.50),
-                      Inches(4.5), Inches(0.50),
+        _pptx_textbox(slide, Inches(0.4), H - Inches(0.70),
+                      Inches(4.5), Inches(0.70),
                       "Xcelerate Growth Partners", 14,
                       bold=True, color=PT_WHITE, align=PP_ALIGN.LEFT)
         # Uniform BLUE number box
         _pptx_rect(slide,
-                   W - Inches(0.72), H - Inches(0.50),
-                   Inches(0.58), Inches(0.50), PT_BLUE)
-        pn_box = _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.50),
-                               Inches(0.58), Inches(0.50),
+                   W - Inches(0.72), H - Inches(0.70),
+                   Inches(0.58), Inches(0.70), PT_BLUE)
+        pn_box = _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.70),
+                               Inches(0.58), Inches(0.70),
                                str(page_num), 18,
                                bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
         pn_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
