@@ -46,6 +46,7 @@ from pptx.util import Inches, Pt
 RL_NAVY      = HexColor("#1D3461")
 RL_GREEN     = HexColor("#5CB85C")
 RL_GREEN_DK  = HexColor("#3A7A3A")
+RL_BLUE      = HexColor("#1565C0")   # uniform page-number box colour
 RL_WHITE     = white
 RL_BODY      = HexColor("#2C2C2C")
 RL_LGRAY     = HexColor("#F5F5F5")
@@ -54,6 +55,7 @@ RL_MGRAY     = HexColor("#CCCCCC")
 # python-pptx colours
 PT_NAVY      = RGBColor(0x1D, 0x34, 0x61)
 PT_GREEN     = RGBColor(0x5C, 0xB8, 0x5C)
+PT_BLUE      = RGBColor(0x15, 0x65, 0xC0)   # uniform page-number box colour
 PT_WHITE     = RGBColor(0xFF, 0xFF, 0xFF)
 PT_BODY      = RGBColor(0x2C, 0x2C, 0x2C)
 PT_LGRAY     = RGBColor(0xF5, 0xF5, 0xF5)
@@ -155,11 +157,30 @@ STANDARD_SLIDES = [
 #  PDF GENERATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def _pdf_footer(c, page_num):
-    c.setFillColor(RL_NAVY)
-    c.setFont("Helvetica-Bold", 9)
-    c.drawString(40, 18, "Xcelerate Growth Partners")
-    c.setFillColor(RL_GREEN)
+def _pdf_footer(c, page_num, cover_strip=False):
+    """Draw page footer.
+    cover_strip=True  → paint a full-width navy band first so ALL baked-in
+                        footer elements (green boxes, blue boxes, right-side
+                        "Xcelerate Growth Partners" text) are erased, then
+                        draw fresh white text + blue number box on top.
+    cover_strip=False → lightweight version for generated (white-background)
+                        slides; draws navy text on left + blue number box.
+    """
+    if cover_strip:
+        # Erase entire footer strip from the baked-in PNG background
+        c.setFillColor(RL_NAVY)
+        c.rect(0, 0, PDF_W, 36, fill=1, stroke=0)
+        # "Xcelerate Growth Partners" in white on the left
+        c.setFillColor(RL_WHITE)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(40, 14, "Xcelerate Growth Partners")
+    else:
+        # Generated (white-background) slides — navy text on left
+        c.setFillColor(RL_NAVY)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(40, 18, "Xcelerate Growth Partners")
+    # Uniform BLUE number box on the right
+    c.setFillColor(RL_BLUE)
     c.rect(PDF_W - 50, 8, 36, 24, fill=1, stroke=0)
     c.setFillColor(RL_WHITE)
     c.setFont("Helvetica-Bold", 11)
@@ -322,16 +343,17 @@ def build_proposal_pdf(company, contact, date, base_pdf_path,
         base_reader = PdfReader(base_pdf_path)
         for i, page in enumerate(base_reader.pages[1:]):
             actual_page_num = i + 2  # page 2, 3, 4 …
-            # Pages 6-9 come from the new upload and have no footer baked in —
-            # overlay one dynamically using reportlab.
-            if actual_page_num >= 6:
-                overlay_buf = io.BytesIO()
-                oc = canvas.Canvas(overlay_buf, pagesize=(PDF_W, PDF_H))
-                _pdf_footer(oc, actual_page_num)
-                oc.save()
-                overlay_buf.seek(0)
-                overlay_page = PdfReader(overlay_buf).pages[0]
-                page.merge_page(overlay_page)
+            # For ALL image slides (2-9): overlay a navy footer strip that
+            # erases baked-in green boxes (slides 2-5), blue boxes and
+            # right-side "Xcelerate Growth Partners" text (slides 7-9),
+            # then draws a fresh uniform BLUE number box.
+            overlay_buf = io.BytesIO()
+            oc = canvas.Canvas(overlay_buf, pagesize=(PDF_W, PDF_H))
+            _pdf_footer(oc, actual_page_num, cover_strip=True)
+            oc.save()
+            overlay_buf.seek(0)
+            overlay_page = PdfReader(overlay_buf).pages[0]
+            page.merge_page(overlay_page)
             writer.add_page(page)
         base_count = len(base_reader.pages) - 1
     else:
@@ -412,22 +434,48 @@ def _pptx_textbox(slide, left, top, width, height, text, font_size,
     return txb
 
 
-def _pptx_footer(slide, page_num):
+def _pptx_footer(slide, page_num, cover_strip=False):
+    """Draw page footer.
+    cover_strip=True  → paint a full-width navy band first so ALL baked-in
+                        footer elements (green boxes, blue boxes, right-side
+                        "Xcelerate Growth Partners" text) are erased, then
+                        draw fresh white text + blue number box on top.
+    cover_strip=False → lightweight version for generated (white-background)
+                        slides; draws text on right + blue number box.
+    """
     W, H = PPTX_W, PPTX_H
-    # "Xcelerate Growth Partners" in GREEN (matches PDF template style)
-    _pptx_textbox(slide, W - Inches(5.2), H - Inches(0.58),
-                  Inches(4.5), Inches(0.50),
-                  "Xcelerate Growth Partners", 18,
-                  bold=True, color=PT_GREEN, align=PP_ALIGN.RIGHT)
-    # Green page-number box
-    _pptx_rect(slide,
-               W - Inches(0.72), H - Inches(0.58),
-               Inches(0.58), Inches(0.50), PT_GREEN)
-    pn_box = _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.58),
-                           Inches(0.58), Inches(0.50),
-                           str(page_num), 18,
-                           bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
-    pn_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    if cover_strip:
+        # Erase entire footer strip from the baked-in PNG background
+        _pptx_rect(slide, 0, H - Inches(0.50), W, Inches(0.50), PT_NAVY)
+        # "Xcelerate Growth Partners" in white on the left
+        _pptx_textbox(slide, Inches(0.4), H - Inches(0.50),
+                      Inches(4.5), Inches(0.50),
+                      "Xcelerate Growth Partners", 14,
+                      bold=True, color=PT_WHITE, align=PP_ALIGN.LEFT)
+        # Uniform BLUE number box
+        _pptx_rect(slide,
+                   W - Inches(0.72), H - Inches(0.50),
+                   Inches(0.58), Inches(0.50), PT_BLUE)
+        pn_box = _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.50),
+                               Inches(0.58), Inches(0.50),
+                               str(page_num), 18,
+                               bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+        pn_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    else:
+        # Generated (white-background) slides — label on right, blue number box
+        _pptx_textbox(slide, W - Inches(5.2), H - Inches(0.58),
+                      Inches(4.5), Inches(0.50),
+                      "Xcelerate Growth Partners", 18,
+                      bold=True, color=PT_GREEN, align=PP_ALIGN.RIGHT)
+        # Uniform BLUE number box
+        _pptx_rect(slide,
+                   W - Inches(0.72), H - Inches(0.58),
+                   Inches(0.58), Inches(0.50), PT_BLUE)
+        pn_box = _pptx_textbox(slide, W - Inches(0.72), H - Inches(0.58),
+                               Inches(0.58), Inches(0.50),
+                               str(page_num), 18,
+                               bold=True, color=PT_WHITE, align=PP_ALIGN.CENTER)
+        pn_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
 
 
 def _pptx_slide_header(slide, title, logo_path, subtitle=None):
@@ -839,14 +887,16 @@ def _pptx_investment_slide(prs, company, costs, page_num, logo_path=None):
     _pptx_footer(slide, page_num)
 
 
-def _pptx_image_slide(prs, bg_image_path, page_num=None):
-    """Create a slide using a full-bleed background image. If page_num is given,
-    overlays a footer (for slides whose PNG doesn't have one baked in)."""
+def _pptx_image_slide(prs, bg_image_path, page_num=None, cover_strip=False):
+    """Create a slide using a full-bleed background image.
+    page_num    → overlays a footer when provided.
+    cover_strip → True for all image slides: paints a navy band over baked-in
+                  footer elements before drawing the fresh BLUE number box."""
     slide = _pptx_blank_slide(prs)
     if bg_image_path and os.path.exists(bg_image_path):
         slide.shapes.add_picture(bg_image_path, 0, 0, PPTX_W, PPTX_H)
     if page_num is not None:
-        _pptx_footer(slide, page_num)
+        _pptx_footer(slide, page_num, cover_strip=cover_strip)
     return slide
 
 
@@ -868,13 +918,13 @@ def build_proposal_pptx(company, contact, date,
 
     # 2. Standard content slides — use pre-rendered PNG backgrounds from the
     #    PDF template so the PPTX looks pixel-perfect identical to the PDF.
-    #    Slides 2-5 have footers baked into the PNG; slides 6-9 do not, so
-    #    we pass page_num for those to overlay the footer dynamically.
+    #    For ALL image slides (2-9) we paint a fresh navy footer band over the
+    #    baked-in footer elements (replacing green boxes on slides 2-5 and blue
+    #    boxes + right-side text on slides 6-9) with a uniform BLUE number box.
     for page_num in range(2, 10):
         bg_path = os.path.join(assets_dir, f'slide_bg_{page_num}.png')
         if os.path.exists(bg_path):
-            overlay_num = page_num if page_num >= 6 else None
-            _pptx_image_slide(prs, bg_path, page_num=overlay_num)
+            _pptx_image_slide(prs, bg_path, page_num=page_num, cover_strip=True)
         else:
             # Fallback: text-based slide if background images are missing
             slide_idx = page_num - 2          # 0-based into STANDARD_SLIDES
