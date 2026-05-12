@@ -855,7 +855,7 @@ def build_proposal_pptx(company, contact, date,
     # 2. Standard content slides — use pre-rendered PNG backgrounds from the
     #    PDF template so the PPTX looks pixel-perfect identical to the PDF.
     #    Template pages 2–8 map to slide_bg_2.png … slide_bg_8.png.
-    for page_num in range(2, 9):
+    for page_num in range(2, 10):
         bg_path = os.path.join(assets_dir, f'slide_bg_{page_num}.png')
         if os.path.exists(bg_path):
             _pptx_image_slide(prs, bg_path)
@@ -880,6 +880,7 @@ def build_proposal_pptx(company, contact, date,
                     )
 
     # 3. Custom services slide (always dynamic — different per proposal)
+    # Slides: 1 cover + 8 bg slides (2-9) = slide 10 is services, 11 is investment
     page = 10
     if services:
         _pptx_services_slide(prs, company, services, notes, page,
