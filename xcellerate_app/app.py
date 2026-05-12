@@ -356,8 +356,8 @@ def generate():
     notes           = request.form.get("notes", "").strip()
     body_override   = request.form.get("body_override", "").strip()
 
-    if not company or not date:
-        return jsonify({"error": "Company name and date are required."}), 400
+    if not company:
+        return jsonify({"error": "Company name is required."}), 400
 
     job_id  = uuid.uuid4().hex[:8]
     job_dir = OUTPUTS_DIR / job_id
